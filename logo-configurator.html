@@ -105,6 +105,12 @@
 const BASE_ANGLE = 27.07, CX = 600, CY = 600;
 const A = [612, 356], M = [600, 600];
 const NST = 30, N = 200, N2 = 400;
+const BAND_LEN = 900;
+// The ribbon's end normal comes from a one-sided chord, so it sits a fraction
+// of a degree off the band's, and abutting edges leave a tapering wedge of
+// background. Starting the band behind the joint buries that in an overlap;
+// s < 0 clamps the taper to lineWidth, so the stub matches the ribbon exactly.
+const JOIN_OVERLAP = 2;
 
 const rad = d => d * Math.PI / 180;
 const rotvis = (x, y, deg) => { const c = Math.cos(rad(deg)), s = Math.sin(rad(deg)); return [x*c + y*s, -x*s + y*c]; };
@@ -133,7 +139,7 @@ function taper(t, c) {
 // its tangent line, so the arc stays tangent at any slopeCurve.
 function kneeFillet(P, HW) {
   const bw = P.bandWidth;
-  const r = Math.min(P.slopeRound, (bw - 2*HW) * 0.95, (900 - P.slopeLen) * 0.95);
+  const r = Math.min(P.slopeRound, (bw - 2*HW) * 0.95, (BAND_LEN - P.slopeLen) * 0.95);
   if (r <= 0) return null;
   const wAt = s => 2*HW + (bw - 2*HW) * taper(Math.min(s / P.slopeLen, 1), P.slopeCurve);
   const cy = bw - r, NS = 600, s0 = Math.max(0, P.slopeLen - 8*r);
@@ -156,7 +162,8 @@ function kneeFillet(P, HW) {
   const st = near(hi).s;
   return st < hi ? { r, c: hi, cy, st } : null;
 }
-const fmt = n => n.toFixed(1);
+const fmt = (n, p = 1) => n.toFixed(p);
+const viewBox = P => { const vb = 1200 / P.zoom, o = 600 - vb/2; return { vb, o, hi: o + vb }; };
 // The rings overlap at the joints, so they ship as subpaths of one path and are
 // filled once as a union; separately, any pair of touching antialiased edges
 // composites to ~75% and shows the background through as a hairline. Nonzero
@@ -179,47 +186,65 @@ function bandAxis(P) {
   const HW = P.lineWidth / 2;
   const A2base = rotPT(sclp(A, P.scale), P.lean);
   const A2 = [A2base[0] + u2[0]*P.slopeStart, A2base[1] + u2[1]*P.slopeStart]; // joint slides toward center
-  return { u2, uo2: [-u2[0], -u2[1]], n2, inn2: [-n2[0], -n2[1]], HW, A2,
+  return { u2, uo2: [-u2[0], -u2[1]], inn2: [-n2[0], -n2[1]], HW, A2,
            Pouter: [A2[0] + n2[0]*HW, A2[1] + n2[1]*HW] };
 }
 
-// Signed difference between the run the band cuts off the frame's top edge and
-// the run it cuts off the side; zero is a symmetric corner exit. Projecting a
-// frame edge onto the band normal is affine in that edge's own coordinate, so
-// the covered span inverts directly instead of needing a clip.
-function cutDiff(P, lean) {
-  const { inn2, Pouter } = bandAxis({ ...P, lean });
-  const vb = 1200 / P.zoom, o = 600 - vb/2, hi = o + vb;
-  const [ix, iy] = inn2, [px, py] = Pouter, W = P.bandWidth;
-  const run = (c0, k) => {
-    if (Math.abs(k) < 1e-12) return (c0 >= 0 && c0 <= W) ? vb : 0;
-    const a = -c0/k, b = (W - c0)/k;
-    return Math.max(0, Math.min(Math.max(a, b), hi) - Math.max(Math.min(a, b), o));
-  };
-  return run((o - py)*iy - px*ix, ix) - run((hi - px)*ix - py*iy, iy);
+// The band's width as a function of distance along it. Shared so the solver
+// measures the same band build() draws; a solver that assumed full bandWidth
+// answered for a slab the taper never fills.
+function bandProfile(P, HW) {
+  const fil = kneeFillet(P, HW), bw = P.bandWidth;
+  return s => (fil && s >= fil.st && s <= fil.c)
+    ? fil.cy + Math.sqrt(Math.max(0, fil.r*fil.r - (s - fil.c)*(s - fil.c)))
+    : 2*HW + (bw - 2*HW) * taper(Math.max(0, Math.min(s / P.slopeLen, 1)), P.slopeCurve);
 }
 
-// Lean is bounded and cutDiff runs monotonically across it in practice, but a
-// bracket is not guaranteed at every zoom, so fall back to the closest match.
-function equalCutLean(P, lo = -35, hi = 35) {
-  let flo = cutDiff(P, lo);
-  if (flo * cutDiff(P, hi) > 0) {
-    let best = lo, bd = Infinity;
-    for (let L = lo; L <= hi; L += 0.05) {
-      const d = Math.abs(cutDiff(P, L));
-      if (d < bd) { bd = d; best = L; }
-    }
-    return best;
+// How much of the frame's top edge and right edge the drawn band covers. The
+// band is swept along uo2, so a point is inside it exactly when its distance
+// along the sweep is within the band's extent and its offset across the sweep
+// is within the profile at that distance -- no polygon needed. Sampled at the
+// 1200 px the SVG renders to, since a finer answer is not visible anyway.
+function cutRuns(P, lean, wAt) {
+  const { uo2, inn2, Pouter } = bandAxis({ ...P, lean });
+  const { vb, o, hi } = viewBox(P);
+  const inside = (x, y) => {
+    const dx = x - Pouter[0], dy = y - Pouter[1];
+    const s = dx*uo2[0] + dy*uo2[1];
+    if (s < -JOIN_OVERLAP || s > BAND_LEN) return false;
+    const c = dx*inn2[0] + dy*inn2[1];
+    return c >= 0 && c <= wAt(s);
+  };
+  let top = 0, right = 0;
+  for (let i = 0; i < 1200; i++) {
+    const t = o + vb*(i + 0.5)/1200;
+    if (inside(t, o)) top++;
+    if (inside(hi, t)) right++;
   }
-  for (let i = 0; i < 50; i++) {
-    const mid = (lo + hi) / 2, f = cutDiff(P, mid);
-    if ((f < 0) === (flo < 0)) { lo = mid; flo = f; } else { hi = mid; }
+  return [top*vb/1200, right*vb/1200];
+}
+
+// Lean whose top band leaves the frame's top-right corner symmetrically (the
+// bottom band is its exact rot180 image, so one corner settles both). Scanned
+// rather than bisected: the cut difference is not monotonic in lean, and at
+// low zoom the band stops inside the frame and cuts nothing at all, which no
+// bracket can distinguish from a balanced corner. Returns null when no lean
+// makes the band cross both edges.
+function equalCutLean(P) {
+  const [, , , lo, hi] = SLIDERS.find(r => r[1] === "lean");
+  const wAt = bandProfile(P, P.lineWidth / 2), STEPS = 1400;
+  let best = null, bd = Infinity;
+  for (let i = 0; i <= STEPS; i++) {
+    const L = lo + (hi - lo) * i / STEPS, [top, right] = cutRuns(P, L, wAt);
+    if (top <= 0 || right <= 0) continue;
+    const d = Math.abs(top - right);
+    if (d < bd) { bd = d; best = L; }
   }
-  return (lo + hi) / 2;
+  return best;
 }
 
 function build(P) {
-  const { u2, uo2, n2, inn2, HW, A2, Pouter } = bandAxis(P);
+  const { u2, uo2, inn2, HW, A2, Pouter } = bandAxis(P);
   const wv0 = rotvis(0.928, 0.371, P.lean + P.waistTilt);
   const wl = Math.hypot(wv0[0], wv0[1]); const wv = [wv0[0]/wl, wv0[1]/wl];
 
@@ -255,21 +280,13 @@ function build(P) {
   const sPath = pathOf(L.concat(R.slice().reverse()));
 
   // sloped band: straight outer edge + smootherstep underside taper
-  const fil = kneeFillet(P, HW);
-  // The ribbon's end normal comes from a one-sided chord, so it sits a fraction
-  // of a degree off the band's, and abutting edges leave a tapering wedge of
-  // background. Starting the band behind the joint buries that in an overlap;
-  // s < 0 clamps the taper to lineWidth, so the stub matches the ribbon exactly.
-  const JOIN_OVERLAP = 2;
+  const wAt = bandProfile(P, HW);
   const outer = [], inner = [];
   for (let i = 0; i <= N2; i++) {
-    const s = i/N2*(900 + JOIN_OVERLAP) - JOIN_OVERLAP;
+    const s = i/N2*(BAND_LEN + JOIN_OVERLAP) - JOIN_OVERLAP;
     const e = [Pouter[0]+uo2[0]*s, Pouter[1]+uo2[1]*s];
     outer.push(e);
-    const t = Math.max(0, Math.min(s/P.slopeLen, 1));
-    const w = (fil && s >= fil.st && s <= fil.c)
-      ? fil.cy + Math.sqrt(Math.max(0, fil.r*fil.r - (s - fil.c)*(s - fil.c)))
-      : 2*HW + (P.bandWidth-2*HW)*taper(t, P.slopeCurve);
+    const w = wAt(s);
     inner.push([e[0]+inn2[0]*w, e[1]+inn2[1]*w]);
   }
   const bandTop = pathOf(outer.slice().reverse().concat(inner));
@@ -280,28 +297,37 @@ function build(P) {
 /* ---- svg assembly ---- */
 function svgString(P, textureUri, withBg) {
   const g = build(P);
-  const vb = 1200 / P.zoom, o = 600 - vb/2;
+  const { vb, o } = viewBox(P);
   // Lets a texture that does not tile seamlessly still loop without a visible
   // edge once offset: every seam meets its own reflection.
-  // Full precision, not fmt(): 2 * fmt(vb) != fmt(2 * vb), and the difference
-  // opens a gap down the mirror seam. The mirrored copies also bleed back across
-  // each seam, since abutting <image> edges resample independently and hairline
-  // even when they meet exactly; their outer edges stay on the tile boundary so
-  // the tile still repeats clean.
-  const W = +vb.toFixed(4), M = 2*W, bleed = W/400;
-  const tw = P.texMirrorX ? M : W, th = P.texMirrorY ? M : W;
-  const cell = (w, h, t) => `      <image href="${textureUri}" x="0" y="0" width="${w}" height="${h}"${t}/>`;
-  const tile = [cell(W, W, "")];
-  if (P.texMirrorX) tile.push(cell(W + bleed, W, ` transform="translate(${M},0) scale(-1,1)"`));
-  if (P.texMirrorY) tile.push(cell(W, W + bleed, ` transform="translate(0,${M}) scale(1,-1)"`));
-  if (P.texMirrorX && P.texMirrorY) tile.push(cell(W + bleed, W + bleed, ` transform="translate(${M},${M}) scale(-1,-1)"`));
+  // The tile edge is rounded once and the period doubled from that value,
+  // because rounding twice leaves 2*round(vb) != round(2*vb) and the
+  // difference opens a gap down the mirror seam. The mirrored copies also
+  // bleed back across each seam, since abutting <image> edges resample
+  // independently and hairline even when they meet exactly; their outer edges
+  // stay on the tile boundary so the tile still repeats clean. The bleed only
+  // widens a cell under preserveAspectRatio="none" -- the default letterboxes
+  // a square texture into the wider box instead, which reopens the very gap
+  // the bleed is there to close.
+  const W = +fmt(vb, 4), W2 = 2*W, bleed = W/400;
+  const tw = P.texMirrorX ? W2 : W, th = P.texMirrorY ? W2 : W;
+  const cell = (w, h, t) =>
+    `      <image href="${textureUri}" x="0" y="0" width="${fmt(w, 4)}" height="${fmt(h, 4)}" preserveAspectRatio="none"${t}/>`;
+  const tile = [];
+  for (const [mx, my] of [[0,0],[1,0],[0,1],[1,1]]) {
+    if ((mx && !P.texMirrorX) || (my && !P.texMirrorY)) continue;
+    const t = mx || my
+      ? ` transform="translate(${mx ? fmt(W2, 4) : 0},${my ? fmt(W2, 4) : 0}) scale(${mx ? -1 : 1},${my ? -1 : 1})"`
+      : "";
+    tile.push(cell(mx ? W + bleed : W, my ? W + bleed : W, t));
+  }
   // Zoomed out, a 1200-wide bg stops short and lets the stage checkerboard
   // show through the artwork.
-  const bg = withBg ? `  <rect x="${fmt(o)}" y="${fmt(o)}" width="${fmt(vb)}" height="${fmt(vb)}" fill="${P.bg}"/>\n` : "";
+  const bg = withBg ? `  <rect x="${fmt(o, 4)}" y="${fmt(o, 4)}" width="${fmt(W, 4)}" height="${fmt(W, 4)}" fill="${P.bg}"/>\n` : "";
   const fill = P.solidColor ? P.ink : "url(#foil)";
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${fmt(o)} ${fmt(o)} ${fmt(vb)} ${fmt(vb)}" width="1200" height="1200">
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${fmt(o, 4)} ${fmt(o, 4)} ${fmt(W, 4)} ${fmt(W, 4)}" width="1200" height="1200">
   <defs>
-    <pattern id="foil" patternUnits="userSpaceOnUse" x="${+(o + P.texX/100*vb).toFixed(4)}" y="${+(o + P.texY/100*vb).toFixed(4)}" width="${tw}" height="${th}">
+    <pattern id="foil" patternUnits="userSpaceOnUse" x="${fmt(o + P.texX/100*vb, 4)}" y="${fmt(o + P.texY/100*vb, 4)}" width="${fmt(tw, 4)}" height="${fmt(th, 4)}">
 ${tile.join("\n")}
     </pattern>
   </defs>
@@ -329,7 +355,9 @@ const SLIDERS = [
   ["width", "slopeStart","slope start (narrow neck)", 0, 160, 1],
   ["width", "slopeCurve","slope curve (inward)", 0, 100, 1],
   ["width", "slopeRound","corner radius",      0, 120, 1],
-  ["orient","lean",      "lean °",           -35, 35, 0.01],
+  // "any" so the solved lean survives assignment without snapping, and so the
+  // keyboard still moves in useful increments rather than hundredths.
+  ["orient","lean",      "lean °",           -35, 35, "any"],
   ["framing","zoom",    "zoom",             0.40, 2.50, 0.01],
   ["tex",   "brightness","texture brightness", 0.6, 1.4, 0.01],
   ["tex",   "texX",      "texture offset X %", -100, 100, 1],
@@ -396,7 +424,7 @@ for (const [grp, key, label, mn, mx, step] of SLIDERS) {
   const sl = document.createElement("input");
   sl.type = "range"; sl.min = mn; sl.max = mx; sl.step = step; sl.value = state[key];
   const out = div.querySelector("output");
-  const show = () => out.value = Number(sl.value).toFixed(step < 1 ? (step < 0.1 ? 2 : 1) : 0);
+  const show = () => out.value = Number(sl.value).toFixed(step === "any" || step < 0.1 ? 2 : step < 1 ? 1 : 0);
   sl.addEventListener("input", () => { show(); setP(key, parseFloat(sl.value)); if (key === "brightness") refreshTexture(); });
   show(); div.appendChild(sl);
   document.getElementById(grp).appendChild(div);
@@ -417,11 +445,23 @@ for (const [key, label] of [["texMirrorX", "mirror tiling · X"], ["texMirrorY",
 const syncChecks = () => { for (const k in checks) checks[k].checked = !!state[k]; };
 
 const eqCut = document.createElement("button");
-eqCut.textContent = "equal X/Y cut";
+const EQ_CUT_LABEL = "equal X/Y cut";
+eqCut.textContent = EQ_CUT_LABEL;
 eqCut.style.width = "100%";
 eqCut.title = "lean so the band leaves the frame corner symmetrically";
+let eqCutNotice = null;
 eqCut.addEventListener("click", () => {
-  rows.lean.value = equalCutLean(state).toFixed(2);
+  // restore from the constant, never from the live label: a second click inside
+  // the notice window would capture the notice itself and pin it there for good
+  clearTimeout(eqCutNotice);
+  eqCut.textContent = EQ_CUT_LABEL;
+  const lean = equalCutLean(state);
+  if (lean === null) {
+    eqCut.textContent = "band misses the corner";
+    eqCutNotice = setTimeout(() => eqCut.textContent = EQ_CUT_LABEL, 1400);
+    return;
+  }
+  rows.lean.value = lean.toFixed(2);
   rows.lean.dispatchEvent(new Event("input"));
 });
 document.getElementById("orient").appendChild(eqCut);
