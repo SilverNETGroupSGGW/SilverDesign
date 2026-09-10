@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>@silver/ui — gallery</title>
+    <link rel="stylesheet" href="../dist/styles.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #0e0f12;
+      }
+      #err {
+        color: #ff8080;
+        font: 13px/1.5 monospace;
+        white-space: pre-wrap;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <pre id="err"></pre>
+    <script>
+      window.addEventListener('error', (e) => {
+        document.getElementById('err').textContent +=
+          'ERROR: ' + ((e.error && e.error.stack) || e.message) + '\n';
+      });
+      window.addEventListener('unhandledrejection', (e) => {
+        document.getElementById('err').textContent += 'REJECT: ' + e.reason + '\n';
+      });
+    </script>
+    <script src="./bundle.js"></script>
+  </body>
+</html>
