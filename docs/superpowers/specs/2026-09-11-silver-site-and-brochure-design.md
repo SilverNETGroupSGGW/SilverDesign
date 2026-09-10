@@ -53,8 +53,8 @@ robić_, _czy dam radę_, _kiedy, gdzie i jak dołączyć_. Nic ponad to.
 | GitHub         | `https://github.com/SilverNETGroupSGGW`                                                                       |
 | Facebook       | `https://www.facebook.com/silvernetgroupsggw` (tylko stopka)                                                  |
 | Aplikacja      | Kampus SGGW — Android (`com.silvers.kampus_sggw_remake`) i iOS (`id1586959639`), 1 tys.+ pobrań w Google Play |
-| Aplikacja      | Plan WZIM — Android (`com.silvernet.silvertimetable`), 1 tys.+ pobrań                                         |
-| Projekt w toku | sggw_days — Flutter + Firebase, repo w orgu                                                                   |
+| Aplikacja | Plan WZIM — Android (`com.silvernet.silvertimetable`) i iOS (`id1384573148`), 1 tys.+ pobrań w Google Play |
+| Aplikacja | Dni SGGW (`sggw_days`) — Flutter + Firebase, ukończona; aplikacja na wydarzenie Dni SGGW 2026, ponad 80 pobrań w dwa dni od premiery |
 | Projekt        | Charmander — proxy do powiadomień push, FastAPI i .NET Minimal API, repo w orgu                               |
 | Stack          | dobierany pod projekt; w orgu: Dart/Flutter, C#/.NET, Python, TypeScript                                      |
 
@@ -81,8 +81,9 @@ Jedna strona główna plus dwie podstrony, wszystkie w PL i EN.
 2. **Jak to działa** — trzy kroki: wchodzisz na Discorda → dołączasz do
    projektu albo zgłaszasz swój → robimy go w małym zespole przez semestr,
    co jakiś czas spotykając się w 3/79.
-3. **Projekty** — cztery karty (Kampus SGGW, Plan WZIM, sggw_days,
-   Charmander) z linkami do sklepów i GitHuba. Karty w sklepach pierwsze.
+3. **Projekty** — cztery karty (Kampus SGGW, Plan WZIM, Dni SGGW,
+   Charmander) z linkami do sklepów i GitHuba. Karty w sklepach pierwsze,
+   każda z jednym twardym wynikiem (pobrania, platformy) zamiast opisu.
 4. **Technologia** — jeden akapit (zasada §2.4) i lista tego, co realnie
    jest w orgu.
 5. **Dołącz** — próg wejścia jawnie („nie musisz jeszcze umieć
@@ -112,7 +113,7 @@ w §3.1):
 | 2019 | Aplikacja Plan WZIM. Warsztaty Unity i Flutter zakończone projektami; gra platformowa STEAMY. |
 | 2021–2022 | Warsztaty z Gita i GitHuba (repozytoria w orgu). Kampus SGGW od nowa, we Flutterze, w Google Play i App Store. |
 | 2023 | Plan WZIM — ostatnia duża aktualizacja. |
-| 2026 | sggw_days (Flutter + Firebase) i Charmander (proxy do powiadomień push). |
+| 2026 | Aplikacja Dni SGGW — ponad 80 pobrań w dwa dni wydarzenia. Charmander, proxy do powiadomień push. |
 
 Oś kończy się bieżącym rokiem; nie ma wpisu „przerwa" ani „powrót" — luka
 między latami mówi sama za siebie, czytelnik nie potrzebuje komentarza.
