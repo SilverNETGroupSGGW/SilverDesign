@@ -157,7 +157,20 @@ function kneeFillet(P, HW) {
   return st < hi ? { r, c: hi, cy, st } : null;
 }
 const fmt = n => n.toFixed(1);
-const pathOf = pts => "M " + pts.map(p => fmt(p[0])+" "+fmt(p[1])).join(" L ") + " Z";
+// The rings overlap at the joints, so they ship as subpaths of one path and are
+// filled once as a union; separately, any pair of touching antialiased edges
+// composites to ~75% and shows the background through as a hairline. Nonzero
+// needs every ring wound the same way, or the overlap punches back out.
+const signedArea = pts => {
+  let a = 0;
+  for (let i = 0, n = pts.length; i < n; i++) {
+    const q = pts[(i+1) % n];
+    a += pts[i][0]*q[1] - q[0]*pts[i][1];
+  }
+  return a / 2;
+};
+const pathOf = pts => "M " + (signedArea(pts) < 0 ? pts.slice().reverse() : pts)
+  .map(p => fmt(p[0])+" "+fmt(p[1])).join(" L ") + " Z";
 
 function build(P) {
   const u0 = [-Math.cos(rad(BASE_ANGLE)), Math.sin(rad(BASE_ANGLE))];
@@ -183,7 +196,14 @@ function build(P) {
   const P0b = rot180(...P0), P1b = rot180(...P1), P2b = rot180(...P2);
   for (let i = 0; i < N; i++) arc2.push(cubic(M, P2b, P1b, P0b, i/N));
   const st2 = st.slice().reverse().map(p => rot180(...p));
-  const spine = st.concat(arc, arc2, st2);
+  // neck = 0 collapses the straight run onto one spot, and coincident points
+  // give a zero-length tangent -> zero normal -> the ribbon pinches shut at the
+  // joint, opening a wedge against the band. Offsetting needs distinct points.
+  const spine = [];
+  for (const p of st.concat(arc, arc2, st2)) {
+    const q = spine[spine.length-1];
+    if (!q || Math.abs(p[0]-q[0]) + Math.abs(p[1]-q[1]) > 1e-9) spine.push(p);
+  }
 
   // ribbon outline
   const L = [], R = [];
@@ -199,9 +219,14 @@ function build(P) {
   // sloped band: straight outer edge + smootherstep underside taper
   const Pouter = [A2[0]+n2[0]*HW, A2[1]+n2[1]*HW];
   const fil = kneeFillet(P, HW);
+  // The ribbon's end normal comes from a one-sided chord, so it sits a fraction
+  // of a degree off the band's, and abutting edges leave a tapering wedge of
+  // background. Starting the band behind the joint buries that in an overlap;
+  // s < 0 clamps the taper to lineWidth, so the stub matches the ribbon exactly.
+  const JOIN_OVERLAP = 2;
   const outer = [], inner = [];
   for (let i = 0; i <= N2; i++) {
-    const s = i/N2*900;
+    const s = i/N2*(900 + JOIN_OVERLAP) - JOIN_OVERLAP;
     const e = [Pouter[0]+uo2[0]*s, Pouter[1]+uo2[1]*s];
     outer.push(e);
     const t = Math.max(0, Math.min(s/P.slopeLen, 1));
@@ -237,9 +262,7 @@ function svgString(P, textureUri, withBg) {
 ${tile.join("\n")}
     </pattern>
   </defs>
-${bg}  <path d="${g.bandTop}" fill="${fill}"/>
-  <path d="${g.bandBot}" fill="${fill}"/>
-  <path d="${g.sPath}" fill="${fill}"/>
+${bg}  <path d="${g.bandTop} ${g.bandBot} ${g.sPath}" fill="${fill}"/>
 </svg>`;
 }
 
