@@ -1,0 +1,30 @@
+[
+  {
+    "sheet": 1,
+    "components": [
+      "Button",
+      "Card",
+      "EventCard",
+      "Eyebrow",
+      "Foil",
+      "Grid",
+      "Heading",
+      "Hero",
+      "Logo",
+      "Mono",
+      "PersonCard",
+      "RibbonBackdrop",
+      "Rule",
+      "Section",
+      "SilverProvider",
+      "Stat"
+    ]
+  },
+  {
+    "sheet": 2,
+    "components": [
+      "Tag",
+      "Text"
+    ]
+  }
+]

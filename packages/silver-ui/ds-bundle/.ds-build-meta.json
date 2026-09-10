@@ -1,0 +1,9 @@
+{
+  "namespace": "SilverUI",
+  "source": "@silver/ui@0.1.0",
+  "shape": "package",
+  "provider": "SilverProvider",
+  "componentCount": 18,
+  "skippedStoryIds": [],
+  "runtimeFontPrefixes": []
+}

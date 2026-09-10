@@ -1,0 +1,175 @@
+{
+  "global": "SilverUI",
+  "pkg": "@silver/ui",
+  "pkgDir": "/var/home/orcho/Projects/SilverDesign/packages/silver-ui",
+  "extraEntries": [],
+  "exported": [
+    "Button",
+    "Card",
+    "EventCard",
+    "Eyebrow",
+    "Foil",
+    "Grid",
+    "Heading",
+    "Hero",
+    "Logo",
+    "Mono",
+    "PersonCard",
+    "RibbonBackdrop",
+    "Rule",
+    "Section",
+    "SilverProvider",
+    "Stat",
+    "Tag",
+    "Text"
+  ],
+  "storybookStatic": null,
+  "keyRecipe": 7,
+  "cfgSliceGlobal": "42bcec25bc365556213913671eeb788119a198bf028ee49cfa9aa0a94592a578",
+  "components": [
+    {
+      "name": "Button",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "888ab65fb26dbddb",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Card",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "ba62d470c9db757a",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "EventCard",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "06dfdd8a116d2bd7",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Eyebrow",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "a527bd87ad1990e4",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Foil",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "2ce7038c947adc86",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Grid",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "dbf38653152f323e",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Heading",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "870f2e2468cf538a",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Hero",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "25cb8d543375a45a",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Logo",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "9213c4b02f8d0d2b",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Mono",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "9b5fe0b6bde69854",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "PersonCard",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "c96d39e4a5fed2df",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "RibbonBackdrop",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "b6f73f9381ec8256",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Rule",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "598a9548979c6c53",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Section",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "e46f8152067976ca",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "SilverProvider",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "affb92d3bcec1083",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Stat",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "946a67bc23826f31",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Tag",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "f9cf86c245478fa9",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    },
+    {
+      "name": "Text",
+      "group": "general",
+      "srcSha": null,
+      "sourceKey": "2f6c323252f56dd4",
+      "cfgSlice": "5ff899b099eb6923833804cda955efdd69101524bec86f67dac5537cd81802e8",
+      "stories": []
+    }
+  ]
+}
