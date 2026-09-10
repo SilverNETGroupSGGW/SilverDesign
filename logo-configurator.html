@@ -127,6 +127,35 @@ function taper(t, c) {
   const inward = 1 - Math.sqrt(Math.max(0, 1 - t*t));
   return s + (inward - s) * k;
 }
+// Rounds the taper's kink into full band width the way border-radius rounds a
+// box corner. Both edges keep their exact shape up to their tangent points, so
+// nothing outside the corner moves. Solved against the taper as a curve, not
+// its tangent line, so the arc stays tangent at any slopeCurve.
+function kneeFillet(P, HW) {
+  const bw = P.bandWidth;
+  const r = Math.min(P.slopeRound, (bw - 2*HW) * 0.95, (900 - P.slopeLen) * 0.95);
+  if (r <= 0) return null;
+  const wAt = s => 2*HW + (bw - 2*HW) * taper(Math.min(s / P.slopeLen, 1), P.slopeCurve);
+  const cy = bw - r, NS = 600, s0 = Math.max(0, P.slopeLen - 8*r);
+  const near = c => {
+    let d2 = Infinity, at = P.slopeLen;
+    for (let i = 0; i <= NS; i++) {
+      const s = s0 + (P.slopeLen - s0) * i / NS;
+      const dx = s - c, dy = wAt(s) - cy, d = dx*dx + dy*dy;
+      if (d < d2) { d2 = d; at = s; }
+    }
+    return { d2, s: at };
+  };
+  // the centre rides the flat edge at depth r, so tangency reduces to
+  // distance-to-taper == r and a bisection on how far out it sits
+  let lo = P.slopeLen, hi = P.slopeLen + 3*r;
+  for (let k = 0; k < 30; k++) {
+    const mid = (lo + hi) / 2;
+    if (near(mid).d2 < r*r) lo = mid; else hi = mid;
+  }
+  const st = near(hi).s;
+  return st < hi ? { r, c: hi, cy, st } : null;
+}
 const fmt = n => n.toFixed(1);
 const pathOf = pts => "M " + pts.map(p => fmt(p[0])+" "+fmt(p[1])).join(" L ") + " Z";
 
@@ -169,13 +198,16 @@ function build(P) {
 
   // sloped band: straight outer edge + smootherstep underside taper
   const Pouter = [A2[0]+n2[0]*HW, A2[1]+n2[1]*HW];
+  const fil = kneeFillet(P, HW);
   const outer = [], inner = [];
   for (let i = 0; i <= N2; i++) {
     const s = i/N2*900;
     const e = [Pouter[0]+uo2[0]*s, Pouter[1]+uo2[1]*s];
     outer.push(e);
     const t = Math.max(0, Math.min(s/P.slopeLen, 1));
-    const w = 2*HW + (P.bandWidth-2*HW)*taper(t, P.slopeCurve);
+    const w = (fil && s >= fil.st && s <= fil.c)
+      ? fil.cy + Math.sqrt(Math.max(0, fil.r*fil.r - (s - fil.c)*(s - fil.c)))
+      : 2*HW + (P.bandWidth-2*HW)*taper(t, P.slopeCurve);
     inner.push([e[0]+inn2[0]*w, e[1]+inn2[1]*w]);
   }
   const bandTop = pathOf(outer.slice().reverse().concat(inner));
@@ -214,7 +246,7 @@ ${bg}  <path d="${g.bandTop}" fill="${fill}"/>
 /* ---- state / controls ---- */
 const DEFAULTS = {
   scale: 0.72, neck: 2, entryH: 100, waistTilt: 15, waistH: 125,
-  lineWidth: 32, bandWidth: 130, slopeLen: 140, slopeStart: 0, slopeCurve: 0,
+  lineWidth: 32, bandWidth: 130, slopeLen: 140, slopeStart: 0, slopeCurve: 0, slopeRound: 0,
   lean: 20, zoom: 1.0, brightness: 1.0, bg: "#15171b", ink: "#e8e8ea", solidColor: false,
   texX: 0, texY: 0, texMirrorX: false, texMirrorY: false
 };
@@ -230,6 +262,7 @@ const SLIDERS = [
   ["width", "slopeLen",  "slope length",     60, 400, 1],
   ["width", "slopeStart","slope start (narrow neck)", 0, 160, 1],
   ["width", "slopeCurve","slope curve (inward)", 0, 100, 1],
+  ["width", "slopeRound","corner radius",      0, 120, 1],
   ["orient","lean",      "lean °",           -35, 35, 0.5],
   ["framing","zoom",    "zoom",             0.40, 2.50, 0.01],
   ["tex",   "brightness","texture brightness", 0.6, 1.4, 0.01],
@@ -259,7 +292,7 @@ function settingsJSON() {
     waistTilt: state.waistTilt, waistH: state.waistH,
     lineWidth: state.lineWidth, bandWidth: state.bandWidth,
     slopeLen: state.slopeLen, slopeStart: state.slopeStart,
-    slopeCurve: state.slopeCurve,
+    slopeCurve: state.slopeCurve, slopeRound: state.slopeRound,
     lean: state.lean, zoom: state.zoom, brightness: state.brightness, bg: state.bg,
     ink: state.ink, solidColor: state.solidColor,
     texX: state.texX, texY: state.texY,
