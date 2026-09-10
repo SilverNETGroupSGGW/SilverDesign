@@ -3,8 +3,6 @@ import * as React from 'react';
 export interface SilverProviderProps {
   /** Page ground. `void` is the default; `graphite` matches the mark's own background. */
   surface?: 'void' | 'graphite';
-  /** Brushed-metal grain over the surface. On by default; stops dark areas reading flat. */
-  grain?: boolean;
   /** Travels the shared foil sheet. On by default; disabled under `prefers-reduced-motion`. */
   drift?: boolean;
   /** Renders as this element instead of a div. */
@@ -34,14 +32,14 @@ export interface SilverProviderProps {
  */
 export const SilverProvider = React.forwardRef<HTMLDivElement, SilverProviderProps>(
   function SilverProvider(
-    { surface = 'void', grain = true, drift = true, as: Tag = 'div', className, style, children },
+    { surface = 'void', drift = true, as: Tag = 'div', className, style, children },
     ref,
   ) {
     return (
       <Tag
         ref={ref as never}
         data-silver-surface={surface}
-        className={cx('sv-root', grain && 'sv-root--grain', drift && 'sv-root--drift', className)}
+        className={cx('sv-root', drift && 'sv-root--drift', className)}
         style={style}
       >
         {children}

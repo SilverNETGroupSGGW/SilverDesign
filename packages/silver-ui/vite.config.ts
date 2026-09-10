@@ -24,7 +24,6 @@ export default defineConfig({
     // relative to that directory, so inlining would break all of them.
     copy: [
       { from: '../../brand/tokens.css', to: 'dist' },
-      { from: '../../brand/grain.png', to: 'dist' },
       { from: '../../brand/fonts/*', to: 'dist/fonts' },
       { from: 'src/components.css', to: 'dist' },
       { from: 'src/styles.css', to: 'dist' },

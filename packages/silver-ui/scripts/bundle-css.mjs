@@ -7,9 +7,8 @@
  * single `cssEntry` file into the uploaded bundle without resolving @imports:
  * a chain would arrive with dangling references and every design would render
  * untokenised. The @font-face import is dropped (design-sync ships fonts
- * separately) and the grain is inlined, so the file depends on no sibling.
+ * separately), so the file depends on no sibling.
  */
-import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,14 +16,8 @@ import { fileURLToPath } from 'node:url';
 const here = join(dirname(fileURLToPath(import.meta.url)), '..');
 const brand = join(here, '..', '..', 'brand');
 
-const grain = execFileSync('python3', [join(here, 'scripts/grain-datauri.py')], {
-  encoding: 'utf8',
-  maxBuffer: 8 << 20,
-}).trim();
-
 const tokens = readFileSync(join(brand, 'tokens.css'), 'utf8')
-  .replace(/@import\s+url\(['"]fonts\/fonts\.css['"]\);?\n?/, '')
-  .replace(/url\(['"]grain\.png['"]\)/g, `url("${grain}")`);
+  .replace(/@import\s+url\(['"]fonts\/fonts\.css['"]\);?\n?/, '');
 
 const components = readFileSync(join(here, 'src/components.css'), 'utf8');
 

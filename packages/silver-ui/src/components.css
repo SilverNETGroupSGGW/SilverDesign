@@ -41,19 +41,6 @@
   }
 }
 
-.sv-root--grain::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: var(--grain);
-  background-attachment: fixed;
-  background-size: var(--grain-sheet) var(--grain-sheet);
-  background-position: calc(50% + var(--foil-drift)) center;
-  opacity: var(--grain-on-ground);
-  mix-blend-mode: soft-light;
-  pointer-events: none;
-  z-index: 0;
-}
 .sv-root > * {
   position: relative;
   z-index: 1;
@@ -92,29 +79,8 @@
 .sv-tag--solid,
 .sv-person__photo--initials {
   position: relative;
-  isolation: isolate;
 }
 
-/* One rule for every foil-bearing element. The grain is part of the shared
-   sheet too — fixed attachment and the same drift as the gradient — so a piece
-   of metal shows its own patch of brushing and the whole surface travels as
-   one. `border-radius: inherit` keeps it inside rounded corners. */
-.sv-foil-surface::after,
-.sv-btn--primary::after,
-.sv-tag--solid::after,
-.sv-person__photo--initials::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background-image: var(--grain);
-  background-attachment: fixed;
-  background-size: var(--grain-sheet) var(--grain-sheet);
-  background-position: calc(50% + var(--foil-drift)) center;
-  opacity: var(--grain-on-foil);
-  mix-blend-mode: overlay;
-  pointer-events: none;
-}
 
 /* ------------------------------------------------------------- typography */
 

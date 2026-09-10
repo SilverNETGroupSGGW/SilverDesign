@@ -29,10 +29,8 @@ Repo-specific gotchas. Read this before re-syncing.
 - The fix: `scripts/bundle-css.mjs` generates **`dist/ds.css`** — tokens + components flattened
   into one file — and `cfg.cssEntry` points at it. The converter copies `cssEntry` verbatim
   without resolving `@import`, so a chain would arrive dangling.
-- That generated file also **drops the `@import url('fonts/fonts.css')` line** (design-sync ships
-  fonts itself via `cfg.extraFonts`) and **inlines `grain.png` as a data URI** (`scripts/
-grain-datauri.py`, 200px / 16 grey levels, 279KB → 16KB). Without the inline, `_ds_bundle.css`
-  would reference `url('grain.png')` at the bundle root, where nothing copies it.
+- That generated file also **drops the `@import url('fonts/fonts.css')` line** — design-sync
+  ships fonts itself via `cfg.extraFonts`.
 - `dist/styles.css` (the `@import` chain) is what normal npm consumers import. `dist/ds.css` is
   its flat twin for design-sync only. Both must stay in sync — they are generated from the same
   two sources, so they do by construction.
@@ -102,32 +100,13 @@ Four things changed after the first sync; they are all in `brand/tokens.css` and
   `scroll`). There the foil falls back to per-element gradients, which is a graceful degradation,
   not a break — every element still shows metal, just its own slice.
 
-## Two texture bugs that shipped once — do not reintroduce
+## If you ever put a `url()` in a custom property
 
-1. **`url()` inside a custom property resolves against the document, not the stylesheet.**
-   `--grain: url('grain.png')` declared in `brand/tokens.css` made every page look for
-   `grain.png` next to itself, so the texture never painted anywhere — demo, poster, or app —
-   and nothing errored. It only worked in the synced bundle because `scripts/bundle-css.mjs`
-   inlines it there. The grain is now inlined into `brand/tokens.css` itself by
-   `tools/inline_grain.py`. Keep it inlined.
-2. **A missing semicolon after the data URI silently killed two tokens.** `--grain: url(...)`
-   with no `;` merged with the next line, so both `--grain` and `--grain-sheet` computed to
-   empty and `background-image` resolved to `none`. Diagnosed by dumping
-   `getComputedStyle(el, '::after')` — worth doing again if a texture goes missing, because the
-   rendered result looks exactly like "the blend mode is too subtle".
-
-## Grain generation and blending
-
-- `tools/make_grain.py` builds `brand/grain.png`: noise motion-blurred along the brand angle, so
-  the streaks run at 27.07 deg like real brushed metal. It wraps seamlessly (the blur uses
-  `np.roll`). Then `tools/inline_grain.py` quantises it to 256px / 48 levels and inlines it.
-- The **original grain was far too low-contrast to see** — std 14 at source, 8 after quantising,
-  which no blend mode can turn into visible texture. It is now std ~45. If the texture ever looks
-  flat, measure the tile's std before touching blend modes.
-- **Blend mode depends on the ground.** `overlay` keeps the mean and etches streaks into bright
-  foil, but collapses toward black on the near-black page ground and shows nothing there; the
-  ground uses `soft-light`. Both are wired in `src/components.css`; the poster does the same.
-- Grain overlays carry `border-radius: inherit`, or they spill past the rounded corners.
+Two bugs shipped from this once, both silent. `url()` inside a custom property resolves
+against the **document**, not the stylesheet that declares it, so a relative path fails to
+paint on every page that is not a sibling of the CSS — and nothing errors. Inline it as a
+data URI instead. And terminate it with a `;`: without one it merges with the next line and
+kills that token too, which looks exactly like "the effect is too subtle".
 
 ## Drift
 
@@ -193,8 +172,6 @@ from the SVGs the moment the foil became a repeating gradient. One source, one l
   shapely + Pillow). If the mark geometry in `brand/tokens.json` or `tools/silver_logo.py`
   changes, regenerate it or the library ships the old logo while the SVGs ship the new one.
   Nothing in `bun run build` regenerates it.
-- **The grain data URI is baked into `dist/ds.css` at build time.** Editing `brand/grain.png`
-  changes it silently on the next build; if the bundle CSS size jumps, that is why.
 - **Fonts are self-hosted woff2 in `brand/fonts/`** (Inter variable + JetBrains Mono, latin and
   latin-ext subsets). Polish diacritics need latin-ext — verify any font swap still covers
   `ą ć ę ł ń ó ś ź ż`.

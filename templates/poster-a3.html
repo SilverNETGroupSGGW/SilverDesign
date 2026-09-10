@@ -40,21 +40,6 @@ html, body { margin: 0; padding: 0; background: #555; }
 }
 .ribbon img { width: 100%; height: 100%; display: block; }
 
-/* Grain over the whole sheet, not just the foil: it ties the ribbon to the
-   background so the mark does not look pasted on. */
-/* soft-light, not overlay: the sheet is near-black and overlay collapses
-   toward black there, showing nothing. No fixed attachment on a print page —
-   there is no viewport to attach to. */
-.page::after {
-  content: '';
-  position: absolute; inset: 0;
-  background-image: var(--grain);
-  background-size: 26mm;
-  opacity: var(--grain-on-ground);
-  mix-blend-mode: soft-light;
-  pointer-events: none;
-}
-
 /* --- content ---------------------------------------------------------- */
 .content {
   position: absolute;

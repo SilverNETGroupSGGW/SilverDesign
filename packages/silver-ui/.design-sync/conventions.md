@@ -55,7 +55,7 @@ and style your own layout glue with inline styles or CSS that reads these custom
 | Angle    | `--angle`, `--angle-css`, `--angle-tan`                                                                        |
 | Space    | `--s-1` 4px, `--s-2` 8px, `--s-3` 16px, `--s-4` 24px, `--s-5` 40px, `--s-6` 64px, `--s-7` 104px, `--s-8` 168px |
 | Shape    | `--radius-sm`, `--radius`, `--radius-lg`, `--radius-xl`, `--radius-pill`                                       |
-| Texture  | `--grain`, `--grain-sheet`, `--grain-on-foil`, `--grain-on-ground`, `--foil-sheet`, `--foil-drift`             |
+| Texture  | `--foil-sheet`, `--foil-drift`             |
 
 Reach for a component before reaching for a token: `Section` already handles vertical rhythm,
 `Grid` already handles wrapping columns, `Rule` already handles the angle.
@@ -73,9 +73,6 @@ Consequences when you build:
 - Do not set `background-attachment`, `background-size` or `background-position` on anything
   wearing foil. Overriding any one of the three drops that element off the shared sheet and it
   stops matching everything around it.
-- The brushed grain is part of the same sheet, so it varies and travels with the gradient. It
-  needs a different blend per ground: `overlay` at `--grain-on-foil` on bright foil, `soft-light`
-  at `--grain-on-ground` on the near-black page. Using `overlay` on a dark ground paints nothing.
 - The sheet **travels by default** — `SilverProvider` has `drift` on. It animates one custom
   property on the root, never a property per element, and stops under `prefers-reduced-motion`.
   Pass `drift={false}` for a still surface.

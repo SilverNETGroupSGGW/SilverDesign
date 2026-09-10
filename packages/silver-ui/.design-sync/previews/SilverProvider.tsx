@@ -17,16 +17,6 @@ export const Surfaces = () => (
   </div>
 );
 
-export const Grain = () => (
-  <div style={{ display: 'grid', gap: 16 }}>
-    <SilverProvider surface="graphite" grain style={{ padding: 24 }}>
-      <Eyebrow>grain on</Eyebrow>
-    </SilverProvider>
-    <SilverProvider surface="graphite" grain={false} style={{ padding: 24 }}>
-      <Eyebrow>grain off</Eyebrow>
-    </SilverProvider>
-  </div>
-);
 
 export const WrappingAnApp = () => (
   <SilverProvider surface="void" style={{ padding: 28 }}>
