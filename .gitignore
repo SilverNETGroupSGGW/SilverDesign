@@ -1,3 +1,8 @@
 node_modules/
 __pycache__/
 *.pyc
+
+# Orphaned build output: the silver-ui source was removed in 8f64604, but its
+# generated dist/, ds-bundle/ and .ds-sync/ trees are still on disk. Ignored so
+# they cannot be re-tracked; safe to delete from the working tree.
+packages/
