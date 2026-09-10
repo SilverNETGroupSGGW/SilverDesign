@@ -95,6 +95,28 @@ Nawigacja: Projekty · Historia · Dołącz (kotwica) · PL/EN.
 `/projekty` · `/en/projects` — te same karty rozwinięte (opis, platformy,
 stack, linki), filtr _w sklepach / na GitHubie / wszystkie_.
 
+### 4.3 `/historia` · `/en/history`
+
+Oś czasu od 2013 do dziś, jeden wpis na wydarzenie, rok po lewej, treść po
+prawej. Ton jak reszta strony: fakty, bez „dumni jesteśmy". Wpisy (źródła
+w §3.1):
+
+| Rok | Wpis |
+|---|---|
+| 2013 | Start koła przy WZIM SGGW. Warsztaty z Construct 2 i podstaw C# dla grupy Junior Silver .NET. |
+| 2013 | IT Academic Day — dzień konferencji Dni Nowych Technologii na SGGW zorganizowany przez koło (Aula Kryształowa). |
+| 2014 | 1. miejsce na Teslathonie (36 h) — system wyborczy na wybory parlamentarne. 3. miejsce wśród ~100 drużyn .NET z Polski na Nocy Żywych Deweloperów (24 h, dziewięć aplikacji). W jury Predica, Microsoft, Vizao. |
+| 2014–2015 | Warsztaty: Windows Phone 8.1, Unity3D, Akademia C#. Pierwsza aplikacja Kampus SGGW. |
+| 2015 | Organizacja koła na GitHubie. Portal dla kół naukowych „Wokół", aplikacja Giełda Pomysłów. |
+| 2016–2018 | Warsztaty: programowanie obiektowe, C#/.NET, Android, Unity, ASP.NET MVC, zaawansowany C#, SFML. |
+| 2019 | Aplikacja Plan WZIM. Warsztaty Unity i Flutter zakończone projektami; gra platformowa STEAMY. |
+| 2021–2022 | Warsztaty z Gita i GitHuba (repozytoria w orgu). Kampus SGGW od nowa, we Flutterze, w Google Play i App Store. |
+| 2023 | Plan WZIM — ostatnia duża aktualizacja. |
+| 2026 | sggw_days (Flutter + Firebase) i Charmander (proxy do powiadomień push). |
+
+Oś kończy się bieżącym rokiem; nie ma wpisu „przerwa" ani „powrót" — luka
+między latami mówi sama za siebie, czytelnik nie potrzebuje komentarza.
+
 Broszury (§7) mają własne trasy, wyłączone z nawigacji, sitemapy i
 indeksowania.
 
