@@ -172,16 +172,54 @@ const signedArea = pts => {
 const pathOf = pts => "M " + (signedArea(pts) < 0 ? pts.slice().reverse() : pts)
   .map(p => fmt(p[0])+" "+fmt(p[1])).join(" L ") + " Z";
 
-function build(P) {
+function bandAxis(P) {
   const u0 = [-Math.cos(rad(BASE_ANGLE)), Math.sin(rad(BASE_ANGLE))];
   const u2 = rotvis(u0[0], u0[1], P.lean);
-  const uo2 = [-u2[0], -u2[1]];
   const n2 = [-u2[1], u2[0]];
-  const inn2 = [-n2[0], -n2[1]];
   const HW = P.lineWidth / 2;
-
   const A2base = rotPT(sclp(A, P.scale), P.lean);
   const A2 = [A2base[0] + u2[0]*P.slopeStart, A2base[1] + u2[1]*P.slopeStart]; // joint slides toward center
+  return { u2, uo2: [-u2[0], -u2[1]], n2, inn2: [-n2[0], -n2[1]], HW, A2,
+           Pouter: [A2[0] + n2[0]*HW, A2[1] + n2[1]*HW] };
+}
+
+// Signed difference between the run the band cuts off the frame's top edge and
+// the run it cuts off the side; zero is a symmetric corner exit. Projecting a
+// frame edge onto the band normal is affine in that edge's own coordinate, so
+// the covered span inverts directly instead of needing a clip.
+function cutDiff(P, lean) {
+  const { inn2, Pouter } = bandAxis({ ...P, lean });
+  const vb = 1200 / P.zoom, o = 600 - vb/2, hi = o + vb;
+  const [ix, iy] = inn2, [px, py] = Pouter, W = P.bandWidth;
+  const run = (c0, k) => {
+    if (Math.abs(k) < 1e-12) return (c0 >= 0 && c0 <= W) ? vb : 0;
+    const a = -c0/k, b = (W - c0)/k;
+    return Math.max(0, Math.min(Math.max(a, b), hi) - Math.max(Math.min(a, b), o));
+  };
+  return run((o - py)*iy - px*ix, ix) - run((hi - px)*ix - py*iy, iy);
+}
+
+// Lean is bounded and cutDiff runs monotonically across it in practice, but a
+// bracket is not guaranteed at every zoom, so fall back to the closest match.
+function equalCutLean(P, lo = -35, hi = 35) {
+  let flo = cutDiff(P, lo);
+  if (flo * cutDiff(P, hi) > 0) {
+    let best = lo, bd = Infinity;
+    for (let L = lo; L <= hi; L += 0.05) {
+      const d = Math.abs(cutDiff(P, L));
+      if (d < bd) { bd = d; best = L; }
+    }
+    return best;
+  }
+  for (let i = 0; i < 50; i++) {
+    const mid = (lo + hi) / 2, f = cutDiff(P, mid);
+    if ((f < 0) === (flo < 0)) { lo = mid; flo = f; } else { hi = mid; }
+  }
+  return (lo + hi) / 2;
+}
+
+function build(P) {
+  const { u2, uo2, n2, inn2, HW, A2, Pouter } = bandAxis(P);
   const wv0 = rotvis(0.928, 0.371, P.lean + P.waistTilt);
   const wl = Math.hypot(wv0[0], wv0[1]); const wv = [wv0[0]/wl, wv0[1]/wl];
 
@@ -217,7 +255,6 @@ function build(P) {
   const sPath = pathOf(L.concat(R.slice().reverse()));
 
   // sloped band: straight outer edge + smootherstep underside taper
-  const Pouter = [A2[0]+n2[0]*HW, A2[1]+n2[1]*HW];
   const fil = kneeFillet(P, HW);
   // The ribbon's end normal comes from a one-sided chord, so it sits a fraction
   // of a degree off the band's, and abutting edges leave a tapering wedge of
@@ -286,7 +323,7 @@ const SLIDERS = [
   ["width", "slopeStart","slope start (narrow neck)", 0, 160, 1],
   ["width", "slopeCurve","slope curve (inward)", 0, 100, 1],
   ["width", "slopeRound","corner radius",      0, 120, 1],
-  ["orient","lean",      "lean °",           -35, 35, 0.5],
+  ["orient","lean",      "lean °",           -35, 35, 0.01],
   ["framing","zoom",    "zoom",             0.40, 2.50, 0.01],
   ["tex",   "brightness","texture brightness", 0.6, 1.4, 0.01],
   ["tex",   "texX",      "texture offset X %", -100, 100, 1],
@@ -372,6 +409,16 @@ for (const [key, label] of [["texMirrorX", "mirror tiling · X"], ["texMirrorY",
   checks[key] = cb;
 }
 const syncChecks = () => { for (const k in checks) checks[k].checked = !!state[k]; };
+
+const eqCut = document.createElement("button");
+eqCut.textContent = "equal X/Y cut";
+eqCut.style.width = "100%";
+eqCut.title = "lean so the band leaves the frame corner symmetrically";
+eqCut.addEventListener("click", () => {
+  rows.lean.value = equalCutLean(state).toFixed(2);
+  rows.lean.dispatchEvent(new Event("input"));
+});
+document.getElementById("orient").appendChild(eqCut);
 
 const presetSel = document.getElementById("preset");
 for (const name of Object.keys(PRESETS)) {
