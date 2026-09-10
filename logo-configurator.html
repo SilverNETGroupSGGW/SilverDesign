@@ -283,19 +283,25 @@ function svgString(P, textureUri, withBg) {
   const vb = 1200 / P.zoom, o = 600 - vb/2;
   // Lets a texture that does not tile seamlessly still loop without a visible
   // edge once offset: every seam meets its own reflection.
-  const tw = vb * (P.texMirrorX ? 2 : 1), th = vb * (P.texMirrorY ? 2 : 1);
-  const cell = (t) => `      <image href="${textureUri}" x="0" y="0" width="${fmt(vb)}" height="${fmt(vb)}"${t}/>`;
-  const tile = [cell("")];
-  if (P.texMirrorX) tile.push(cell(` transform="translate(${fmt(2*vb)},0) scale(-1,1)"`));
-  if (P.texMirrorY) tile.push(cell(` transform="translate(0,${fmt(2*vb)}) scale(1,-1)"`));
-  if (P.texMirrorX && P.texMirrorY) tile.push(cell(` transform="translate(${fmt(2*vb)},${fmt(2*vb)}) scale(-1,-1)"`));
+  // Full precision, not fmt(): 2 * fmt(vb) != fmt(2 * vb), and the difference
+  // opens a gap down the mirror seam. The mirrored copies also bleed back across
+  // each seam, since abutting <image> edges resample independently and hairline
+  // even when they meet exactly; their outer edges stay on the tile boundary so
+  // the tile still repeats clean.
+  const W = +vb.toFixed(4), M = 2*W, bleed = W/400;
+  const tw = P.texMirrorX ? M : W, th = P.texMirrorY ? M : W;
+  const cell = (w, h, t) => `      <image href="${textureUri}" x="0" y="0" width="${w}" height="${h}"${t}/>`;
+  const tile = [cell(W, W, "")];
+  if (P.texMirrorX) tile.push(cell(W + bleed, W, ` transform="translate(${M},0) scale(-1,1)"`));
+  if (P.texMirrorY) tile.push(cell(W, W + bleed, ` transform="translate(0,${M}) scale(1,-1)"`));
+  if (P.texMirrorX && P.texMirrorY) tile.push(cell(W + bleed, W + bleed, ` transform="translate(${M},${M}) scale(-1,-1)"`));
   // Zoomed out, a 1200-wide bg stops short and lets the stage checkerboard
   // show through the artwork.
   const bg = withBg ? `  <rect x="${fmt(o)}" y="${fmt(o)}" width="${fmt(vb)}" height="${fmt(vb)}" fill="${P.bg}"/>\n` : "";
   const fill = P.solidColor ? P.ink : "url(#foil)";
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${fmt(o)} ${fmt(o)} ${fmt(vb)} ${fmt(vb)}" width="1200" height="1200">
   <defs>
-    <pattern id="foil" patternUnits="userSpaceOnUse" x="${fmt(o + P.texX/100*vb)}" y="${fmt(o + P.texY/100*vb)}" width="${fmt(tw)}" height="${fmt(th)}">
+    <pattern id="foil" patternUnits="userSpaceOnUse" x="${+(o + P.texX/100*vb).toFixed(4)}" y="${+(o + P.texY/100*vb).toFixed(4)}" width="${tw}" height="${th}">
 ${tile.join("\n")}
     </pattern>
   </defs>
