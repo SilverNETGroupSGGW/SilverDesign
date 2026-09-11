@@ -1,0 +1,31 @@
+---
+import markSvg from "../../brand/logo/mark-transparent.svg?raw";
+
+interface Props {
+  size?: string;
+  interactive?: boolean;
+}
+const { size = "4rem", interactive = false } = Astro.props;
+// Each render gets its own pattern id: two marks on one page would otherwise both
+// resolve url(#foil) to the first one's pattern.
+const uid = Math.random().toString(36).slice(2, 8);
+// The exported SVG inlines the same 261 KB JPEG four times; pointing the tiles at the copy
+// in public/ keeps the inline markup at ~37 KB instead of ~1 MB per mark.
+const svg = markSvg
+  .replaceAll(/data:image\/jpeg;base64,[^"]+/g, "/brand/foil-texture.jpg")
+  .replaceAll('id="foil"', `id="foil-${uid}"`)
+  .replaceAll("url(#foil)", `url(#foil-${uid})`);
+---
+<span class="mark" style={`--size:${size}`} data-foil={interactive ? "" : undefined} set:html={svg} aria-hidden="true" />
+
+<style>
+  .mark {
+    display: inline-block;
+    inline-size: var(--size);
+    aspect-ratio: 1;
+  }
+  .mark :global(svg) {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+</style>

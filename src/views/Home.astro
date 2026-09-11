@@ -1,0 +1,58 @@
+---
+import { getEntry } from "astro:content";
+import Button from "../components/Button.astro";
+import Mark from "../components/Mark.astro";
+import Base from "../layouts/Base.astro";
+import { pathFor, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+const site = (await getEntry("site", "site"))!.data;
+---
+<Base locale={locale} route="home" title={copy.meta.title} description={copy.meta.description}>
+  <section class="hero container">
+    <div class="band" aria-hidden="true"></div>
+    <Mark size="clamp(8rem, 30vw, 18rem)" interactive />
+    <h1>{copy.hero.title}</h1>
+    <p class="lead">{copy.hero.lead}</p>
+    <div class="ctas">
+      <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
+      <Button href={pathFor("projects", locale)} variant="ghost">{copy.hero.ctaProjects}</Button>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-7);
+    overflow: hidden;
+  }
+  .band {
+    position: absolute;
+    inset: 0 -20%;
+    z-index: -1;
+    background: url("/brand/foil-texture.jpg") center / cover;
+    opacity: 0.08;
+    clip-path: polygon(0 100%, 100% calc(100% - 100% * tan(var(--angle))), 100% 100%);
+  }
+  h1 {
+    font-size: var(--step-4);
+    max-width: 18ch;
+  }
+  .lead {
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+  .ctas {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+</style>

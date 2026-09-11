@@ -1,0 +1,67 @@
+---
+import { getEntry } from "astro:content";
+import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
+import LocaleSwitch from "./LocaleSwitch.astro";
+import Mark from "./Mark.astro";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+}
+const { locale, route } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+const site = (await getEntry("site", "site"))!.data;
+const links = [
+  { href: pathFor("projects", locale), label: copy.nav.projects, key: "projects" },
+  { href: pathFor("history", locale), label: copy.nav.history, key: "history" },
+  { href: `${pathFor("home", locale)}#join`, label: copy.nav.join, key: "join" },
+];
+---
+<header class="header">
+  <div class="container row">
+    <a class="brand" href={pathFor("home", locale)} aria-label={site.name}>
+      <Mark size="2rem" />
+      <span>{site.name}</span>
+    </a>
+    <nav aria-label="Main">
+      {links.map((l) => (
+        <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
+      ))}
+      <LocaleSwitch locale={locale} route={route} />
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--line);
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  nav {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--muted);
+  }
+  nav a:hover,
+  nav a[aria-current="page"] {
+    color: var(--ink);
+  }
+</style>

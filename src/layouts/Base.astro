@@ -1,0 +1,40 @@
+---
+import { getEntry } from "astro:content";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { locales, pathFor, type Locale, type RouteKey } from "../lib/i18n";
+import "../styles/tokens.css";
+import "../styles/base.css";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  title: string;
+  description: string;
+}
+const { locale, route, title, description } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+const canonical = new URL(pathFor(route, locale), Astro.site);
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={new URL(pathFor(route, l), Astro.site)} />)}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="theme-color" content="#16161B" />
+  </head>
+  <body>
+    <a class="visually-hidden" href="#main">{copy.nav.skip}</a>
+    <Header locale={locale} route={route} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

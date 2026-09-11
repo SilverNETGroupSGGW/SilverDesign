@@ -1,0 +1,23 @@
+---
+import { getEntry } from "astro:content";
+import { otherLocale, pathFor, type Locale, type RouteKey } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+}
+const { locale, route } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+const target = otherLocale(locale);
+---
+<a class="switch mono" href={pathFor(route, target)} hreflang={target} lang={target}>{copy.nav.switchTo}</a>
+
+<style>
+  .switch {
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .switch:hover {
+    color: var(--ink);
+  }
+</style>
