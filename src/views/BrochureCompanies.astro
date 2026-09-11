@@ -4,6 +4,7 @@ import Mark from "../components/Mark.astro";
 import Qr from "../components/Qr.astro";
 import Brochure from "../layouts/Brochure.astro";
 import type { Locale } from "../lib/i18n";
+import { isMeasurement } from "../lib/schemas";
 
 interface Props {
   locale: Locale;
@@ -44,7 +45,9 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
       {projects.map((p) => (
         <li class="card cut">
           <strong>{p.data.name}</strong>
-          <span class:list={[p.data.status === "store" && "mono"]}>{p.data.result[locale]}</span>
+          <span class:list={[isMeasurement(p.data.result[locale]) && "mono"]}>
+            {p.data.result[locale]}
+          </span>
           {p.data.status === "store" && <span class="muted">{p.data.tech.join(" · ")}</span>}
         </li>
       ))}
@@ -64,7 +67,7 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
       </div>
     </div>
     <div class="code">
-      <Qr value={`mailto:${site.email}`} size={174} />
+      <Qr value={`mailto:${site.email}`} size={175} />
       <p>{b.qrLabel}</p>
     </div>
   </footer>

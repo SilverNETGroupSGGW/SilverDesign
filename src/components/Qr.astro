@@ -12,13 +12,27 @@ const svg = await QRCode.toString(value, {
   errorCorrectionLevel: "M",
   color: { dark: "#D8DBDE", light: "#00000000" },
 });
+// The generated viewBox is one unit per module, so the code's own grid is what the box has to be a
+// whole multiple of: a fractional module prints as runs that alternate between two widths, and a
+// scanner reads the drift as a distorted symbol. Rounding down never grows the box a layout sized.
+const modules = Number(/viewBox="0 0 (\d+)/.exec(svg)?.[1]);
+if (!modules) throw new Error(`Qr: the generated SVG for ${value} has no module count`);
+const fitted = Math.floor(size / modules) * modules;
+if (!fitted) throw new Error(`Qr: ${size}px is smaller than the ${modules} modules ${value} needs`);
 ---
-<span class="qr" style={`--qr:${size}px`} set:html={svg} role="img" aria-label={value} />
+<span
+  class="qr"
+  style={`--qr-size:${fitted}px`}
+  data-modules={modules}
+  set:html={svg}
+  role="img"
+  aria-label={value}
+/>
 
 <style>
   .qr {
     display: block;
-    inline-size: var(--qr);
+    inline-size: var(--qr-size);
   }
   .qr :global(svg) {
     inline-size: 100%;
