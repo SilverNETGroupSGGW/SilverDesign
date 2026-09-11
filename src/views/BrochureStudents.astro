@@ -16,47 +16,39 @@ const apps = (await getCollection("projects"))
   .filter((p) => p.data.status === "store")
   .toSorted((a, c) => a.data.order - c.data.order);
 ---
-<Brochure locale={locale} title={`${site.name} — ${b.title}`}>
-  <div class="band" aria-hidden="true"></div>
-  <header class="top">
-    <Mark size="200px" />
-    <div>
-      <h1>
-        <span class="wordmark">{site.name}</span>
-        <span class="tagline">{b.title}</span>
-      </h1>
-      <p class="lead muted">{b.lead}</p>
-    </div>
+<Brochure locale={locale} title={`${site.name} — ${b.title}`} markTop="478px">
+  <div class="markwrap"><Mark size="var(--mark-size)" ribbon /></div>
+
+  <header class="block masthead" style="--left:96px;--w:1048px">
+    <h1>
+      <span class="wordmark">{site.name}</span>
+      <span class="tagline">{b.title}</span>
+    </h1>
+    <p class="lead muted">{b.lead}</p>
   </header>
 
-  <div class="body">
-    <section>
-      <h2 class="angled">{b.stepsHeading}</h2>
-      <ol class="steps" role="list">
-        {copy.steps.items.map((s, i) => (
-          <li class="cut">
-            <span class="n mono muted">0{i + 1}</span>
-            <strong>{s.title}</strong>
-            <span class="muted">{s.body}</span>
-          </li>
-        ))}
-      </ol>
-    </section>
-    <section>
-      <h2 class="angled">{b.appsHeading}</h2>
-      <ul class="apps" role="list">
-        {apps.map((p) => (
-          <li class="cut">
-            <strong>{p.data.name}</strong>
-            <span class="muted">{p.data.summary[locale]}</span>
-            <span class="mono">{p.data.result[locale]}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  </div>
+  <h2 class="block over angled" style="--left:96px;--w:228px;--lift:414px">{b.stepsHeading}</h2>
+  <ol class="block over stair" style="--left:96px;--w:724px;--anchor:324px;--n:3;--card-h:390px">
+    {copy.steps.items.map((s, i) => (
+      <li class="card cut" style={`--i:${i}`}>
+        <strong>{s.title}</strong>
+        <span class="muted">{s.body}</span>
+      </li>
+    ))}
+  </ol>
 
-  <footer class="bottom cut">
+  <ul class="block under stair" style="--left:520px;--w:548px;--n:2;--card-h:340px">
+    {apps.map((p, i) => (
+      <li class="card cut" style={`--i:${i}`}>
+        <strong>{p.data.name}</strong>
+        <span class="muted">{p.data.summary[locale]}</span>
+        <span class="mono">{p.data.result[locale]}</span>
+      </li>
+    ))}
+  </ul>
+  <h2 class="block under angled" style="--left:96px;--w:400px">{b.appsHeading}</h2>
+
+  <footer class="block foot" style="--left:96px;--w:1048px">
     <div class="ask">
       <p class="threshold">{b.threshold}</p>
       <div class="lines">
@@ -65,51 +57,17 @@ const apps = (await getCollection("projects"))
         <p class="mono muted">{copy.join.room} {site.room}, {site.address[0]}</p>
       </div>
     </div>
-    <div class="qr">
-      <Qr value={site.discord} size={250} />
+    <div class="code">
+      <Qr value={site.discord} size={203} />
       <p>{b.qrLabel}</p>
     </div>
   </footer>
 </Brochure>
 
 <style>
-  .steps,
-  .apps {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--print-space-2);
-  }
-  .steps li,
-  .apps li {
-    display: grid;
-    gap: var(--print-space-1);
-    align-content: start;
-    padding: var(--print-space-3);
-    background: var(--surface);
-    border: 1px solid var(--line);
-  }
-  .steps {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .apps {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .n {
-    font-variant-numeric: tabular-nums;
-  }
-  strong {
-    font-size: var(--print-step-1);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
-  .bottom {
-    --qr-column: 250px;
-  }
   .threshold {
-    font-size: var(--print-step-3);
+    font-size: var(--print-step-2);
     font-weight: 500;
-    max-width: 26ch;
+    max-width: 30ch;
   }
 </style>

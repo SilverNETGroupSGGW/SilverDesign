@@ -1,14 +1,25 @@
 ---
 import MarkDefs from "../components/MarkDefs.astro";
 import type { Locale } from "../lib/i18n";
+import { markRibbon } from "../lib/mark";
 import "../styles/tokens.css";
 import "../styles/base.css";
 
 interface Props {
   locale: Locale;
   title: string;
+  /** Where the mark's box starts, which is what puts the ribbon on the sheet. */
+  markTop: string;
 }
-const { locale, title } = Astro.props;
+const { locale, title, markTop } = Astro.props;
+// The ribbon's place on the sheet is a function of where the mark sits, so the sheet carries the
+// mark's own fractions and works the rest out in calc().
+const ribbonVars = [
+  `--rb-ax:${markRibbon.lowerAxis[0]!.toFixed(6)}`,
+  `--rb-ay:${markRibbon.lowerAxis[1]!.toFixed(6)}`,
+  `--rb-half:${markRibbon.halfRise.toFixed(6)}`,
+  `--mark-top:${markTop}`,
+].join(";");
 ---
 <!doctype html>
 <html lang={locale}>
@@ -20,7 +31,7 @@ const { locale, title } = Astro.props;
   </head>
   <body>
     <MarkDefs />
-    <div class="page">
+    <div class="page" style={ribbonVars}>
       <slot />
     </div>
   </body>
@@ -41,35 +52,92 @@ const { locale, title } = Astro.props;
     --print-space-2: 16px;
     --print-space-3: 24px;
     --print-space-4: 40px;
-    /* Not a step in the scale above: the rhythm between the sheet's three bands and between the
-       body's sections. */
-    --print-rhythm: 36px;
     --print-step--1: 19px;
     --print-step-0: 23px;
     --print-step-1: 26px;
     --print-step-2: 30px;
     --print-step-3: 32px;
-    --print-step-4: 44px;
+    --print-step-4: 36px;
     --print-step-5: 82px;
     --cut: 40px;
     --marker: 40px;
     --marker-weight: 4px;
-    /* The band's top edge meets the left paper edge here and rises from there at --angle; its rise
-       over the full sheet is what makes the lower third the band's ground. */
-    --band-left: 1100px;
-    --band-rise: calc(1240px * tan(var(--angle)));
+
+    --sheet-w: 1240px;
+    --sheet-h: 1754px;
+    --pad: 96px;
+    /* 32px measured square to the ribbon, which a block set by its vertical distance overshoots. */
+    --clear: calc(32px / cos(var(--angle)));
+    --gap: 20px;
+    --mark-size: 280px;
+
+    /* A point on the centreline of the arm that leaves the mark towards the bottom left, and the
+       vertical distance from any centreline to the ribbon's own edge. */
+    --rb-x: calc(var(--sheet-w) - var(--pad) - (1 - var(--rb-ax)) * var(--mark-size));
+    --rb-y: calc(var(--mark-top) + var(--rb-ay) * var(--mark-size));
+    --rb-edge: calc(var(--rb-half) * var(--mark-size));
 
     position: relative;
     isolation: isolate;
-    width: 1240px;
-    height: 1754px;
+    width: var(--sheet-w);
+    height: var(--sheet-h);
     overflow: hidden;
-    padding: 96px;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: var(--print-rhythm);
     font-size: var(--print-step-0);
   }
+  .page .markwrap {
+    position: absolute;
+    display: flex;
+    inset-block-start: var(--mark-top);
+    inset-inline-end: var(--pad);
+    inline-size: var(--mark-size);
+  }
+  .page .block {
+    position: absolute;
+    left: var(--left);
+    width: var(--w);
+  }
+  /* Above the ribbon: --anchor is the x of the bottom-right corner, the one the diagonal reaches
+     first. --lift stacks a block a fixed distance further up the same diagonal. */
+  .page .over {
+    bottom: calc(
+      var(--sheet-h) - var(--rb-y) + var(--rb-edge) + var(--clear) + var(--lift, 0px) -
+        (var(--rb-x) - var(--anchor, calc(var(--left) + var(--w)))) * tan(var(--angle))
+    );
+  }
+  /* Below it the top-left corner is the near one, and a staircase hangs from its lowest tread. */
+  .page .under {
+    top: calc(
+      var(--rb-y) + var(--rb-edge) + var(--clear) + (var(--rb-x) - var(--anchor, var(--left))) *
+        tan(var(--angle)) - var(--lift, 0px)
+    );
+  }
+  /* Treads of equal width, each one pitch further right and a pitch's rise higher, so the run of
+     their near corners is parallel to the ribbon. */
+  .page .stair {
+    --pitch: calc((var(--w) + var(--gap)) / var(--n));
+    --rise: calc(var(--pitch) * tan(var(--angle)));
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .page .over.stair {
+    align-items: end;
+  }
+  .page .over.stair > * {
+    margin-block-end: calc(var(--i) * var(--rise));
+  }
+  .page .under.stair {
+    --lift: calc((var(--n) - 1) * var(--rise));
+    align-items: start;
+  }
+  .page .under.stair > * {
+    margin-block-start: calc((var(--n) - 1 - var(--i)) * var(--rise));
+  }
+
   .page h1 {
     display: grid;
     gap: var(--print-space-1);
@@ -86,7 +154,6 @@ const { locale, title } = Astro.props;
   }
   .page h2 {
     font-size: var(--print-step-3);
-    margin-bottom: var(--print-space-2);
   }
   .page .angled::before {
     margin-block-end: var(--print-space-2);
@@ -100,55 +167,63 @@ const { locale, title } = Astro.props;
   .page .muted {
     color: var(--muted);
   }
-  .page .top {
-    display: grid;
-    grid-template-columns: var(--mark-column, 200px) 1fr;
-    gap: var(--print-space-4);
-    align-items: start;
-  }
   .page .lead {
     font-size: var(--print-step-2);
     margin-top: var(--print-space-3);
-    max-width: 40ch;
+    max-width: none;
   }
-  /* ch overstates Geist's average character, so 57ch is the 75-character measure, not 75ch. */
-  .page .body p {
-    max-width: 57ch;
-  }
-  .page .body {
+  .page .card {
     display: grid;
-    gap: var(--print-rhythm);
-    align-content: space-between;
+    gap: var(--print-space-1);
+    align-content: start;
+    block-size: var(--card-h, auto);
+    padding: var(--print-space-3);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: var(--print-step--1);
   }
-  /* The lower third is the band, so everything that lands there sits on a plate of the paper's own
-     ground: the plate is what keeps the type and the QR's quiet zone off the foil. */
-  .page .bottom {
-    background: var(--bg);
-    padding: var(--print-space-4);
+  .page .card strong {
+    font-size: var(--print-step-1);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .page .masthead {
+    top: var(--pad);
     display: grid;
-    grid-template-columns: 1fr var(--qr-column, 240px);
+    grid-template-columns: minmax(0, 3fr) minmax(0, 5fr);
     gap: var(--print-space-4);
-    align-items: stretch;
+    align-items: start;
+  }
+  .page .masthead .lead {
+    margin-top: 0;
+  }
+  .page .foot {
+    bottom: var(--pad);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--print-space-4);
+    align-items: end;
   }
   .page .ask {
     display: grid;
-    gap: var(--print-space-4);
-    align-content: center;
+    gap: var(--print-space-3);
+    align-content: end;
   }
   .page .lines {
     display: grid;
     gap: var(--print-space-1);
   }
-  .page .qr p {
-    margin-top: var(--print-space-4);
-    font-size: var(--print-step--1);
+  /* The code reads against the sheet's own ground, so the padding around it is the quiet zone;
+     the caption keeps the same distance below. */
+  .page .code {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--print-space-4);
+    padding: var(--print-space-4);
   }
-  .page .band {
-    position: absolute;
-    inset: calc(var(--band-left) - var(--band-rise)) 0 0 0;
-    z-index: -1;
-    background: url("/brand/foil-texture.jpg") center / cover;
-    opacity: 0.32;
-    clip-path: polygon(0 var(--band-rise), 100% 0, 100% 100%, 0 100%);
+  .page .code p {
+    font-size: var(--print-step--1);
+    max-width: 22ch;
   }
 </style>

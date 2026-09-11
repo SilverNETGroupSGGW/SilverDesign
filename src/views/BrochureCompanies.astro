@@ -14,48 +14,41 @@ const site = (await getEntry("site", "site"))!.data;
 const b = copy.brochure.companies;
 const projects = (await getCollection("projects")).toSorted((a, c) => a.data.order - c.data.order);
 ---
-<Brochure locale={locale} title={`${site.name} — ${b.title}`}>
-  <div class="band" aria-hidden="true"></div>
-  <header class="top">
-    <Mark size="200px" />
+<Brochure locale={locale} title={`${site.name} — ${b.title}`} markTop="428px">
+  <div class="markwrap"><Mark size="var(--mark-size)" ribbon /></div>
+
+  <header class="block masthead" style="--left:96px;--w:1048px">
+    <h1>
+      <span class="wordmark">{site.name}</span>
+      <span class="tagline">{b.title}</span>
+    </h1>
     <div>
-      <h1>
-        <span class="wordmark">{site.name}</span>
-        <span class="tagline">{b.title}</span>
-      </h1>
       <p class="lead muted">{b.lead}</p>
+      <h2 class="quiet">{b.whoHeading}</h2>
+      <p class="small">{b.who}</p>
     </div>
   </header>
 
-  <div class="body">
-    <section>
-      <h2 class="angled">{b.whoHeading}</h2>
-      <p>{b.who}</p>
-    </section>
-    <section>
-      <h2 class="angled">{b.builtHeading}</h2>
-      <ul class="built" role="list">
-        {projects.map((p) => (
-          <li class="cut">
-            <strong>{p.data.name}</strong>
-            <span class:list={[p.data.status === "store" && "mono"]}>{p.data.result[locale]}</span>
-            {p.data.status === "store" && <span class="tech muted">{p.data.tech.join(" · ")}</span>}
-          </li>
-        ))}
-      </ul>
-    </section>
-    <section>
-      <h2 class="angled">{b.togetherHeading}</h2>
-      <ol class="together">
-        {b.together.map((t) => <li class="cut">{t}</li>)}
-      </ol>
-    </section>
-  </div>
+  <h2 class="block over angled" style="--left:96px;--w:187px;--lift:284px">{b.togetherHeading}</h2>
+  <ol class="block over stair" style="--left:96px;--w:600px;--anchor:283px;--n:3;--card-h:280px">
+    {b.together.map((t, i) => <li class="card cut" style={`--i:${i}`}>{t}</li>)}
+  </ol>
 
-  <footer class="bottom cut">
+  <ul class="block under stair" style="--left:300px;--w:768px;--n:4;--card-h:290px">
+    {projects.map((p, i) => (
+      <li class="card cut" style={`--i:${i}`}>
+        <strong>{p.data.name}</strong>
+        <span class:list={[p.data.status === "store" && "mono"]}>{p.data.result[locale]}</span>
+        {p.data.status === "store" && <span class="muted">{p.data.tech.join(" · ")}</span>}
+      </li>
+    ))}
+  </ul>
+  <h2 class="block under angled" style="--left:96px;--w:200px">{b.builtHeading}</h2>
+
+  <footer class="block foot" style="--left:96px;--w:1048px">
     <div class="ask">
       <div>
-        <h2 class="angled">{b.contactHeading}</h2>
+        <h2 class="quiet">{b.contactHeading}</h2>
         <p class="chair">{site.chair}</p>
       </div>
       <div class="lines">
@@ -64,7 +57,7 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
         <p class="mono muted">{site.address.join(", ")}</p>
       </div>
     </div>
-    <div class="qr">
+    <div class="code">
       <Qr value={`mailto:${site.email}`} size={203} />
       <p>{b.qrLabel}</p>
     </div>
@@ -72,58 +65,17 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
 </Brochure>
 
 <style>
-  /* This sheet's third heading marker runs parallel to the band's own edge; 40px further down
-     keeps the two diagonals from reading as one device. */
-  .band {
-    --band-left: 1140px;
-  }
-  /* Four shipped things in one row: the two in the stores carry their stack and a measured result
-     (§8 mono), the two in the org carry a sentence about what they are (§8 Geist). */
-  .built {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--print-space-2);
-  }
-  .built li {
-    display: grid;
-    gap: var(--print-space-1);
-    align-content: start;
-    padding: var(--print-space-3);
-    background: var(--surface);
-    border: 1px solid var(--line);
-  }
-  strong {
+  .quiet {
     font-size: var(--print-step-1);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    margin-top: var(--print-space-3);
   }
-  .tech {
+  .small {
     font-size: var(--print-step--1);
-  }
-  /* Three offers read as three columns, the way the steps do on the students sheet. */
-  .together {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--print-space-3);
-  }
-  .together li {
-    padding: var(--print-space-3);
-    background: var(--surface);
-    border: 1px solid var(--line);
-  }
-  .bottom {
-    /* 203 / 29 modules = 7.0 px a module, so the code lands on whole pixels at both scales. */
-    --qr-column: 203px;
+    margin-top: var(--print-space-1);
   }
   .chair {
     font-size: var(--print-step-2);
     font-weight: 500;
-    margin-top: var(--print-space-2);
+    margin-top: var(--print-space-1);
   }
 </style>
