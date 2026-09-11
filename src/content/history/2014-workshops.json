@@ -1,0 +1,10 @@
+{
+  "yearFrom": 2014,
+  "yearTo": 2015,
+  "order": 1,
+  "title": { "pl": "Warsztaty i pierwszy Kampus", "en": "Workshops and the first Kampus" },
+  "body": {
+    "pl": "Windows Phone 8.1, Unity3D, Akademia C#. W kwietniu 2015 pierwsza wersja aplikacji Kampus SGGW.",
+    "en": "Windows Phone 8.1, Unity3D, the C# Academy. April 2015: the first version of the Kampus SGGW app."
+  }
+}

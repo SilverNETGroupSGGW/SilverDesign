@@ -1,0 +1,10 @@
+{
+  "yearFrom": 2021,
+  "yearTo": 2022,
+  "order": 0,
+  "title": { "pl": "Git i nowy Kampus", "en": "Git and a new Kampus" },
+  "body": {
+    "pl": "Warsztaty z Gita i GitHuba. Kampus SGGW napisany od nowa we Flutterze, w Google Play i App Store.",
+    "en": "Git and GitHub workshops. Kampus SGGW rewritten in Flutter, in Google Play and the App Store."
+  }
+}

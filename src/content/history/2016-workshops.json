@@ -1,0 +1,10 @@
+{
+  "yearFrom": 2016,
+  "yearTo": 2018,
+  "order": 0,
+  "title": { "pl": "Trzy lata warsztatów", "en": "Three years of workshops" },
+  "body": {
+    "pl": "Programowanie obiektowe, C#/.NET, Android, Unity, ASP.NET MVC, zaawansowany C#, SFML. Każdy semestr z własnym cyklem.",
+    "en": "Object-oriented programming, C#/.NET, Android, Unity, ASP.NET MVC, advanced C#, SFML. A new cycle every semester."
+  }
+}

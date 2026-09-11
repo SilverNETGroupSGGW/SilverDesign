@@ -1,0 +1,13 @@
+{
+  "name": "Charmander",
+  "order": 4,
+  "status": "github",
+  "platforms": ["web", "api"],
+  "links": { "github": "https://github.com/SilverNETGroupSGGW/Charmander" },
+  "tech": [".NET Minimal API", "FastAPI", "React", "Firebase Cloud Messaging"],
+  "summary": {
+    "pl": "Proxy do powiadomień push w przeglądarce. Ten sam kontrakt API napisany dwa razy — w .NET i w Pythonie — żeby porównać.",
+    "en": "A proxy for browser push notifications. The same API contract written twice — in .NET and in Python — to compare."
+  },
+  "result": { "pl": "Dwa backendy, jeden kontrakt", "en": "Two backends, one contract" }
+}

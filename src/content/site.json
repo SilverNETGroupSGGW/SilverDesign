@@ -1,0 +1,17 @@
+{
+  "name": "Silver",
+  "formalName": "Koło Naukowe Informatyków Silver .NET",
+  "faculty": {
+    "pl": "Wydział Zastosowań Informatyki i Matematyki",
+    "en": "Faculty of Applied Informatics and Mathematics"
+  },
+  "university": "SGGW",
+  "since": 2013,
+  "room": "3/79",
+  "address": ["ul. Nowoursynowska 159, budynek 34", "02-776 Warszawa"],
+  "chair": "Jakub Orchowski",
+  "discord": "https://discord.gg/JGPZCtB",
+  "email": "kontakt@silver.sggw.pl",
+  "github": "https://github.com/SilverNETGroupSGGW",
+  "facebook": "https://www.facebook.com/silvernetgroupsggw"
+}

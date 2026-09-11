@@ -1,0 +1,9 @@
+{
+  "year": 2018,
+  "order": 1,
+  "title": { "pl": "Plan WZIM", "en": "Plan WZIM" },
+  "body": {
+    "pl": "Plan zajęć wydziału w telefonie: powiadomienia o zmianach, widok dla prowadzących, sala na planie budynku.",
+    "en": "The faculty timetable on a phone: change notifications, a lecturer view, the room on a floor plan."
+  }
+}

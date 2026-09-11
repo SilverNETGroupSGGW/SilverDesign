@@ -1,0 +1,17 @@
+{
+  "name": "Plan WZIM",
+  "order": 2,
+  "status": "store",
+  "platforms": ["android", "ios"],
+  "links": {
+    "play": "https://play.google.com/store/apps/details?id=com.silvernet.silvertimetable",
+    "appStore": "https://apps.apple.com/pl/app/plan-wzim/id1384573148"
+  },
+  "tech": ["Flutter", "Dart"],
+  "summary": {
+    "pl": "Plan zajęć wydziału w telefonie. Twoja grupa, przerwy, sala na planie budynku, osobny widok dla prowadzących.",
+    "en": "The faculty timetable on your phone. Your group, the breaks, the room on a floor plan, a separate view for lecturers."
+  },
+  "result": { "pl": "1 tys.+ pobrań · Android i iOS", "en": "1K+ downloads · Android and iOS" },
+  "screenshot": "plan-wzim-day.png"
+}

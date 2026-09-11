@@ -1,0 +1,16 @@
+{
+  "name": "Dni SGGW",
+  "order": 3,
+  "status": "github",
+  "platforms": ["android", "ios", "web"],
+  "links": { "github": "https://github.com/SilverNETGroupSGGW/sggw_days" },
+  "tech": ["Flutter", "Firebase", "GitHub Actions"],
+  "summary": {
+    "pl": "Aplikacja na Dni SGGW 2026: program, mapa, powiadomienia. Na czas wydarzenia w Google Play, App Store i w przeglądarce.",
+    "en": "The app for SGGW Days 2026: schedule, map, notifications. Live in Google Play, the App Store and the browser for the event."
+  },
+  "result": {
+    "pl": "80+ pobrań w dwa dni wydarzenia",
+    "en": "80+ downloads over the two event days"
+  }
+}

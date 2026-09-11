@@ -1,0 +1,9 @@
+{
+  "year": 2026,
+  "order": 0,
+  "title": { "pl": "HackArena, Dni SGGW, nowy zespół", "en": "HackArena, SGGW Days, a new team" },
+  "body": {
+    "pl": "Marzec: HackArena 3.0 — 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej wśród 33 drużyn. Aplikacja Dni SGGW: ponad 80 pobrań w dwa dni wydarzenia. 27 maja: pierwsze spotkanie nowego zespołu na żywo. Charmander — proxy do powiadomień push.",
+    "en": "March: HackArena 3.0 — 4th in the final race, 16th overall among 33 teams. The SGGW Days app: 80+ downloads over the two event days. 27 May: the new team's first in-person meeting. Charmander — a push-notification proxy."
+  }
+}

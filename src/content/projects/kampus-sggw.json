@@ -1,0 +1,18 @@
+{
+  "name": "Kampus SGGW",
+  "order": 1,
+  "status": "store",
+  "platforms": ["android", "ios"],
+  "links": {
+    "play": "https://play.google.com/store/apps/details?id=com.silvers.kampus_sggw_remake",
+    "appStore": "https://apps.apple.com/pl/app/kampus-sggw/id1586959639",
+    "github": "https://github.com/SilverNETGroupSGGW/kampus_sggw"
+  },
+  "tech": ["Flutter", "Dart"],
+  "summary": {
+    "pl": "Mapa kampusu w telefonie: budynki, sale, stołówki, przystanki. Znajdujesz salę egzaminu, zanim zacznie się egzamin.",
+    "en": "The campus in your pocket: buildings, rooms, canteens, bus stops. Find the exam room before the exam starts."
+  },
+  "result": { "pl": "1 tys.+ pobrań · Android i iOS", "en": "1K+ downloads · Android and iOS" },
+  "screenshot": "kampus-sggw-map.jpg"
+}
