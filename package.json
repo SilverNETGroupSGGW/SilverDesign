@@ -1,0 +1,30 @@
+{
+  "name": "silver-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "lint": "oxlint",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "build": "astro build",
+    "preview": "astro preview",
+    "logo:export": "bun scripts/export-logo.ts",
+    "brochure": "bun scripts/render-brochures.ts"
+  },
+  "dependencies": {
+    "astro": "^7.3.2",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/qrcode": "^1.5.5",
+    "bun-types": "^1.4.0",
+    "geist": "^1.7.2",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "playwright": "^1.63.0",
+    "typescript": "^6.0.3"
+  }
+}

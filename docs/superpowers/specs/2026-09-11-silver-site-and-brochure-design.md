@@ -238,12 +238,13 @@ Od zera; z poprzedniego systemu nic nie wraca.
 
 ## 9. Stack i narzędzia
 
-- **Astro 5**, wyjście statyczne, wbudowane i18n: `defaultLocale: "pl"`,
+- **Astro 7**, wyjście statyczne, wbudowane i18n: `defaultLocale: "pl"`,
   `locales: ["pl", "en"]`, `prefixDefaultLocale: true`,
-  `redirectToDefaultLocale: true`. Każda strona żyje pod `/pl/…` albo
-  `/en/…`; `/` to wyłącznie strona przekierowująca na `/pl/` (meta refresh
-  plus zwykły link, bo statyczny hosting nie robi redirectów 30x). `<html
-  lang>`, linki `hreflang`, przełącznik zachowuje bieżącą podstronę.
+  `redirectToDefaultLocale: false`. Każda strona żyje pod `/pl/…` albo
+  `/en/…`; `/` to ręcznie napisana strona `src/pages/index.astro`,
+  przekierowująca na `/pl/` (meta refresh plus zwykły link, bo statyczny
+  hosting nie robi redirectów 30x). `<html lang>`, linki `hreflang`,
+  przełącznik zachowuje bieżącą podstronę.
 - **TypeScript** — `tsconfig` rozszerza `astro/tsconfigs/strictest`.
 - **Bun** jako runtime, menedżer pakietów i test runner.
 - **oxlint** + **oxfmt** — jedyne narzędzia lint/format; brak ESLint i

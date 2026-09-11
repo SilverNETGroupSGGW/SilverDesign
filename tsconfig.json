@@ -1,0 +1,9 @@
+{
+  "extends": "astro/tsconfigs/strictest",
+  "include": [".astro/types.d.ts", "src/**/*", "scripts/**/*", "tests/**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "types": ["astro/client", "bun-types"],
+    "resolveJsonModule": true
+  }
+}
