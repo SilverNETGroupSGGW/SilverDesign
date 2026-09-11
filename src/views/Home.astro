@@ -134,9 +134,11 @@ const dropPerMark =
   @media (min-width: 64rem) {
     .hero {
       --mark-size: clamp(20rem, 32cqw, 30rem);
-      /* Tall enough that the mark sits low enough for the ribbon to pass a full line's depth under
-         the copy on its way to the bottom edge. */
-      min-block-size: 48rem;
+      /* The ribbon has to run off the edge of the screen, not stop at the hero's own bottom, so the
+         hero is never shorter than the viewport; the header above it means it overshoots the fold by
+         the header's height, which is cheaper than pinning that height to a number. The 48rem floor
+         holds the composition together on a short window. */
+      min-block-size: max(48rem, 100svh);
       padding-block: var(--space-6);
     }
     .inner {
