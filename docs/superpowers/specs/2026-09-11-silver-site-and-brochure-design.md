@@ -26,12 +26,16 @@ robić_, _czy dam radę_, _kiedy, gdzie i jak dołączyć_. Nic ponad to.
 4. Technologia wynika z projektu. Nie ma listy „ścieżek". Zamiast tego jedno
    szczere zdanie: dobieramy stack pod projekt i chętnie sięgamy po rzeczy
    nowe, czasem zanim będą stabilne.
+   Dwa rodzaje projektów, oba jawnie: aplikacje, które rozwiązują nasze
+   własne problemy na uczelni (plan zajęć, mapa kampusu), i mniejsze rzeczy
+   robione dla samej przyjemności — żeby sprawdzić nową technologię albo
+   zrobić coś znanego po swojemu.
 5. Język: krótkie zdania, po polsku jak do kolegi z roku, bez korporacyjnego
    („misja", „pasja", „dynamiczny zespół", „innowacyjne rozwiązania") i bez
    nadmiernej swobody. Angielski: to samo, nie tłumaczenie słowo w słowo.
 6. Nie wchodzi na stronę główną ani do broszur: hackathony z 2014, oś czasu
    warsztatów, daty ostatnich aktualizacji aplikacji, liczba członków jako
-   argument („rosnąca społeczność"). Wszystko to może być na `/historia`.
+   argument („rosnąca społeczność"). Wszystko to może być na `/pl/historia`.
 7. Nazwiska dawnych członków (twórcy projektów, prowadzący warsztaty z
    archiwalnej strony) nie wchodzą nigdzie: to byli studenci, którzy nie
    zgadzali się na obecność na nowej stronie. Wyjątek robi przewodniczący
@@ -77,7 +81,7 @@ Wayback Machine ani do dawnych adresów — oś czasu i nic więcej.
 
 Jedna strona główna plus dwie podstrony, wszystkie w PL i EN.
 
-`/` (PL) · `/en/` (EN):
+`/pl/` · `/en/` (`/` przekierowuje na `/pl/`):
 
 1. **Hero** — znak S, jedno zdanie, kim jesteśmy i dla kogo, przycisk
    „Dołącz na Discordzie" i link „Zobacz projekty".
@@ -90,19 +94,20 @@ Jedna strona główna plus dwie podstrony, wszystkie w PL i EN.
    Charmander) z linkami do sklepów i GitHuba; Kampus SGGW i Plan WZIM z
    prawdziwym zrzutem ekranu z `brand/screenshots/`. Karty w sklepach pierwsze,
    każda z jednym twardym wynikiem (pobrania, platformy) zamiast opisu.
-4. **Technologia** — jeden akapit (zasada §2.4) i lista tego, co realnie
-   jest w orgu.
+4. **Co budujemy i czym** — dwa akapity (zasada §2.4): co (własne
+   problemy + małe projekty po swojemu) i czym (stack pod projekt), plus
+   lista tego, co realnie jest w orgu.
 5. **Dołącz** — próg wejścia jawnie („nie musisz jeszcze umieć
    programować"), Discord, mail, sala.
 6. **Stopka** — kontakt, adres, GitHub, Facebook, „przy WZIM SGGW od 2013"
-   (link do `/historia`), przełącznik języka.
+   (link do `/pl/historia`), przełącznik języka.
 
 Nawigacja: Projekty · Historia · Dołącz (kotwica) · PL/EN.
 
-`/projekty` · `/en/projects` — te same karty rozwinięte (opis, platformy,
+`/pl/projekty` · `/en/projects` — te same karty rozwinięte (opis, platformy,
 stack, linki), filtr _w sklepach / na GitHubie / wszystkie_.
 
-### 4.3 `/historia` · `/en/history`
+### 4.3 `/pl/historia` · `/en/history`
 
 Oś czasu od 2013 do dziś, jeden wpis na wydarzenie, rok po lewej, treść po
 prawej. Ton jak reszta strony: fakty, bez „dumni jesteśmy". Wpisy (źródła
@@ -120,7 +125,7 @@ w §3.1):
 | 2019 | Warsztaty Unity i Flutter zakończone projektami; gra platformowa STEAMY (2D, siedmioosobowy zespół, własna grafika i muzyka). Od tego roku Flutter jest w kole na stałe. |
 | 2021–2022 | Warsztaty z Gita i GitHuba (repozytoria w orgu). Kampus SGGW od nowa, we Flutterze, w Google Play i App Store. |
 | 2023 | Plan WZIM — ostatnia duża aktualizacja. |
-| 2026 | HackArena 3.0 (marzec): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej wśród 33 drużyn. Aplikacja Dni SGGW — ponad 80 pobrań w dwa dni wydarzenia. Charmander, proxy do powiadomień push. |
+| 2026 | HackArena 3.0 (marzec): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej wśród 33 drużyn. Aplikacja Dni SGGW — ponad 80 pobrań w dwa dni wydarzenia. 27 maja: pierwsze spotkanie na żywo nowego zespołu, z nowymi osobami. Charmander, proxy do powiadomień push. |
 
 Oś kończy się bieżącym rokiem; nie ma wpisu „przerwa" ani „powrót" — luka
 między latami mówi sama za siebie, czytelnik nie potrzebuje komentarza.
@@ -141,8 +146,12 @@ Projekty (wstęp):
 > Dwie z naszych aplikacji są w sklepach i mają po ponad tysiąc pobrań.
 > Reszta jest na GitHubie.
 
-Technologia:
+Co budujemy i czym:
 
+> Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni —
+> stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś
+> chciał sprawdzić nową technologię albo zrobić znaną rzecz po swojemu.
+>
 > Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie
 > sięgamy po nowe rzeczy — czasem zanim ktokolwiek uzna je za stabilne.
 
@@ -176,8 +185,8 @@ Dwie wersje × dwa języki = cztery PNG-i:
 
 | Trasa                    | Plik                                    |
 | ------------------------ | --------------------------------------- |
-| `/broszura/studenci`     | `dist/brochure/silver-studenci-pl.png`  |
-| `/broszura/firmy`        | `dist/brochure/silver-firmy-pl.png`     |
+| `/pl/broszura/studenci` | `dist/brochure/silver-studenci-pl.png` |
+| `/pl/broszura/firmy` | `dist/brochure/silver-firmy-pl.png` |
 | `/en/brochure/students`  | `dist/brochure/silver-students-en.png`  |
 | `/en/brochure/companies` | `dist/brochure/silver-companies-en.png` |
 
@@ -230,8 +239,11 @@ Od zera; z poprzedniego systemu nic nie wraca.
 ## 9. Stack i narzędzia
 
 - **Astro 5**, wyjście statyczne, wbudowane i18n: `defaultLocale: "pl"`,
-  `locales: ["pl", "en"]`, PL bez prefiksu, EN pod `/en/`. `<html lang>`,
-  linki `hreflang`, przełącznik zachowuje bieżącą podstronę.
+  `locales: ["pl", "en"]`, `prefixDefaultLocale: true`,
+  `redirectToDefaultLocale: true`. Każda strona żyje pod `/pl/…` albo
+  `/en/…`; `/` to wyłącznie strona przekierowująca na `/pl/` (meta refresh
+  plus zwykły link, bo statyczny hosting nie robi redirectów 30x). `<html
+  lang>`, linki `hreflang`, przełącznik zachowuje bieżącą podstronę.
 - **TypeScript** — `tsconfig` rozszerza `astro/tsconfigs/strictest`.
 - **Bun** jako runtime, menedżer pakietów i test runner.
 - **oxlint** + **oxfmt** — jedyne narzędzia lint/format; brak ESLint i
@@ -260,7 +272,7 @@ i `brand/` zostają, gdzie są.
   - każdy wpis `history` ma rok w zakresie 2013–bieżący.
 - `bun run brochure` — cztery PNG-i, każdy dokładnie 2480 × 3508, brak
   przewijania.
-- Lighthouse na `/`: Performance ≥ 95, Accessibility ≥ 95, każda strona w
+- Lighthouse na `/pl/`: Performance ≥ 95, Accessibility ≥ 95, każda strona w
   obu językach.
 - Ręcznie w Chrome przed oddaniem: 400 px i 1440 px, oba języki, tryb
   `prefers-reduced-motion`.
