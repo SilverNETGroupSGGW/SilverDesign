@@ -26,6 +26,7 @@ const projects = (await getCollection("projects")).toSorted((a, b) => a.data.ord
           withScreenshot
           headingLevel={2}
           eagerScreenshot={i === 0}
+          expanded
         />
       ))}
     </div>

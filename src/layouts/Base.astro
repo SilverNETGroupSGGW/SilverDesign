@@ -35,6 +35,6 @@ const canonical = new URL(pathFor(route, locale), Astro.site);
     <main id="main">
       <slot />
     </main>
-    <Footer locale={locale} />
+    <Footer locale={locale} route={route} />
   </body>
 </html>

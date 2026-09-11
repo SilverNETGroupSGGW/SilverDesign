@@ -65,6 +65,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   .hero {
     position: relative;
     isolation: isolate;
+    container-type: inline-size;
     padding-block: var(--space-7);
     overflow: hidden;
   }
@@ -74,11 +75,12 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   }
   .band {
     position: absolute;
-    inset: 0;
+    inset: auto 0 0 0;
+    height: min(100%, 100cqw * tan(var(--angle)));
     z-index: -1;
     background: url("/brand/foil-texture.jpg") center / cover;
     opacity: 0.08;
-    clip-path: polygon(0 100%, 100% calc(100% - 100% * tan(var(--angle))), 100% 100%);
+    clip-path: polygon(0 100%, 100% calc(100% - 100cqw * tan(var(--angle))), 100% 100%);
   }
   h1 {
     font-size: var(--step-4);

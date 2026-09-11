@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import { getEntry } from "astro:content";
 import type { Locale } from "../lib/i18n";
+import type { Project } from "../lib/schemas";
 
 interface Props {
   project: CollectionEntry<"projects">;
@@ -10,6 +11,7 @@ interface Props {
   withScreenshot?: boolean;
   headingLevel?: 2 | 3;
   eagerScreenshot?: boolean;
+  expanded?: boolean;
 }
 const {
   project,
@@ -17,6 +19,7 @@ const {
   withScreenshot = false,
   headingLevel = 3,
   eagerScreenshot = false,
+  expanded = false,
 } = Astro.props;
 const p = project.data;
 const copy = (await getEntry("copy", locale))!.data;
@@ -27,15 +30,22 @@ const shot =
     ? (await screenshots[`../../brand/screenshots/${p.screenshot}`]?.())?.default
     : undefined;
 
+const platformNames: Record<Project["platforms"][number], string> = {
+  android: copy.projects.platformAndroid,
+  ios: copy.projects.platformIos,
+  web: copy.projects.platformWeb,
+  api: copy.projects.platformApi,
+};
+
 const links = [
   p.links.play && { href: p.links.play, label: copy.projects.play },
   p.links.appStore && { href: p.links.appStore, label: copy.projects.appStore },
   p.links.github && { href: p.links.github, label: copy.projects.github },
 ].filter((l): l is { href: string; label: string } => Boolean(l));
 
-// On /projekty the first screenshot is the LCP element: the default quality puts it at 130 KB,
-// which costs the page ~5 Lighthouse performance points. It renders grayscale at 85% opacity,
-// so 65 is invisible here.
+// The first screenshot of a listing is the page's LCP element: the default quality puts it at
+// 130 KB, which costs the page ~5 Lighthouse performance points. Card screenshots render
+// grayscale at 85% opacity, so 65 is invisible here.
 const shotQuality = 65;
 ---
 <article class="card" data-status={p.status}>
@@ -47,13 +57,19 @@ const shotQuality = 65;
       class="shot"
       quality={shotQuality}
       loading={eagerScreenshot ? "eager" : "lazy"}
-      fetchpriority={eagerScreenshot ? "high" : "auto"}
+      fetchpriority={eagerScreenshot ? "high" : undefined}
     />
   )}
   <div class="body">
     {headingLevel === 2 ? <h2 class="name">{p.name}</h2> : <h3 class="name">{p.name}</h3>}
     <p class="result">{p.result[locale]}</p>
     <p class="summary">{p.summary[locale]}</p>
+    {expanded && (
+      <p class="platforms">
+        <span class="label">{copy.projects.platforms}</span>{" "}
+        <span>{p.platforms.map((k) => platformNames[k]).join(" · ")}</span>
+      </p>
+    )}
     <p class="tech mono">{p.tech.join(" · ")}</p>
     <p class="links">
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
@@ -89,8 +105,17 @@ const shotQuality = 65;
     font-weight: 500;
   }
   .summary,
-  .tech {
+  .tech,
+  .platforms {
     color: var(--muted);
+  }
+  .platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .platforms .label {
+    font-weight: 500;
   }
   .links {
     display: flex;

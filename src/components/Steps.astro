@@ -41,7 +41,7 @@ const { steps } = Astro.props;
     padding: var(--space-4);
     background: var(--surface);
     border: 1px solid var(--line);
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem), calc(100% - 1.25rem * tan(var(--angle))) 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem * tan(var(--angle))), calc(100% - 1.25rem) 100%, 0 100%);
     display: grid;
     gap: var(--space-2);
   }

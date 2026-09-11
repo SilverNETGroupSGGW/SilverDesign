@@ -1,11 +1,13 @@
 ---
 import { getEntry } from "astro:content";
-import { fill, pathFor, type Locale } from "../lib/i18n";
+import { fill, pathFor, type Locale, type RouteKey } from "../lib/i18n";
+import LocaleSwitch from "./LocaleSwitch.astro";
 
 interface Props {
   locale: Locale;
+  route: RouteKey;
 }
-const { locale } = Astro.props;
+const { locale, route } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 ---
@@ -27,6 +29,7 @@ const site = (await getEntry("site", "site"))!.data;
       <p><a href={site.discord}>Discord</a></p>
       <p><a href={site.github}>GitHub</a></p>
       <p><a href={site.facebook}>Facebook</a></p>
+      <p><LocaleSwitch locale={locale} route={route} /></p>
     </div>
   </div>
 </footer>

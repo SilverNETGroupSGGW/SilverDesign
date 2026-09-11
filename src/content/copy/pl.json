@@ -44,7 +44,12 @@
     "filterGithub": "Na GitHubie",
     "play": "Google Play",
     "appStore": "App Store",
-    "github": "GitHub"
+    "github": "GitHub",
+    "platforms": "Platformy",
+    "platformAndroid": "Android",
+    "platformIos": "iOS",
+    "platformWeb": "Przeglądarka",
+    "platformApi": "API"
   },
   "build": {
     "heading": "Co budujemy i czym",

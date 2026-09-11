@@ -22,7 +22,7 @@
   --muted: #9a9ea5;
   --bright: #f2f3f5;
 
-  /* band angle of the S mark, from brand/logo/geometry.json */
+  /* Inclination from horizontal, rising left-to-right (brand/logo/geometry.json); a band's rise = its width * tan(--angle). */
   --angle: 26.17deg;
 
   --font-sans: "Geist", system-ui, sans-serif;

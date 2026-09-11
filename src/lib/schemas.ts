@@ -82,6 +82,11 @@ export const CopySchema = z.object({
     play: z.string(),
     appStore: z.string(),
     github: z.string(),
+    platforms: z.string(),
+    platformAndroid: z.string(),
+    platformIos: z.string(),
+    platformWeb: z.string(),
+    platformApi: z.string(),
   }),
   build: z.object({ heading: z.string(), what: z.string(), how: z.string(), inOrg: z.string() }),
   join: z.object({
