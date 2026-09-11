@@ -1,0 +1,122 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import Mark from "../components/Mark.astro";
+import Qr from "../components/Qr.astro";
+import Brochure from "../layouts/Brochure.astro";
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+const site = (await getEntry("site", "site"))!.data;
+const b = copy.brochure.students;
+const apps = (await getCollection("projects"))
+  .filter((p) => p.data.status === "store")
+  .toSorted((a, c) => a.data.order - c.data.order);
+---
+<Brochure locale={locale} title={b.title}>
+  <div class="band" aria-hidden="true"></div>
+  <header class="top">
+    <Mark size="220px" />
+    <div>
+      <h1>{b.title}</h1>
+      <p class="lead muted">{b.lead}</p>
+    </div>
+  </header>
+
+  <div class="body">
+    <section>
+      <h2>{b.stepsHeading}</h2>
+      <ol class="steps">
+        {copy.steps.items.map((s, i) => (
+          <li>
+            <span class="mono muted">0{i + 1}</span>
+            <strong>{s.title}</strong>
+            <span class="muted">{s.body}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+    <section>
+      <h2>{b.appsHeading}</h2>
+      <ul class="apps">
+        {apps.map((p) => (
+          <li>
+            <strong>{p.data.name}</strong>
+            <span class="muted">{p.data.summary[locale]}</span>
+            <span class="mono">{p.data.result[locale]}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <p class="threshold">{b.threshold}</p>
+  </div>
+
+  <footer class="bottom">
+    <div class="contact">
+      <p class="mono">{site.discord.replace("https://", "")}</p>
+      <p class="mono muted">{site.email}</p>
+      <p class="mono muted">{copy.join.room} {site.room}, {site.address[0]}</p>
+    </div>
+    <div class="qr">
+      <Qr value={site.discord} size={240} />
+      <p class="muted">{b.qrLabel}</p>
+    </div>
+  </footer>
+</Brochure>
+
+<style>
+  .top {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .lead {
+    font-size: 30px;
+    margin-top: 16px;
+  }
+  .body {
+    display: grid;
+    gap: 40px;
+    align-content: start;
+  }
+  .steps,
+  .apps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 20px;
+  }
+  .steps li,
+  .apps li {
+    display: grid;
+    gap: 6px;
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .apps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .threshold {
+    font-size: 30px;
+    font-weight: 500;
+  }
+  .bottom {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 48px;
+    align-items: end;
+  }
+  .qr p {
+    margin-top: 12px;
+    font-size: 18px;
+  }
+</style>

@@ -1,0 +1,27 @@
+---
+import QRCode from "qrcode";
+
+interface Props {
+  value: string;
+  size?: number;
+}
+const { value, size = 260 } = Astro.props;
+const svg = await QRCode.toString(value, {
+  type: "svg",
+  margin: 0,
+  errorCorrectionLevel: "M",
+  color: { dark: "#D8DBDE", light: "#00000000" },
+});
+---
+<span class="qr" style={`--qr:${size}px`} set:html={svg} role="img" aria-label={value} />
+
+<style>
+  .qr {
+    display: block;
+    inline-size: var(--qr);
+  }
+  .qr :global(svg) {
+    inline-size: 100%;
+    block-size: auto;
+  }
+</style>
