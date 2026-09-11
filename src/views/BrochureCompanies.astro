@@ -66,19 +66,10 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
 
 <style>
   .top {
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 48px;
-    align-items: center;
+    --mark-column: 180px;
   }
-  .lead {
-    font-size: 30px;
-    margin-top: 16px;
-  }
-  .body {
-    display: grid;
-    gap: 40px;
-    align-content: start;
+  .bottom {
+    --qr-column: 220px;
   }
   .built {
     list-style: none;
@@ -101,15 +92,5 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     padding-left: 1.2em;
     display: grid;
     gap: 12px;
-  }
-  .bottom {
-    display: grid;
-    grid-template-columns: 1fr 220px;
-    gap: 48px;
-    align-items: end;
-  }
-  .qr p {
-    margin-top: 40px;
-    font-size: 18px;
   }
 </style>

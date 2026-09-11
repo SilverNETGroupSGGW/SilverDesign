@@ -1,0 +1,75 @@
+---
+import { getEntry } from "astro:content";
+import Mark from "../components/Mark.astro";
+import MarkDefs from "../components/MarkDefs.astro";
+import { locales, pathFor } from "../lib/i18n";
+import "../styles/tokens.css";
+import "../styles/base.css";
+
+const site = (await getEntry("site", "site"))!.data;
+const sides = await Promise.all(
+  locales.map(async (locale) => ({
+    locale,
+    copy: (await getEntry("copy", locale))!.data.notFound,
+    home: pathFor("home", locale),
+  })),
+);
+const title = sides.map((s) => s.copy.title).join(" · ");
+---
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, follow" />
+    <title>{`${title} — ${site.name}`}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="theme-color" content="#16161B" />
+  </head>
+  <body>
+    <MarkDefs />
+    <main id="main" class="container page">
+      <a class="brand" href={sides[0]!.home} aria-label={site.name}>
+        <Mark size="4rem" />
+      </a>
+      {sides.map((s, i) => (
+        <section lang={s.locale}>
+          {i === 0 ? <h1>{s.copy.title}</h1> : <h2>{s.copy.title}</h2>}
+          <p>{s.copy.body}</p>
+          <p><a href={s.home}>{s.copy.home}</a></p>
+        </section>
+      ))}
+    </main>
+  </body>
+</html>
+
+<style>
+  .page {
+    min-height: 100vh;
+    padding-block: var(--space-7);
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: var(--space-5);
+  }
+  .brand {
+    display: inline-block;
+  }
+  section {
+    display: grid;
+    gap: var(--space-2);
+  }
+  h1 {
+    font-size: var(--step-3);
+  }
+  h2 {
+    font-size: var(--step-1);
+  }
+  section p {
+    color: var(--muted);
+  }
+  section a {
+    padding-block: 0.45rem;
+  }
+</style>

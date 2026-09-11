@@ -2,6 +2,7 @@
 import { getEntry } from "astro:content";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import MarkDefs from "../components/MarkDefs.astro";
 import { locales, pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import "../styles/tokens.css";
 import "../styles/base.css";
@@ -11,10 +12,13 @@ interface Props {
   route: RouteKey;
   title: string;
   description: string;
+  preloadTexture?: boolean;
 }
-const { locale, route, title, description } = Astro.props;
+const { locale, route, title, description, preloadTexture = false } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
+const site = (await getEntry("site", "site"))!.data;
 const canonical = new URL(pathFor(route, locale), Astro.site);
+const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
 ---
 <!doctype html>
 <html lang={locale}>
@@ -25,14 +29,35 @@ const canonical = new URL(pathFor(route, locale), Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {locales.map((l) => <link rel="alternate" hreflang={l} href={new URL(pathFor(route, l), Astro.site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(pathFor(route, "pl"), Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocales[locale]} />
+    <meta property="og:locale:alternate" content={ogLocales[locale === "pl" ? "en" : "pl"]} />
+    <meta property="og:image" content={new URL("/og.png", Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL("/og.png", Astro.site)} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    {preloadTexture && (
+      <link rel="preload" href="/brand/foil-texture.jpg" as="image" fetchpriority="high" />
+    )}
     <meta name="theme-color" content="#16161B" />
   </head>
   <body>
     <a class="visually-hidden skip-link" href="#main">{copy.nav.skip}</a>
+    <MarkDefs />
     <Header locale={locale} route={route} />
-    <main id="main">
+    <main id="main" tabindex="-1">
       <slot />
     </main>
     <Footer locale={locale} route={route} />

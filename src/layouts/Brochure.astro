@@ -1,4 +1,5 @@
 ---
+import MarkDefs from "../components/MarkDefs.astro";
 import type { Locale } from "../lib/i18n";
 import "../styles/tokens.css";
 import "../styles/base.css";
@@ -18,6 +19,7 @@ const { locale, title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    <MarkDefs />
     <div class="page">
       <slot />
     </div>
@@ -57,10 +59,37 @@ const { locale, title } = Astro.props;
   .page .muted {
     color: var(--muted);
   }
+  .page .top {
+    display: grid;
+    grid-template-columns: var(--mark-column, 200px) 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .page .lead {
+    font-size: 30px;
+    margin-top: 16px;
+  }
+  .page .body {
+    display: grid;
+    gap: 40px;
+    align-content: start;
+  }
+  .page .bottom {
+    display: grid;
+    grid-template-columns: 1fr var(--qr-column, 220px);
+    gap: 48px;
+    align-items: end;
+  }
+  .page .qr p {
+    margin-top: 40px;
+    font-size: 18px;
+  }
+  /* The band is the brand diagonal, so its height is the rise of that angle over the full page
+     width; anything shorter cuts the wedge off flat before it reaches the right edge. */
   .page .band {
     position: absolute;
     inset: auto 0 0 0;
-    height: 420px;
+    height: calc(1240px * tan(var(--angle)));
     z-index: -1;
     background: url("/brand/foil-texture.jpg") center / cover;
     opacity: 0.08;

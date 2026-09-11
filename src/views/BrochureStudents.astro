@@ -69,19 +69,10 @@ const apps = (await getCollection("projects"))
 
 <style>
   .top {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 48px;
-    align-items: center;
+    --mark-column: 220px;
   }
-  .lead {
-    font-size: 30px;
-    margin-top: 16px;
-  }
-  .body {
-    display: grid;
-    gap: 40px;
-    align-content: start;
+  .bottom {
+    --qr-column: 240px;
   }
   .steps,
   .apps {
@@ -109,15 +100,5 @@ const apps = (await getCollection("projects"))
   .threshold {
     font-size: 30px;
     font-weight: 500;
-  }
-  .bottom {
-    display: grid;
-    grid-template-columns: 1fr 240px;
-    gap: 48px;
-    align-items: end;
-  }
-  .qr p {
-    margin-top: 40px;
-    font-size: 18px;
   }
 </style>
