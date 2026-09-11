@@ -16,8 +16,10 @@
 
   --bg: #16161b;
   --surface: #1e1e24;
-  --surface-2: #26262d;
   --line: #34343c;
+  /* A control's resting outline has to clear 3:1 (WCAG 1.4.11); --line is for dividers and card
+     edges, which are decorative and exempt. 44% ink gives 3.48:1 on --bg and 3.20:1 on --surface. */
+  --line-interactive: color-mix(in srgb, var(--ink) 44%, var(--bg));
   --ink: #d8dbde;
   --muted: #9a9ea5;
   --bright: #f2f3f5;
@@ -31,12 +33,9 @@
   --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
   --step-0: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
   --step-1: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-  --step-2: clamp(1.56rem, 1.35rem + 1vw, 2.1rem);
   --step-3: clamp(1.95rem, 1.5rem + 2vw, 3rem);
   --step-4: clamp(2.44rem, 1.6rem + 4vw, 4.5rem);
-  --step-5: clamp(3rem, 1.5rem + 7vw, 7rem);
 
-  --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 1rem;
   --space-4: 1.5rem;

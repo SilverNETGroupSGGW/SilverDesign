@@ -16,7 +16,13 @@ const site = (await getEntry("site", "site"))!.data;
 const projects = (await getCollection("projects")).toSorted((a, b) => a.data.order - b.data.order);
 const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
 ---
-<Base locale={locale} route="home" title={copy.meta.title} description={copy.meta.description}>
+<Base
+  locale={locale}
+  route="home"
+  title={copy.meta.title}
+  description={copy.meta.description}
+  preloadTexture
+>
   <section class="hero">
     <div class="band" aria-hidden="true"></div>
     <div class="container stack">
@@ -72,6 +78,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   .stack {
     display: grid;
     gap: var(--space-4);
+    grid-template-columns: minmax(0, 1fr);
   }
   .band {
     position: absolute;
@@ -85,6 +92,9 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   h1 {
     font-size: var(--step-4);
     max-width: 18ch;
+    /* At 200% text zoom a single Polish word is wider than a phone viewport. */
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
   .lead {
     font-size: var(--step-1);
@@ -95,12 +105,15 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     gap: var(--space-3);
     flex-wrap: wrap;
   }
+  /* minmax(0, …) instead of a bare column: a grid track sized to auto never shrinks below the
+     longest word, which at 200% text zoom is wider than a phone. */
   .projects,
   .build,
   .join {
     padding-block: var(--space-6);
     display: grid;
     gap: var(--space-4);
+    grid-template-columns: minmax(0, 1fr);
   }
   .join {
     justify-items: start;
@@ -111,7 +124,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   .grid {
     display: grid;
     gap: var(--space-4);
-    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
   }
   .muted {
     color: var(--muted);
@@ -119,7 +132,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   .facts {
     justify-self: stretch;
     display: grid;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: minmax(0, max-content) minmax(0, 1fr);
     gap: var(--space-2) var(--space-4);
     margin: 0;
   }
@@ -128,5 +141,6 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   }
   .facts dd {
     margin: 0;
+    overflow-wrap: anywhere;
   }
 </style>

@@ -53,12 +53,16 @@ const links = [
   }
   nav {
     display: flex;
-    gap: var(--space-4);
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
     align-items: center;
   }
   nav a {
     text-decoration: none;
     color: var(--muted);
+    /* Thumb room without moving the header rhythm: an inline box's vertical padding grows the hit
+       area and the focus ring, not the line box. */
+    padding-block: 0.45rem;
   }
   nav a:hover,
   nav a[aria-current="page"] {

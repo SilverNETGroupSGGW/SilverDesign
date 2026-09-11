@@ -58,6 +58,8 @@ svg {
 .mono {
   font-family: var(--font-mono);
   font-size: var(--step--1);
+  /* Package ids, e-mails and addresses are single unbreakable tokens wider than a zoomed phone. */
+  overflow-wrap: anywhere;
 }
 .visually-hidden {
   position: absolute;

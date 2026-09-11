@@ -1,32 +1,70 @@
 ---
+import type { Locale } from "../lib/i18n";
 import type { Copy } from "../lib/schemas";
 
 interface Props {
   copy: Copy["projects"];
+  locale: Locale;
 }
-const { copy } = Astro.props;
+const { copy, locale } = Astro.props;
+// The query string is part of the page's URL vocabulary, so it is localised like the routes are.
+const query = {
+  pl: { param: "filtr", store: "sklep", github: "github" },
+  en: { param: "filter", store: "store", github: "github" },
+} as const;
+const { param, ...slugs } = query[locale];
 const options = [
   { value: "all", label: copy.filterAll },
-  { value: "store", label: copy.filterStore },
-  { value: "github", label: copy.filterGithub },
+  { value: "store", label: copy.filterStore, slug: slugs.store },
+  { value: "github", label: copy.filterGithub, slug: slugs.github },
 ];
 ---
-<div class="filter" data-project-filter>
+<div class="filter" role="group" aria-label={copy.filterLabel} data-project-filter data-param={param}>
   {options.map((o, i) => (
-    <button type="button" data-value={o.value} aria-pressed={i === 0 ? "true" : "false"}>{o.label}</button>
+    <button type="button" data-value={o.value} data-slug={o.slug} aria-pressed={i === 0 ? "true" : "false"}>
+      {o.label}
+    </button>
   ))}
+  <p class="visually-hidden" role="status" aria-live="polite" data-filter-status data-count={copy.filterCount}></p>
 </div>
 
 <script>
   const root = document.querySelector<HTMLElement>("[data-project-filter]");
+  const status = root?.querySelector<HTMLElement>("[data-filter-status]");
   const cards = document.querySelectorAll<HTMLElement>("[data-status]");
+  const param = root?.dataset.param ?? "filter";
+
+  const apply = (value: string, slug: string | undefined) => {
+    if (!root) return;
+    let shown = 0;
+    for (const card of cards) {
+      card.hidden = value !== "all" && card.dataset.status !== value;
+      if (!card.hidden) shown += 1;
+    }
+    for (const b of root.querySelectorAll("button")) {
+      b.setAttribute("aria-pressed", String(b.dataset.value === value));
+    }
+    if (status) {
+      status.textContent = (status.dataset.count ?? "")
+        .replace("{count}", String(shown))
+        .replace("{total}", String(cards.length));
+    }
+    const url = new URL(location.href);
+    if (slug) url.searchParams.set(param, slug);
+    else url.searchParams.delete(param);
+    history.replaceState(null, "", url);
+  };
+
   root?.addEventListener("click", (e) => {
     const button = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-value]");
-    if (!button) return;
-    const value = button.dataset.value;
-    for (const b of root.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b === button));
-    for (const card of cards) card.hidden = value !== "all" && card.dataset.status !== value;
+    if (button?.dataset.value) apply(button.dataset.value, button.dataset.slug);
   });
+
+  const wanted = new URL(location.href).searchParams.get(param);
+  const restore = wanted
+    ? root?.querySelector<HTMLButtonElement>(`button[data-slug="${CSS.escape(wanted)}"]`)
+    : null;
+  if (restore?.dataset.value) apply(restore.dataset.value, restore.dataset.slug);
 </script>
 
 <style>
@@ -39,7 +77,7 @@ const options = [
     font: inherit;
     color: var(--muted);
     background: none;
-    border: 1px solid var(--line);
+    border: 1px solid var(--line-interactive);
     border-radius: 999px;
     padding: 0.4em 1em;
     cursor: pointer;

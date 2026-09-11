@@ -24,7 +24,7 @@ const site = (await getEntry("site", "site"))!.data;
       {site.address.map((line) => <p class="mono muted">{line}</p>)}
       <p class="mono muted">{copy.join.room} {site.room}</p>
     </div>
-    <div>
+    <div class="linkcol">
       <p class="label">{copy.footer.links}</p>
       <p><a href={site.discord}>Discord</a></p>
       <p><a href={site.github}>GitHub</a></p>
@@ -43,7 +43,7 @@ const site = (await getEntry("site", "site"))!.data;
   .grid {
     display: grid;
     gap: var(--space-5);
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
   }
   .name {
     font-weight: 600;
@@ -57,5 +57,12 @@ const site = (await getEntry("site", "site"))!.data;
   }
   .muted {
     color: var(--muted);
+  }
+  .footer a {
+    padding-block: 0.45rem;
+  }
+  /* The padded link boxes in this column would otherwise overlap each other vertically. */
+  .linkcol p:not(.label) + p {
+    margin-top: var(--space-2);
   }
 </style>
