@@ -1,0 +1,61 @@
+---
+import type { Copy } from "../lib/schemas";
+
+interface Props {
+  steps: Copy["steps"];
+}
+const { steps } = Astro.props;
+---
+<section class="steps container" aria-labelledby="steps-heading">
+  <h2 id="steps-heading">{steps.heading}</h2>
+  <ol>
+    {steps.items.map((s, i) => (
+      <li>
+        <span class="n mono">0{i + 1}</span>
+        <h3>{s.title}</h3>
+        <p>{s.body}</p>
+      </li>
+    ))}
+  </ol>
+  <p class="hack">{steps.hackathons}</p>
+</section>
+
+<style>
+  .steps {
+    padding-block: var(--space-6);
+    display: grid;
+    gap: var(--space-4);
+  }
+  h2 {
+    font-size: var(--step-3);
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    counter-reset: step;
+  }
+  li {
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem), calc(100% - 1.25rem * tan(var(--angle))) 100%, 0 100%);
+    display: grid;
+    gap: var(--space-2);
+  }
+  .n {
+    color: var(--muted);
+  }
+  h3 {
+    font-size: var(--step-1);
+  }
+  p {
+    color: var(--muted);
+  }
+  .hack {
+    color: var(--muted);
+  }
+</style>

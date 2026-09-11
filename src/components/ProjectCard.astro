@@ -1,0 +1,77 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import { getEntry } from "astro:content";
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  locale: Locale;
+  withScreenshot?: boolean;
+}
+const { project, locale, withScreenshot = false } = Astro.props;
+const p = project.data;
+const copy = (await getEntry("copy", locale))!.data;
+
+const screenshots = import.meta.glob<{ default: ImageMetadata }>("../../brand/screenshots/*.{png,jpg}");
+const shot =
+  withScreenshot && p.screenshot
+    ? (await screenshots[`../../brand/screenshots/${p.screenshot}`]?.())?.default
+    : undefined;
+
+const links = [
+  p.links.play && { href: p.links.play, label: copy.projects.play },
+  p.links.appStore && { href: p.links.appStore, label: copy.projects.appStore },
+  p.links.github && { href: p.links.github, label: copy.projects.github },
+].filter((l): l is { href: string; label: string } => Boolean(l));
+---
+<article class="card" data-status={p.status}>
+  {shot && <Image src={shot} alt="" width={480} class="shot" />}
+  <div class="body">
+    <h3>{p.name}</h3>
+    <p class="result">{p.result[locale]}</p>
+    <p class="summary">{p.summary[locale]}</p>
+    <p class="tech mono">{p.tech.join(" · ")}</p>
+    <p class="links">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </p>
+  </div>
+</article>
+
+<style>
+  .card {
+    display: grid;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .shot {
+    width: 100%;
+    max-height: 18rem;
+    object-fit: cover;
+    object-position: top;
+    filter: saturate(0);
+    opacity: 0.85;
+  }
+  .body {
+    padding: var(--space-4);
+    display: grid;
+    gap: var(--space-2);
+  }
+  h3 {
+    font-size: var(--step-1);
+  }
+  .result {
+    color: var(--bright);
+    font-weight: 500;
+  }
+  .summary,
+  .tech {
+    color: var(--muted);
+  }
+  .links {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+</style>

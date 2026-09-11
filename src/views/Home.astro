@@ -1,7 +1,9 @@
 ---
-import { getEntry } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import Button from "../components/Button.astro";
 import Mark from "../components/Mark.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import Steps from "../components/Steps.astro";
 import Base from "../layouts/Base.astro";
 import { pathFor, type Locale } from "../lib/i18n";
 
@@ -11,6 +13,8 @@ interface Props {
 const { locale } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
+const projects = (await getCollection("projects")).toSorted((a, b) => a.data.order - b.data.order);
+const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
 ---
 <Base locale={locale} route="home" title={copy.meta.title} description={copy.meta.description}>
   <section class="hero">
@@ -24,6 +28,36 @@ const site = (await getEntry("site", "site"))!.data;
         <Button href={pathFor("projects", locale)} variant="ghost">{copy.hero.ctaProjects}</Button>
       </div>
     </div>
+  </section>
+
+  <Steps steps={copy.steps} />
+
+  <section class="projects container" aria-labelledby="projects-heading">
+    <h2 id="projects-heading">{copy.projects.heading}</h2>
+    <p class="lead">{copy.projects.lead}</p>
+    <div class="grid">
+      {projects.map((p) => <ProjectCard project={p} locale={locale} withScreenshot />)}
+    </div>
+    <p><a href={pathFor("projects", locale)}>{copy.projects.viewAll} →</a></p>
+  </section>
+
+  <section class="build container" aria-labelledby="build-heading">
+    <h2 id="build-heading">{copy.build.heading}</h2>
+    <p>{copy.build.what}</p>
+    <p>{copy.build.how}</p>
+    <p class="muted">{copy.build.inOrg} <span class="mono">{orgTech.join(" · ")}</span></p>
+  </section>
+
+  <section id="join" class="join container" aria-labelledby="join-heading">
+    <h2 id="join-heading">{copy.join.heading}</h2>
+    <p class="lead">{copy.join.lead}</p>
+    <p>{copy.join.threshold}</p>
+    <dl class="facts">
+      <dt>{copy.join.discord}</dt><dd><a href={site.discord}>{site.discord.replace("https://", "")}</a></dd>
+      <dt>{copy.join.email}</dt><dd><a class="mono" href={`mailto:${site.email}`}>{site.email}</a></dd>
+      <dt>{copy.join.room}</dt><dd class="mono">{site.room}, {site.address[0]}</dd>
+    </dl>
+    <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
   </section>
 </Base>
 
@@ -58,5 +92,35 @@ const site = (await getEntry("site", "site"))!.data;
     display: flex;
     gap: var(--space-3);
     flex-wrap: wrap;
+  }
+  .projects,
+  .build,
+  .join {
+    padding-block: var(--space-6);
+    display: grid;
+    gap: var(--space-4);
+  }
+  h2 {
+    font-size: var(--step-3);
+  }
+  .grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  }
+  .muted {
+    color: var(--muted);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+  }
+  .facts dt {
+    color: var(--muted);
+  }
+  .facts dd {
+    margin: 0;
   }
 </style>
