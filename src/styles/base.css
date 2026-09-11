@@ -63,3 +63,18 @@ svg {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+.skip-link:focus-visible {
+  position: fixed;
+  inset: var(--space-3) auto auto var(--space-3);
+  z-index: 10;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  padding: 0.6em 1.1em;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}

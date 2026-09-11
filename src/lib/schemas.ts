@@ -59,6 +59,7 @@ export const CopySchema = z.object({
     join: z.string(),
     switchTo: z.string(),
     skip: z.string(),
+    mainLabel: z.string(),
   }),
   hero: z.object({
     title: z.string(),

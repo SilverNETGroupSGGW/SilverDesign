@@ -23,7 +23,7 @@ const links = [
       <Mark size="2rem" />
       <span>{site.name}</span>
     </a>
-    <nav aria-label="Main">
+    <nav aria-label={copy.nav.mainLabel}>
       {links.map((l) => (
         <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
       ))}

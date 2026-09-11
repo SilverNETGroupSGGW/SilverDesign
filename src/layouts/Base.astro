@@ -30,7 +30,7 @@ const canonical = new URL(pathFor(route, locale), Astro.site);
     <meta name="theme-color" content="#16161B" />
   </head>
   <body>
-    <a class="visually-hidden" href="#main">{copy.nav.skip}</a>
+    <a class="visually-hidden skip-link" href="#main">{copy.nav.skip}</a>
     <Header locale={locale} route={route} />
     <main id="main">
       <slot />
