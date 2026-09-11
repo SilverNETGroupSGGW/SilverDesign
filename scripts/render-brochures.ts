@@ -1,3 +1,4 @@
+/* oxlint-disable no-await-in-loop -- one Playwright page is reused, so the four renders must be sequential */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { chromium } from "playwright";
@@ -21,6 +22,7 @@ const jobs = [
 
 const server = Bun.serve({
   port: 0,
+  hostname: "127.0.0.1",
   fetch: async (req) => {
     const url = new URL(req.url);
     const path = url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname;
@@ -39,12 +41,26 @@ let failed = false;
 for (const job of jobs) {
   await page.goto(`http://localhost:${server.port}${job.path}`, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
-  const overflow = await page.evaluate(() => {
+  const metrics = await page.evaluate(() => {
     const el = document.querySelector(".page")!;
-    return { x: el.scrollWidth - el.clientWidth, y: el.scrollHeight - el.clientHeight };
+    const rect = el.getBoundingClientRect();
+    return {
+      overflowX: el.scrollWidth - el.clientWidth,
+      overflowY: el.scrollHeight - el.clientHeight,
+      width: rect.width,
+      height: rect.height,
+    };
   });
-  if (overflow.x > 0 || overflow.y > 0) {
-    console.error(`${job.path}: content overflows the page by ${overflow.x}×${overflow.y} px`);
+  if (metrics.overflowX > 0 || metrics.overflowY > 0) {
+    console.error(
+      `${job.path}: content overflows the page by ${metrics.overflowX}×${metrics.overflowY} px`,
+    );
+    failed = true;
+  }
+  if (metrics.width !== WIDTH || metrics.height !== HEIGHT) {
+    console.error(
+      `${job.path}: .page is ${metrics.width}×${metrics.height} CSS px, expected ${WIDTH}×${HEIGHT}`,
+    );
     failed = true;
   }
   const png = await page.screenshot({

@@ -16,3 +16,7 @@ test("reads width and height from IHDR", () => {
 test("rejects non-PNG bytes", () => {
   expect(() => pngSize(new Uint8Array(24))).toThrow("not a PNG");
 });
+
+test("rejects a buffer too short to hold an IHDR", () => {
+  expect(() => pngSize(new Uint8Array(8))).toThrow("not a PNG");
+});
