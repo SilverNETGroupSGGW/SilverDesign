@@ -25,13 +25,17 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
 >
   <section class="hero">
     <div class="band" aria-hidden="true"></div>
-    <div class="container stack">
-      <Mark size="clamp(8rem, 30vw, 18rem)" interactive />
-      <h1>{copy.hero.title}</h1>
-      <p class="lead">{copy.hero.lead}</p>
-      <div class="ctas">
-        <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
-        <Button href={pathFor("projects", locale)} variant="ghost">{copy.hero.ctaProjects}</Button>
+    <div class="container inner">
+      <div class="markwrap">
+        <Mark size="var(--mark-size)" interactive />
+      </div>
+      <div class="copy">
+        <h1>{copy.hero.title}</h1>
+        <p class="lead">{copy.hero.lead}</p>
+        <div class="ctas">
+          <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
+          <Button href={pathFor("projects", locale)} variant="ghost">{copy.hero.ctaProjects}</Button>
+        </div>
       </div>
     </div>
   </section>
@@ -39,7 +43,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   <Steps steps={copy.steps} />
 
   <section class="projects container" aria-labelledby="projects-heading">
-    <h2 id="projects-heading">{copy.projects.heading}</h2>
+    <h2 class="angled" id="projects-heading">{copy.projects.heading}</h2>
     <p class="lead">{copy.projects.lead}</p>
     <div class="grid">
       {projects.map((p) => <ProjectCard project={p} locale={locale} withScreenshot />)}
@@ -48,14 +52,14 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   </section>
 
   <section class="build container" aria-labelledby="build-heading">
-    <h2 id="build-heading">{copy.build.heading}</h2>
+    <h2 class="angled" id="build-heading">{copy.build.heading}</h2>
     <p>{copy.build.what}</p>
     <p>{copy.build.how}</p>
     <p class="muted">{copy.build.inOrg} <span class="mono">{orgTech.join(" · ")}</span></p>
   </section>
 
   <section id="join" class="join container" aria-labelledby="join-heading">
-    <h2 id="join-heading">{copy.join.heading}</h2>
+    <h2 class="angled" id="join-heading">{copy.join.heading}</h2>
     <p class="lead">{copy.join.lead}</p>
     <p>{copy.join.threshold}</p>
     <dl class="facts">
@@ -68,26 +72,45 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
 </Base>
 
 <style>
+  /* The band runs from the container's left edge to the viewport's right one, so its rise is a
+     fixed multiple of its own width and the diagonal stays at --angle at every viewport. */
   .hero {
+    --band-w: calc(50cqw + min(50cqw - var(--gutter), var(--container) / 2));
+    --band-h: calc(var(--band-w) * tan(var(--angle)));
+    --mark-size: clamp(6rem, 29cqw, 9rem);
     position: relative;
     isolation: isolate;
     container-type: inline-size;
-    padding-block: var(--space-7);
+    display: grid;
+    padding-block: 0 var(--space-6);
     overflow: hidden;
   }
-  .stack {
+  .band {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    inline-size: var(--band-w);
+    block-size: var(--band-h);
+    z-index: -1;
+    background: url("/brand/foil-texture.jpg") center / cover;
+    opacity: 0.42;
+    clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  }
+  .inner {
     display: grid;
     gap: var(--space-4);
     grid-template-columns: minmax(0, 1fr);
   }
-  .band {
-    position: absolute;
-    inset: auto 0 0 0;
-    height: min(100%, 100cqw * tan(var(--angle)));
-    z-index: -1;
-    background: url("/brand/foil-texture.jpg") center / cover;
-    opacity: 0.08;
-    clip-path: polygon(0 100%, 100% calc(100% - 100cqw * tan(var(--angle))), 100% 100%);
+  .markwrap {
+    display: grid;
+    block-size: var(--band-h);
+    align-items: end;
+    justify-items: end;
+  }
+  .copy {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: minmax(0, 1fr);
   }
   h1 {
     font-size: var(--step-4);
@@ -99,11 +122,37 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   .lead {
     font-size: var(--step-1);
     color: var(--muted);
+    max-width: 42rem;
   }
   .ctas {
     display: flex;
     gap: var(--space-3);
     flex-wrap: wrap;
+  }
+  @media (min-width: 64rem) {
+    .hero {
+      --mark-size: clamp(11rem, 20cqw, 17rem);
+      padding-block: var(--space-6);
+      /* The floor is what the copy needs to clear the diagonal at the narrow end of the split
+         layout; from ~80rem up the band's own rise is the taller of the two. */
+      min-block-size: max(calc(var(--band-h) + var(--space-7)), 42rem);
+    }
+    .band {
+      inset-block-start: auto;
+      inset-block-end: 0;
+    }
+    .inner {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .copy {
+      grid-area: 1 / 1;
+      align-self: start;
+    }
+    .markwrap {
+      grid-area: 1 / 1;
+      block-size: auto;
+      align-self: end;
+    }
   }
   /* minmax(0, …) instead of a bare column: a grid track sized to auto never shrinks below the
      longest word, which at 200% text zoom is wider than a phone. */
@@ -124,7 +173,12 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   .grid {
     display: grid;
     gap: var(--space-4);
-    grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 40rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   .muted {
     color: var(--muted);
