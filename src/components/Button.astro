@@ -5,7 +5,7 @@ interface Props {
 }
 const { href, variant = "primary" } = Astro.props;
 ---
-<a class:list={["button", variant]} href={href}><span class="label"><slot /></span></a>
+<a class:list={["button", variant, variant === "primary" && "cut-fill"]} href={href}><span class="label"><slot /></span></a>
 
 <style>
   .button {
@@ -34,20 +34,11 @@ const { href, variant = "primary" } = Astro.props;
   .primary {
     color: var(--bg);
   }
-  /* The fill carries the corner cut instead of the anchor itself: clip-path would also clip the
-     focus outline. */
   .primary::before {
     content: "";
     position: absolute;
     inset: -1px;
     background: var(--ink);
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - var(--cut) * tan(var(--angle))),
-      calc(100% - var(--cut)) 100%,
-      0 100%
-    );
     transition: background-color 120ms;
   }
   .primary:hover::before {

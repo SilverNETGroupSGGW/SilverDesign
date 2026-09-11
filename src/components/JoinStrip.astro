@@ -11,7 +11,7 @@ const { locale, text } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 ---
-<section class="strip container" aria-label={copy.join.heading}>
+<section class="strip container cut" aria-label={copy.join.heading}>
   <p>{text}</p>
   <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
 </section>
@@ -21,13 +21,6 @@ const site = (await getEntry("site", "site"))!.data;
     margin-block: var(--space-6);
     padding: var(--space-5);
     background: var(--surface);
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - var(--cut) * tan(var(--angle))),
-      calc(100% - var(--cut)) 100%,
-      0 100%
-    );
     display: flex;
     flex-wrap: wrap;
     align-items: center;

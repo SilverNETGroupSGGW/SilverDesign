@@ -10,7 +10,7 @@ const { steps } = Astro.props;
   <h2 class="angled" id="steps-heading">{steps.heading}</h2>
   <ol role="list">
     {steps.items.map((s, i) => (
-      <li>
+      <li class="cut">
         <span class="n mono">0{i + 1}</span>
         <h3>{s.title}</h3>
         <p>{s.body}</p>
@@ -41,7 +41,6 @@ const { steps } = Astro.props;
     padding: var(--space-4);
     background: var(--surface);
     border: 1px solid var(--line);
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
     display: grid;
     gap: var(--space-2);
   }

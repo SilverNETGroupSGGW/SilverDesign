@@ -21,7 +21,7 @@ const options = [
 ---
 <div class="filter" role="group" aria-label={copy.filterLabel} data-project-filter data-param={param}>
   {options.map((o, i) => (
-    <button type="button" data-value={o.value} data-slug={o.slug} aria-pressed={i === 0 ? "true" : "false"}>
+    <button type="button" class="cut-fill" data-value={o.value} data-slug={o.slug} aria-pressed={i === 0 ? "true" : "false"}>
       {o.label}
     </button>
   ))}
@@ -86,20 +86,11 @@ const options = [
     color: var(--bg);
     border-color: transparent;
   }
-  /* Same fill-in-a-pseudo-element trick as Button: a clip-path on the control would clip its
-     focus outline too. */
   button[aria-pressed="true"]::before {
     content: "";
     position: absolute;
     inset: -1px;
     z-index: -1;
     background: var(--ink);
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - var(--cut) * tan(var(--angle))),
-      calc(100% - var(--cut)) 100%,
-      0 100%
-    );
   }
 </style>

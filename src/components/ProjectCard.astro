@@ -53,7 +53,7 @@ const links = [
 // grayscale at 85% opacity, so 65 is invisible here.
 const shotQuality = 65;
 ---
-<article class="card" data-status={p.status}>
+<article class="card cut" data-status={p.status}>
   {shot && (
     <Image
       src={shot}
@@ -91,13 +91,6 @@ const shotQuality = 65;
     background: var(--surface);
     border: 1px solid var(--line);
     overflow: hidden;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - var(--cut) * tan(var(--angle))),
-      calc(100% - var(--cut)) 100%,
-      0 100%
-    );
   }
   .shot {
     width: 100%;

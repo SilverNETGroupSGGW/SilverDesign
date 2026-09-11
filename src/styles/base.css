@@ -77,6 +77,19 @@ svg {
   transform: skewY(calc(-1 * var(--angle)));
   transform-origin: 0 100%;
 }
+/* The band's diagonal as a corner cut: one --cut run along the bottom edge, rising at the angle.
+   On a control the cut goes on the fill pseudo-element, because clipping the control itself would
+   clip its focus ring too. */
+.cut,
+.cut-fill::before {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut) * tan(var(--angle))),
+    calc(100% - var(--cut)) 100%,
+    0 100%
+  );
+}
 .mono {
   font-family: var(--font-mono);
   font-size: var(--step--1);
