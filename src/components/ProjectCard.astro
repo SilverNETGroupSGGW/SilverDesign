@@ -8,8 +8,16 @@ interface Props {
   project: CollectionEntry<"projects">;
   locale: Locale;
   withScreenshot?: boolean;
+  headingLevel?: 2 | 3;
+  eagerScreenshot?: boolean;
 }
-const { project, locale, withScreenshot = false } = Astro.props;
+const {
+  project,
+  locale,
+  withScreenshot = false,
+  headingLevel = 3,
+  eagerScreenshot = false,
+} = Astro.props;
 const p = project.data;
 const copy = (await getEntry("copy", locale))!.data;
 
@@ -24,11 +32,26 @@ const links = [
   p.links.appStore && { href: p.links.appStore, label: copy.projects.appStore },
   p.links.github && { href: p.links.github, label: copy.projects.github },
 ].filter((l): l is { href: string; label: string } => Boolean(l));
+
+// On /projekty the first screenshot is the LCP element: the default quality puts it at 130 KB,
+// which costs the page ~5 Lighthouse performance points. It renders grayscale at 85% opacity,
+// so 65 is invisible here.
+const shotQuality = 65;
 ---
 <article class="card" data-status={p.status}>
-  {shot && <Image src={shot} alt="" width={480} class="shot" />}
+  {shot && (
+    <Image
+      src={shot}
+      alt=""
+      width={480}
+      class="shot"
+      quality={shotQuality}
+      loading={eagerScreenshot ? "eager" : "lazy"}
+      fetchpriority={eagerScreenshot ? "high" : "auto"}
+    />
+  )}
   <div class="body">
-    <h3>{p.name}</h3>
+    {headingLevel === 2 ? <h2 class="name">{p.name}</h2> : <h3 class="name">{p.name}</h3>}
     <p class="result">{p.result[locale]}</p>
     <p class="summary">{p.summary[locale]}</p>
     <p class="tech mono">{p.tech.join(" · ")}</p>
@@ -58,7 +81,7 @@ const links = [
     display: grid;
     gap: var(--space-2);
   }
-  h3 {
+  .name {
     font-size: var(--step-1);
   }
   .result {
