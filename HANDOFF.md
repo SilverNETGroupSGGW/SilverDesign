@@ -58,3 +58,7 @@ Task 1: minor (deferred): mise.toml lacks fmt:check/preview tasks
 ## Fakty o kole, których nie ma nigdzie indziej
 
 Wszystkie są w spec §3 i §4.3. Źródła (Wayback, Google Play, GitHub org) w spec §3.1. Prezentacja `Silver_NET_Dni_SGGW (1).pptx` z Downloads została już przerobiona — zrzuty ekranu są w `brand/screenshots/`, reszta odrzucona.
+
+## Uwaga bezpieczeństwa — pluginy w `.claude/settings.json`
+
+`i-have-adhd@i-have-adhd` i `shut-up-and-code@shut-up-and-code` pochodzą z prywatnych repozytoriów (`ayghri/i-have-adhd`, `chl03ks/shut-up-and-code`) pobieranych z HEAD, bez przypiętego SHA; ich hooki uruchamiają skrypty przy starcie każdej sesji Claude Code w tym repo. Decyzja przewodniczącego (2026-09-11): zostawić. Kto klonuje repo i nie chce tego, usuwa te dwie linie z `enabledPlugins` lokalnie. Pozostałe pluginy mają SHA przypięte w swoich marketplace'ach.
