@@ -11,6 +11,8 @@ Stan na 2026-09-11, branch `site` (od `main` @ `1c24bb6`). Ten plik jest po to, 
 
 ## Jak wznowić
 
+Pluginy i skille są zadeklarowane w `.claude/settings.json` (marketplace'y, bez kopii źródeł) — sesja w chmurze instaluje je sama. `CLAUDE.md` w repo niesie zasady, które lokalnie dają hooki.
+
 1. `mise install && bun install` (Playwright jest w devDependencies, ale **Chromium nie jest pobrany** — `bunx playwright install chromium` przed zadaniem 5).
 2. Odpal skill `superpowers:subagent-driven-development` z argumentem: ścieżka planu.
 3. Skill szuka workspace `.superpowers/sdd/2026-09-11-silver-site-and-brochure/` — jest git-ignored, więc w nowym środowisku go nie ma. Odtwórz ledger z sekcji poniżej (pierwsza linia musi brzmieć dokładnie `# SDD ledger — plan: docs/superpowers/plans/2026-09-11-silver-site-and-brochure.md`), wpisz `Task 1: complete`, i zacznij od zadania 2.

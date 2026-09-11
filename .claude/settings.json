@@ -1,0 +1,18 @@
+{
+  "extraKnownMarketplaces": {
+    "claude-community": { "source": { "source": "github", "repo": "anthropics/claude-plugins-community" } },
+    "i-have-adhd": { "source": { "source": "github", "repo": "ayghri/i-have-adhd" } },
+    "shut-up-and-code": { "source": { "source": "github", "repo": "chl03ks/shut-up-and-code" } }
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "mattpocock-skills@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "impeccable@claude-community": true,
+    "i-have-adhd@i-have-adhd": true,
+    "shut-up-and-code@shut-up-and-code": true
+  }
+}
