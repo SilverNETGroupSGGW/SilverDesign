@@ -43,6 +43,10 @@ svg {
   max-width: 100%;
   height: auto;
 }
+/* Component display rules outrank the UA [hidden] rule, so it needs !important to stay authoritative. */
+[hidden] {
+  display: none !important;
+}
 :focus-visible {
   outline: 2px solid var(--bright);
   outline-offset: 3px;
