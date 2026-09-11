@@ -91,6 +91,7 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
   .built li {
     display: grid;
     gap: 6px;
+    align-content: start;
     padding: 24px;
     background: var(--surface);
     border: 1px solid var(--line);
@@ -108,7 +109,7 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     align-items: end;
   }
   .qr p {
-    margin-top: 12px;
+    margin-top: 40px;
     font-size: 18px;
   }
 </style>
