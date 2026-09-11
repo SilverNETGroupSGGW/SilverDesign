@@ -125,7 +125,7 @@ w §3.1):
 | 2019 | Warsztaty Unity i Flutter zakończone projektami; gra platformowa STEAMY (2D, siedmioosobowy zespół, własna grafika i muzyka). Od tego roku Flutter jest w kole na stałe. |
 | 2021–2022 | Warsztaty z Gita i GitHuba (repozytoria w orgu). Kampus SGGW od nowa, we Flutterze, w Google Play i App Store. |
 | 2023 | Plan WZIM — ostatnia duża aktualizacja. |
-| 2026 | HackArena 3.0 (marzec): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej wśród 33 drużyn. Aplikacja Dni SGGW — ponad 80 pobrań w dwa dni wydarzenia. 27 maja: pierwsze spotkanie na żywo nowego zespołu, z nowymi osobami. Charmander, proxy do powiadomień push. |
+| 2026 | HackArena 3.0 (marzec): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej wśród 33 drużyn. Aplikacja Dni SGGW — ponad 80 pobrań w dwa dni wydarzenia. 27 maja: pierwsze spotkanie nowego zespołu na żywo. Charmander, proxy do powiadomień push. |
 
 Oś kończy się bieżącym rokiem; nie ma wpisu „przerwa" ani „powrót" — luka
 między latami mówi sama za siebie, czytelnik nie potrzebuje komentarza.
