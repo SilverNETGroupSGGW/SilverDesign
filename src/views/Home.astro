@@ -100,6 +100,9 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     display: grid;
     gap: var(--space-4);
   }
+  .join {
+    justify-items: start;
+  }
   h2 {
     font-size: var(--step-3);
   }
@@ -112,6 +115,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     color: var(--muted);
   }
   .facts {
+    justify-self: stretch;
     display: grid;
     grid-template-columns: max-content 1fr;
     gap: var(--space-2) var(--space-4);
