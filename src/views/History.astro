@@ -1,0 +1,36 @@
+---
+import { getCollection, getEntry } from "astro:content";
+import Timeline from "../components/Timeline.astro";
+import Base from "../layouts/Base.astro";
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+const site = (await getEntry("site", "site"))!.data;
+const entries = await getCollection("history");
+---
+<Base locale={locale} route="history" title={`${copy.history.heading} — ${site.name}`} description={copy.history.lead}>
+  <section class="container page">
+    <h1>{copy.history.heading}</h1>
+    <p class="lead">{copy.history.lead}</p>
+    <Timeline entries={entries} locale={locale} />
+  </section>
+</Base>
+
+<style>
+  .page {
+    padding-block: var(--space-6);
+    display: grid;
+    gap: var(--space-5);
+  }
+  h1 {
+    font-size: var(--step-4);
+  }
+  .lead {
+    color: var(--muted);
+    font-size: var(--step-1);
+  }
+</style>

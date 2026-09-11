@@ -1,0 +1,65 @@
+---
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../lib/i18n";
+import { historyStart } from "../lib/schemas";
+
+interface Props {
+  entries: CollectionEntry<"history">[];
+  locale: Locale;
+}
+const { entries, locale } = Astro.props;
+const sorted = entries.toSorted(
+  (a, b) => historyStart(a.data) - historyStart(b.data) || a.data.order - b.data.order,
+);
+const label = (d: CollectionEntry<"history">["data"]) =>
+  "year" in d ? String(d.year) : `${d.yearFrom}–${d.yearTo}`;
+---
+<ol class="timeline">
+  {sorted.map((e) => (
+    <li>
+      <span class="year mono">{label(e.data)}</span>
+      <div>
+        <h2>{e.data.title[locale]}</h2>
+        <p>{e.data.body[locale]}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  li {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: var(--space-4);
+    align-items: start;
+  }
+  .year {
+    color: var(--muted);
+    padding-top: 0.35em;
+  }
+  div {
+    display: grid;
+    gap: var(--space-2);
+    padding-bottom: var(--space-5);
+    border-bottom: 1px solid var(--line);
+  }
+  h2 {
+    font-size: var(--step-1);
+  }
+  p {
+    color: var(--muted);
+  }
+  @media (max-width: 40rem) {
+    li {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+</style>
