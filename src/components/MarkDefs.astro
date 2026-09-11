@@ -1,5 +1,7 @@
 ---
 import { markPathData, markPathId } from "../lib/mark";
+// Out of flow because base.css gives every svg height:auto and this one has no viewBox, so in flow
+// it would fall back to the 150px default intrinsic height of a replaced element.
 ---
 <svg width="0" height="0" aria-hidden="true" style="position:absolute">
   <defs><path id={markPathId} d={markPathData} /></defs>

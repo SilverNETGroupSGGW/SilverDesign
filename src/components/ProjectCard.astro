@@ -93,6 +93,9 @@ const shotQuality = 65;
   }
   .shot {
     width: 100%;
+    /* Fixed here as well as in the crops: a screenshot added at another aspect would otherwise
+       make the cards in a row start their bodies at different heights. */
+    aspect-ratio: 9 / 5;
     max-height: 18rem;
     object-fit: cover;
     object-position: top;
