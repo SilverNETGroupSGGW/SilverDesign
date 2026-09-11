@@ -11,7 +11,7 @@ const options = [
   { value: "github", label: copy.filterGithub },
 ];
 ---
-<div class="filter" role="group" data-project-filter>
+<div class="filter" data-project-filter>
   {options.map((o, i) => (
     <button type="button" data-value={o.value} aria-pressed={i === 0 ? "true" : "false"}>{o.label}</button>
   ))}

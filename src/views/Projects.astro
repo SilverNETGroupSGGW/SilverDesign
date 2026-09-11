@@ -10,9 +10,10 @@ interface Props {
 }
 const { locale } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
+const site = (await getEntry("site", "site"))!.data;
 const projects = (await getCollection("projects")).toSorted((a, b) => a.data.order - b.data.order);
 ---
-<Base locale={locale} route="projects" title={`${copy.projects.heading} — Silver`} description={copy.projects.lead}>
+<Base locale={locale} route="projects" title={`${copy.projects.heading} — ${site.name}`} description={copy.projects.lead}>
   <section class="container page">
     <h1>{copy.projects.heading}</h1>
     <p class="lead">{copy.projects.lead}</p>
