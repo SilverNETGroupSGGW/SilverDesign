@@ -10,6 +10,7 @@
     "fmt:check": "oxfmt --check",
     "build": "astro build",
     "preview": "astro preview",
+    "test": "bun test",
     "logo:export": "bun scripts/export-logo.ts",
     "brochure": "bun scripts/render-brochures.ts"
   },
