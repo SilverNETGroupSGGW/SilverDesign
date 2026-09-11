@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntry } from "astro:content";
+import JoinStrip from "../components/JoinStrip.astro";
 import Timeline from "../components/Timeline.astro";
 import Base from "../layouts/Base.astro";
 import type { Locale } from "../lib/i18n";
@@ -14,10 +15,11 @@ const entries = await getCollection("history");
 ---
 <Base locale={locale} route="history" title={`${copy.history.heading} — ${site.name}`} description={copy.history.lead}>
   <section class="container page">
-    <h1>{copy.history.heading}</h1>
+    <h1 class="angled">{copy.history.heading}</h1>
     <p class="lead">{copy.history.lead}</p>
     <Timeline entries={entries} locale={locale} />
   </section>
+  <JoinStrip locale={locale} text={copy.join.stripHistory} />
 </Base>
 
 <style>

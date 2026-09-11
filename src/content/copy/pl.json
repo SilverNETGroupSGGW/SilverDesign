@@ -66,7 +66,9 @@
     "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Terminy spotkań na żywo ogłaszamy tam.",
     "discord": "Discord",
     "email": "Mail",
-    "room": "Sala"
+    "room": "Sala",
+    "stripProjects": "Każdą z tych rzeczy robi mały zespół przez semestr. Wejdź na Discorda i wybierz projekt.",
+    "stripHistory": "Ciąg dalszy dzieje się teraz. Projekty i terminy spotkań ogłaszamy na Discordzie."
   },
   "footer": {
     "since": "Przy WZIM SGGW od {year}",

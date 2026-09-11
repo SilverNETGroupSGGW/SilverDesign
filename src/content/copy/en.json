@@ -66,7 +66,9 @@
     "threshold": "Join the Discord, introduce yourself, pick a project. In-person meetings are announced there.",
     "discord": "Discord",
     "email": "Email",
-    "room": "Room"
+    "room": "Room",
+    "stripProjects": "Each of these is built by a small team over a semester. Join the Discord and pick a project.",
+    "stripHistory": "The next part is happening now. Projects and meeting dates are announced on the Discord."
   },
   "footer": {
     "since": "At WZIM SGGW since {year}",

@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import ProjectCard from "../components/ProjectCard.astro";
+import JoinStrip from "../components/JoinStrip.astro";
 import ProjectFilter from "../components/ProjectFilter.astro";
 import Base from "../layouts/Base.astro";
 import type { Locale } from "../lib/i18n";
@@ -15,7 +16,7 @@ const projects = (await getCollection("projects")).toSorted((a, b) => a.data.ord
 ---
 <Base locale={locale} route="projects" title={`${copy.projects.heading} — ${site.name}`} description={copy.projects.lead}>
   <section class="container page">
-    <h1>{copy.projects.heading}</h1>
+    <h1 class="angled">{copy.projects.heading}</h1>
     <p class="lead">{copy.projects.lead}</p>
     <ProjectFilter copy={copy.projects} locale={locale} />
     <div class="grid">
@@ -31,6 +32,7 @@ const projects = (await getCollection("projects")).toSorted((a, b) => a.data.ord
       ))}
     </div>
   </section>
+  <JoinStrip locale={locale} text={copy.join.stripProjects} />
 </Base>
 
 <style>
@@ -49,6 +51,11 @@ const projects = (await getCollection("projects")).toSorted((a, b) => a.data.ord
   .grid {
     display: grid;
     gap: var(--space-4);
-    grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 40rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 </style>

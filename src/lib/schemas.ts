@@ -99,6 +99,8 @@ export const CopySchema = z.object({
     discord: z.string(),
     email: z.string(),
     room: z.string(),
+    stripProjects: z.string(),
+    stripHistory: z.string(),
   }),
   footer: z.object({ since: z.string(), contact: z.string(), links: z.string() }),
   history: z.object({ heading: z.string(), lead: z.string() }),
