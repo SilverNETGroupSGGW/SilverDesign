@@ -34,7 +34,29 @@ const { locale, title } = Astro.props;
     min-height: 0;
     background: var(--bg);
   }
+  /* A sheet has no viewport to scale against, so print carries its own fixed scale next to the
+     fluid one the screen uses. */
   .page {
+    --print-space-1: 8px;
+    --print-space-2: 16px;
+    --print-space-3: 24px;
+    --print-space-4: 40px;
+    --print-space-5: 36px;
+    --print-step--1: 19px;
+    --print-step-0: 23px;
+    --print-step-1: 26px;
+    --print-step-2: 30px;
+    --print-step-3: 32px;
+    --print-step-4: 44px;
+    --print-step-5: 82px;
+    --cut: 40px;
+    --marker: 40px;
+    --marker-weight: 4px;
+    /* The band's top edge meets the left paper edge here and rises from there at --angle; its rise
+       over the full sheet is what makes the lower third the band's ground. */
+    --band-left: 1100px;
+    --band-rise: calc(1240px * tan(var(--angle)));
+
     position: relative;
     isolation: isolate;
     width: 1240px;
@@ -43,18 +65,35 @@ const { locale, title } = Astro.props;
     padding: 96px;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    gap: 48px;
+    gap: var(--print-space-5);
+    font-size: var(--print-step-0);
   }
   .page h1 {
-    font-size: 64px;
-    max-width: 16ch;
+    display: grid;
+    gap: var(--print-space-1);
+    max-width: none;
+  }
+  .page .wordmark {
+    font-size: var(--print-step-5);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .page .tagline {
+    font-size: var(--print-step-4);
+    font-weight: 500;
   }
   .page h2 {
-    font-size: 30px;
-    margin-bottom: 16px;
+    font-size: var(--print-step-3);
+    margin-bottom: var(--print-space-2);
+  }
+  .page .angled::before {
+    margin-block-end: var(--print-space-2);
   }
   .page p {
     max-width: none;
+  }
+  .page .mono {
+    font-size: var(--print-step--1);
   }
   .page .muted {
     color: var(--muted);
@@ -62,37 +101,59 @@ const { locale, title } = Astro.props;
   .page .top {
     display: grid;
     grid-template-columns: var(--mark-column, 200px) 1fr;
-    gap: 48px;
-    align-items: center;
+    gap: var(--print-space-4);
+    align-items: start;
   }
   .page .lead {
-    font-size: 30px;
-    margin-top: 16px;
+    font-size: var(--print-step-2);
+    margin-top: var(--print-space-3);
+    max-width: 40ch;
+  }
+  /* ch overstates Geist's average character, so 57ch is the 75-character measure, not 75ch. */
+  .page .body p {
+    max-width: 57ch;
   }
   .page .body {
     display: grid;
-    gap: 40px;
-    align-content: start;
+    gap: var(--print-space-5);
+    align-content: space-between;
   }
+  /* The lower third is the band, so everything that lands there sits on a plate of the paper's own
+     ground: the plate is what keeps the type and the QR's quiet zone off the foil. */
   .page .bottom {
+    background: var(--bg);
+    padding: var(--print-space-4);
     display: grid;
-    grid-template-columns: 1fr var(--qr-column, 220px);
-    gap: 48px;
-    align-items: end;
+    grid-template-columns: 1fr var(--qr-column, 240px);
+    gap: var(--print-space-4);
+    align-items: stretch;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--cut) * tan(var(--angle))),
+      calc(100% - var(--cut)) 100%,
+      0 100%
+    );
+  }
+  .page .ask {
+    display: grid;
+    gap: var(--print-space-4);
+    align-content: center;
+  }
+  .page .lines {
+    display: grid;
+    gap: var(--print-space-1);
   }
   .page .qr p {
-    margin-top: 40px;
-    font-size: 18px;
+    margin-top: var(--print-space-4);
+    font-size: var(--print-step--1);
   }
-  /* The band is the brand diagonal, so its height is the rise of that angle over the full page
-     width; anything shorter cuts the wedge off flat before it reaches the right edge. */
   .page .band {
     position: absolute;
-    inset: auto 0 0 0;
-    height: calc(1240px * tan(var(--angle)));
+    inset: calc(var(--band-left) - var(--band-rise)) 0 0 0;
     z-index: -1;
     background: url("/brand/foil-texture.jpg") center / cover;
-    opacity: 0.08;
-    clip-path: polygon(0 100%, 100% calc(100% - 1240px * tan(var(--angle))), 100% 100%);
+    opacity: 0.32;
+    clip-path: polygon(0 var(--band-rise), 100% 0, 100% 100%, 0 100%);
   }
 </style>

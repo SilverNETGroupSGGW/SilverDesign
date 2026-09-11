@@ -70,9 +70,9 @@ svg {
 .angled::before {
   content: "";
   display: block;
-  inline-size: 2.5rem;
-  block-size: 3px;
-  margin-block: calc(2.5rem * tan(var(--angle))) var(--space-3);
+  inline-size: var(--marker, 2.5rem);
+  block-size: var(--marker-weight, 3px);
+  margin-block: calc(var(--marker, 2.5rem) * tan(var(--angle))) var(--space-3);
   background: var(--ink);
   transform: skewY(calc(-1 * var(--angle)));
   transform-origin: 0 100%;
