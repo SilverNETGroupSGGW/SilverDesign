@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "title": "Silver — koło naukowe informatyków SGGW",
+    "description": "Koło naukowe informatyków na SGGW. Piszemy aplikacje, z których korzysta kampus."
+  },
+  "nav": {
+    "projects": "Projekty",
+    "history": "Historia",
+    "join": "Dołącz",
+    "switchTo": "English",
+    "skip": "Przejdź do treści"
+  },
+  "hero": {
+    "title": "Koło naukowe informatyków na SGGW.",
+    "lead": "Piszemy aplikacje, z których korzysta kampus — i uczymy się na nich więcej niż na zajęciach.",
+    "ctaDiscord": "Dołącz na Discordzie",
+    "ctaProjects": "Zobacz projekty"
+  },
+  "steps": {
+    "heading": "Jak to działa",
+    "items": [
+      {
+        "title": "Wchodzisz na Discorda",
+        "body": "Tam jest wszystko: projekty, terminy, ludzie. Przedstaw się jednym zdaniem."
+      },
+      {
+        "title": "Wybierasz projekt albo zgłaszasz swój",
+        "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z pomysłem i szukasz dwóch osób."
+      },
+      {
+        "title": "Robimy to przez semestr",
+        "body": "W małym zespole, w swoim tempie. Co jakiś czas spotykamy się na żywo w sali 3/79."
+      }
+    ],
+    "hackathons": "Jeździmy też na hackathony. HackArena 3.0, marzec 2026: 4. miejsce w finale."
+  },
+  "projects": {
+    "heading": "Projekty",
+    "lead": "Dwie z naszych aplikacji są w sklepach i mają po ponad tysiąc pobrań. Reszta jest na GitHubie.",
+    "viewAll": "Wszystkie projekty",
+    "filterAll": "Wszystkie",
+    "filterStore": "W sklepach",
+    "filterGithub": "Na GitHubie",
+    "play": "Google Play",
+    "appStore": "App Store",
+    "github": "GitHub"
+  },
+  "build": {
+    "heading": "Co budujemy i czym",
+    "what": "Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni — stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić znaną rzecz po swojemu.",
+    "how": "Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie sięgamy po nowe rzeczy — czasem zanim ktokolwiek uzna je za stabilne.",
+    "inOrg": "W naszym orgu na GitHubie:"
+  },
+  "join": {
+    "heading": "Dołącz",
+    "lead": "Nie musisz jeszcze umieć programować. Wystarczy, że chcesz coś zbudować.",
+    "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Terminy spotkań na żywo ogłaszamy tam.",
+    "discord": "Discord",
+    "email": "Mail",
+    "room": "Sala"
+  },
+  "footer": {
+    "since": "Przy WZIM SGGW od {year}",
+    "contact": "Kontakt",
+    "links": "Linki"
+  },
+  "history": {
+    "heading": "Historia",
+    "lead": "Co się działo w kole, rok po roku."
+  },
+  "brochure": {
+    "students": {
+      "title": "Koło naukowe informatyków na SGGW",
+      "lead": "Piszemy aplikacje, z których korzysta kampus — i uczymy się na nich więcej niż na zajęciach.",
+      "stepsHeading": "Jak to działa",
+      "appsHeading": "Nasze aplikacje w sklepach",
+      "threshold": "Nie musisz jeszcze umieć programować. Wystarczy, że chcesz coś zbudować.",
+      "qrLabel": "Zeskanuj — wejdziesz na nasz Discord"
+    },
+    "companies": {
+      "title": "Silver — koło naukowe informatyków SGGW",
+      "lead": "Siedmioosobowy zespół studentów, który wypuszcza aplikacje do sklepów.",
+      "whoHeading": "Kim jesteśmy",
+      "who": "Koło Naukowe Informatyków Silver .NET przy Wydziale Zastosowań Informatyki i Matematyki SGGW. Robimy aplikacje mobilne i webowe — dla studentów kampusu i dla siebie.",
+      "builtHeading": "Co zbudowaliśmy",
+      "togetherHeading": "Co możemy zrobić razem",
+      "together": [
+        "Warsztat lub prelekcja dla studentów informatyki SGGW — sala na WZIM, publiczność zapewniamy.",
+        "Wspólny projekt: realny problem z waszej strony, zespół z naszej.",
+        "Wsparcie wydarzenia — hackathonu, konkursu, Dni SGGW."
+      ],
+      "contactHeading": "Kontakt",
+      "qrLabel": "Zeskanuj — napiszesz do nas maila"
+    }
+  }
+}

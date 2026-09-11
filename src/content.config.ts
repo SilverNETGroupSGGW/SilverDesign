@@ -1,6 +1,6 @@
 import { defineCollection } from "astro:content";
 import { file, glob } from "astro/loaders";
-import { HistorySchema, ProjectSchema, SiteSchema } from "./lib/schemas";
+import { CopySchema, HistorySchema, ProjectSchema, SiteSchema } from "./lib/schemas";
 
 const site = defineCollection({
   loader: file("src/content/site.json", {
@@ -19,4 +19,9 @@ const history = defineCollection({
   schema: HistorySchema,
 });
 
-export const collections = { site, projects, history };
+const copy = defineCollection({
+  loader: glob({ base: "./src/content/copy", pattern: "*.json" }),
+  schema: CopySchema,
+});
+
+export const collections = { site, projects, history, copy };
