@@ -39,6 +39,10 @@ p {
   max-width: var(--measure);
   text-wrap: pretty;
 }
+/* A lead runs one size up, so --measure would let it past 75 characters a line. */
+.lead {
+  max-width: 60ch;
+}
 a {
   color: inherit;
   text-underline-offset: 0.15em;

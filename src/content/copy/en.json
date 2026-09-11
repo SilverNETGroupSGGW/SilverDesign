@@ -67,8 +67,8 @@
     "discord": "Discord",
     "email": "Email",
     "room": "Room",
-    "stripProjects": "Each of these is built by a small team over a semester. Join the Discord and pick a project.",
-    "stripHistory": "The next part is happening now. Projects and meeting dates are announced on the Discord."
+    "stripProjects": "Small teams, one project at a time. Take one that is running, or bring your own.",
+    "stripHistory": "This list is still growing. What we are building now, and when we meet, is on the Discord."
   },
   "footer": {
     "since": "At WZIM SGGW since {year}",

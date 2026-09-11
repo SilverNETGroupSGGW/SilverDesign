@@ -74,17 +74,32 @@ const options = [
     flex-wrap: wrap;
   }
   button {
+    position: relative;
     font: inherit;
     color: var(--muted);
     background: none;
     border: 1px solid var(--line-interactive);
-    border-radius: 999px;
     padding: 0.4em 1em;
     cursor: pointer;
   }
   button[aria-pressed="true"] {
     color: var(--bg);
+    border-color: transparent;
+  }
+  /* Same fill-in-a-pseudo-element trick as Button: a clip-path on the control would clip its
+     focus outline too. */
+  button[aria-pressed="true"]::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
     background: var(--ink);
-    border-color: var(--ink);
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--cut) * tan(var(--angle))),
+      calc(100% - var(--cut)) 100%,
+      0 100%
+    );
   }
 </style>

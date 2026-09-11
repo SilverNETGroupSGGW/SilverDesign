@@ -35,10 +35,23 @@ const site = (await getEntry("site", "site"))!.data;
 </footer>
 
 <style>
+  /* The cut's run scales with the element it cuts; only the angle is fixed. */
   .footer {
+    --cut: 6rem;
+    position: relative;
+    isolation: isolate;
     margin-top: var(--space-7);
     padding-block: var(--space-6);
-    background: var(--surface);
+  }
+  /* Two stacked planes one pixel apart: the lower one shows through as a --line edge that follows
+     the cut, which a border or a single clipped plane cannot do along a diagonal. */
+  .footer::before,
+  .footer::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset-inline: 0;
+    inset-block-end: 0;
     clip-path: polygon(
       0 calc(var(--cut) * tan(var(--angle))),
       var(--cut) 0,
@@ -46,6 +59,14 @@ const site = (await getEntry("site", "site"))!.data;
       100% 100%,
       0 100%
     );
+  }
+  .footer::before {
+    inset-block-start: 0;
+    background: var(--line);
+  }
+  .footer::after {
+    inset-block-start: 1px;
+    background: var(--surface);
   }
   .grid {
     display: grid;

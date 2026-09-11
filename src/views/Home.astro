@@ -77,7 +77,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   .hero {
     --band-w: calc(50cqw + min(50cqw - var(--gutter), var(--container) / 2));
     --band-h: calc(var(--band-w) * tan(var(--angle)));
-    --mark-size: clamp(6rem, 29cqw, 9rem);
+    --mark-size: clamp(6rem, 27cqw, 9rem);
     position: relative;
     isolation: isolate;
     container-type: inline-size;
@@ -106,6 +106,8 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     block-size: var(--band-h);
     align-items: end;
     justify-items: end;
+    /* Without it the mark's flat foot lands on the band's bottom edge and reads as a clip. */
+    padding-block-end: 0.75rem;
   }
   .copy {
     display: grid;
@@ -147,11 +149,20 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     .copy {
       grid-area: 1 / 1;
       align-self: start;
+      /* The copy column overlays the mark's top edge; without this its empty area swallows the
+         pointer and the foil snaps back mid-sweep. */
+      pointer-events: none;
+    }
+    .copy h1,
+    .copy .lead,
+    .copy .ctas a {
+      pointer-events: auto;
     }
     .markwrap {
       grid-area: 1 / 1;
       block-size: auto;
       align-self: end;
+      padding-block-end: 0;
     }
   }
   /* minmax(0, …) instead of a bare column: a grid track sized to auto never shrinks below the
