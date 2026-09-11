@@ -44,13 +44,37 @@ for (const job of jobs) {
   const metrics = await page.evaluate(() => {
     const el = document.querySelector(".page")!;
     const rect = el.getBoundingClientRect();
+    // Every box that clips: the sheet itself, the plate and the cards (their corner cut), the
+    // codes. One of those losing a line does not move the sheet's own scroll size, which is how a
+    // card shipped with its last line cut once already.
+    const clipped = [...el.querySelectorAll<HTMLElement>("*")].filter((node) => {
+      const style = getComputedStyle(node);
+      return (
+        style.overflowX !== "visible" || style.overflowY !== "visible" || style.clipPath !== "none"
+      );
+    });
+    const cut = [el, ...clipped]
+      .filter(
+        (node) =>
+          node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1,
+      )
+      .map((node) => {
+        const name = `${node.tagName.toLowerCase()}.${[...node.classList].join(".")}`;
+        return `${name} by ${node.scrollWidth - node.clientWidth}×${node.scrollHeight - node.clientHeight} px`;
+      });
     return {
       overflowX: el.scrollWidth - el.clientWidth,
       overflowY: el.scrollHeight - el.clientHeight,
       width: rect.width,
       height: rect.height,
+      checked: clipped.length + 1,
+      cut,
     };
   });
+  if (metrics.cut.length > 0) {
+    console.error(`${job.path}: content is cut off in ${metrics.cut.join(", ")}`);
+    failed = true;
+  }
   if (metrics.overflowX > 0 || metrics.overflowY > 0) {
     console.error(
       `${job.path}: content overflows the page by ${metrics.overflowX}×${metrics.overflowY} px`,
@@ -73,7 +97,9 @@ for (const job of jobs) {
     failed = true;
   }
   writeFileSync(join(out, job.file), png);
-  console.log(`${job.file} ${size.width}×${size.height}`);
+  console.log(
+    `${job.file} ${size.width}×${size.height}, ${metrics.checked} boxes checked for cut content`,
+  );
 }
 
 await browser.close();
