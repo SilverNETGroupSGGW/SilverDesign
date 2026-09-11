@@ -29,3 +29,38 @@ const svg = markSvg
     block-size: 100%;
   }
 </style>
+
+<script>
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = matchMedia("(pointer: fine)").matches;
+  if (!reduce && fine) {
+    for (const mark of document.querySelectorAll<HTMLElement>("[data-foil]")) {
+      const pattern = mark.querySelector<SVGPatternElement>("pattern");
+      if (!pattern) continue;
+      const x0 = Number(pattern.getAttribute("x") ?? 0);
+      const y0 = Number(pattern.getAttribute("y") ?? 0);
+      const w = Number(pattern.getAttribute("width") ?? 0);
+      const h = Number(pattern.getAttribute("height") ?? 0);
+      const range = 0.04;
+      let raf = 0;
+      let dx = 0;
+      let dy = 0;
+      const apply = () => {
+        raf = 0;
+        pattern.setAttribute("x", String(x0 + dx * w * range));
+        pattern.setAttribute("y", String(y0 + dy * h * range));
+      };
+      mark.addEventListener("pointermove", (e) => {
+        const r = mark.getBoundingClientRect();
+        dx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+        dy = ((e.clientY - r.top) / r.height - 0.5) * 2;
+        if (!raf) raf = requestAnimationFrame(apply);
+      });
+      mark.addEventListener("pointerleave", () => {
+        dx = 0;
+        dy = 0;
+        if (!raf) raf = requestAnimationFrame(apply);
+      });
+    }
+  }
+</script>
