@@ -42,6 +42,9 @@
     "filterAll": "Wszystkie",
     "filterStore": "W sklepach",
     "filterGithub": "Na GitHubie",
+    "filterLabel": "Filtr projektów",
+    "filterCount": "{count} z {total} projektów",
+    "shotAlt": "Zrzut ekranu aplikacji {name}",
     "play": "Google Play",
     "appStore": "App Store",
     "github": "GitHub",
@@ -73,6 +76,11 @@
   "history": {
     "heading": "Historia",
     "lead": "Co się działo w kole, rok po roku."
+  },
+  "notFound": {
+    "title": "Nie ma takiej strony",
+    "body": "Adres jest nieaktualny albo ma literówkę.",
+    "home": "Strona główna"
   },
   "brochure": {
     "students": {

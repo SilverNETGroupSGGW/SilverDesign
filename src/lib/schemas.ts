@@ -79,6 +79,9 @@ export const CopySchema = z.object({
     filterAll: z.string(),
     filterStore: z.string(),
     filterGithub: z.string(),
+    filterLabel: z.string(),
+    filterCount: z.string(),
+    shotAlt: z.string(),
     play: z.string(),
     appStore: z.string(),
     github: z.string(),
@@ -99,6 +102,7 @@ export const CopySchema = z.object({
   }),
   footer: z.object({ since: z.string(), contact: z.string(), links: z.string() }),
   history: z.object({ heading: z.string(), lead: z.string() }),
+  notFound: z.object({ title: z.string(), body: z.string(), home: z.string() }),
   brochure: z.object({
     students: z.object({
       title: z.string(),

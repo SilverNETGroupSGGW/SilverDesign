@@ -42,6 +42,9 @@
     "filterAll": "All",
     "filterStore": "In stores",
     "filterGithub": "On GitHub",
+    "filterLabel": "Project filter",
+    "filterCount": "{count} of {total} projects",
+    "shotAlt": "{name} app, Polish interface",
     "play": "Google Play",
     "appStore": "App Store",
     "github": "GitHub",
@@ -73,6 +76,11 @@
   "history": {
     "heading": "History",
     "lead": "What happened in the club, year by year."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The address is out of date, or it has a typo.",
+    "home": "Home page"
   },
   "brochure": {
     "students": {
