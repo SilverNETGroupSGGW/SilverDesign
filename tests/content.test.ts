@@ -91,10 +91,10 @@ describe("copy", () => {
       expect(() => CopySchema.parse(data), locale).not.toThrow();
     }
   });
-  test("hero title stays inside two h1 lines at 1024 CSS px", () => {
+  test("hero title stays inside three h1 lines at 1024 CSS px", () => {
     // At 1024 the h1 is 66.5px (--step-4) in an 18ch column, ~719px wide, and Geist renders it at
-    // ~36.7px per character: two lines hold ~39. A third line pushes the lead down onto the hero
-    // band, where --muted falls under 4.5:1 (Home.astro's 42rem hero floor assumes two lines).
+    // ~36.7px per character: three lines hold ~58. A fourth pushes the CTAs down the hero, and the
+    // ribbon's clearance under them is measured, not reserved.
     for (const locale of ["pl", "en"]) {
       const copy = CopySchema.parse(readJson(join(root, "copy", `${locale}.json`)));
       expect(copy.hero.title.length, locale).toBeLessThanOrEqual(38);
