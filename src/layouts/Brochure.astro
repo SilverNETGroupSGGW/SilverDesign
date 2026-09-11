@@ -204,9 +204,8 @@ const ribbonVars = [
     display: grid;
     gap: var(--print-space-1);
   }
-  /* The code reads against the sheet's own ground, so the padding around it is the quiet zone;
-     the caption keeps the same distance below. */
-  /* The caption keeps the code's own quiet zone below it, as the plate's padding does elsewhere. */
+  /* The plate's padding is the code's quiet zone on three sides; the caption keeps the same
+     distance below it. */
   .page .code p {
     margin-top: var(--print-space-4);
     font-size: var(--print-step--1);
