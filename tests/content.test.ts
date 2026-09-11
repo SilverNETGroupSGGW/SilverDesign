@@ -34,6 +34,15 @@ describe("projects", () => {
       expect(() => ProjectSchema.parse(data), file).not.toThrow();
     }
   });
+  test("every screenshot resolves to a file under brand/screenshots", () => {
+    const shots = new Set(readdirSync(join(import.meta.dir, "..", "brand", "screenshots")));
+    for (const [file, data] of listJson("projects")) {
+      const p = ProjectSchema.parse(data);
+      if (p.screenshot) {
+        expect(shots.has(p.screenshot), `${file}: ${p.screenshot}`).toBe(true);
+      }
+    }
+  });
   test("store projects link to at least one store", () => {
     for (const [file, data] of listJson("projects")) {
       const p = ProjectSchema.parse(data);

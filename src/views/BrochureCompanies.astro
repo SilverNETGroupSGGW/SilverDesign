@@ -31,7 +31,7 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     </section>
     <section>
       <h2>{b.builtHeading}</h2>
-      <ul class="built">
+      <ul class="built" role="list">
         {projects.map((p) => (
           <li>
             <strong>{p.data.name}</strong>

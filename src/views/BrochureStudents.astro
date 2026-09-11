@@ -29,7 +29,7 @@ const apps = (await getCollection("projects"))
   <div class="body">
     <section>
       <h2>{b.stepsHeading}</h2>
-      <ol class="steps">
+      <ol class="steps" role="list">
         {copy.steps.items.map((s, i) => (
           <li>
             <span class="mono muted">0{i + 1}</span>
@@ -41,7 +41,7 @@ const apps = (await getCollection("projects"))
     </section>
     <section>
       <h2>{b.appsHeading}</h2>
-      <ul class="apps">
+      <ul class="apps" role="list">
         {apps.map((p) => (
           <li>
             <strong>{p.data.name}</strong>

@@ -8,7 +8,7 @@ const { steps } = Astro.props;
 ---
 <section class="steps container" aria-labelledby="steps-heading">
   <h2 id="steps-heading">{steps.heading}</h2>
-  <ol>
+  <ol role="list">
     {steps.items.map((s, i) => (
       <li>
         <span class="n mono">0{i + 1}</span>

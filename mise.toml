@@ -9,10 +9,14 @@ run = "bun run check"
 run = "bun run lint"
 [tasks.fmt]
 run = "bun run fmt"
+[tasks."fmt:check"]
+run = "bun run fmt:check"
 [tasks.test]
 run = "bun test"
 [tasks.build]
 run = "bun run build"
+[tasks.preview]
+run = "bun run preview"
 [tasks."logo:export"]
 run = "bun run logo:export"
 [tasks.brochure]

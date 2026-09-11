@@ -6,14 +6,15 @@ on:
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v7
       - uses: jdx/mise-action@v4
@@ -29,6 +30,7 @@ jobs:
         with:
           name: brochures
           path: dist/brochure
+          if-no-files-found: error
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
@@ -37,6 +39,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

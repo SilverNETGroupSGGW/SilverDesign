@@ -14,7 +14,7 @@ const sorted = entries.toSorted(
 const label = (d: CollectionEntry<"history">["data"]) =>
   "year" in d ? String(d.year) : `${d.yearFrom}–${d.yearTo}`;
 ---
-<ol class="timeline">
+<ol class="timeline" role="list">
   {sorted.map((e) => (
     <li>
       <span class="year mono">{label(e.data)}</span>

@@ -39,7 +39,7 @@ const page = await browser.newPage({
 
 let failed = false;
 for (const job of jobs) {
-  await page.goto(`http://localhost:${server.port}${job.path}`, { waitUntil: "networkidle" });
+  await page.goto(`http://127.0.0.1:${server.port}${job.path}`, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   const metrics = await page.evaluate(() => {
     const el = document.querySelector(".page")!;
