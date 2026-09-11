@@ -38,7 +38,14 @@ const site = (await getEntry("site", "site"))!.data;
   .footer {
     margin-top: var(--space-7);
     padding-block: var(--space-6);
-    border-top: 1px solid var(--line);
+    background: var(--surface);
+    clip-path: polygon(
+      0 calc(var(--cut) * tan(var(--angle))),
+      var(--cut) 0,
+      100% 0,
+      100% 100%,
+      0 100%
+    );
   }
   .grid {
     display: grid;

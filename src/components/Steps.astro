@@ -7,7 +7,7 @@ interface Props {
 const { steps } = Astro.props;
 ---
 <section class="steps container" aria-labelledby="steps-heading">
-  <h2 id="steps-heading">{steps.heading}</h2>
+  <h2 class="angled" id="steps-heading">{steps.heading}</h2>
   <ol role="list">
     {steps.items.map((s, i) => (
       <li>
@@ -41,12 +41,13 @@ const { steps } = Astro.props;
     padding: var(--space-4);
     background: var(--surface);
     border: 1px solid var(--line);
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem * tan(var(--angle))), calc(100% - 1.25rem) 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
     display: grid;
     gap: var(--space-2);
   }
   .n {
     color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
   h3 {
     font-size: var(--step-1);

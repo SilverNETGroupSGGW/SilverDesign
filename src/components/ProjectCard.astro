@@ -87,9 +87,17 @@ const shotQuality = 65;
 <style>
   .card {
     display: grid;
+    align-content: start;
     background: var(--surface);
     border: 1px solid var(--line);
     overflow: hidden;
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--cut) * tan(var(--angle))),
+      calc(100% - var(--cut)) 100%,
+      0 100%
+    );
   }
   .shot {
     width: 100%;

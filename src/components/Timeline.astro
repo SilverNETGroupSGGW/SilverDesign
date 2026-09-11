@@ -43,12 +43,32 @@ const label = (d: CollectionEntry<"history">["data"]) =>
   .year {
     color: var(--muted);
     padding-top: 0.35em;
+    font-variant-numeric: tabular-nums;
   }
   div {
+    position: relative;
     display: grid;
     gap: var(--space-2);
     padding-bottom: var(--space-5);
-    border-bottom: 1px solid var(--line);
+  }
+  /* The divider carries the corner cut the cards carry: it lifts at --angle over its last --cut. */
+  div::before,
+  div::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    block-size: 1px;
+    background: var(--line);
+  }
+  div::before {
+    left: 0;
+    right: var(--cut);
+  }
+  div::after {
+    left: calc(100% - var(--cut));
+    inline-size: calc(var(--cut) / cos(var(--angle)));
+    transform-origin: 0 100%;
+    transform: rotate(calc(-1 * var(--angle)));
   }
   h2 {
     font-size: var(--step-1);
