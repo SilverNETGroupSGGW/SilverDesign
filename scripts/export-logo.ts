@@ -36,12 +36,41 @@ const result = await page.evaluate(() => {
     angleDeg: Number(angleDeg.toFixed(2)),
   };
 });
-await browser.close();
-
 writeFileSync(join(out, "mark.svg"), result.withBg);
 writeFileSync(join(out, "mark-transparent.svg"), result.transparent);
 writeFileSync(
   join(out, "geometry.json"),
   JSON.stringify({ angleDeg: result.angleDeg }, null, 2) + "\n",
 );
-console.log(`exported mark.svg, mark-transparent.svg, angle ${result.angleDeg}°`);
+
+const og = await browser.newPage({ viewport: { width: 1200, height: 630 } });
+// A page built with setContent has an opaque origin, so a file:// @font-face URL is refused and
+// the wordmark would silently fall back to the platform sans.
+const geist = await Bun.file(join(root, "public", "fonts", "Geist-Variable.woff2")).bytes();
+await og.setContent(`<!doctype html>
+<style>
+  @font-face {
+    font-family: "Geist";
+    src: url("data:font/woff2;base64,${Buffer.from(geist).toString("base64")}") format("woff2");
+    font-weight: 100 900;
+  }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: #16161b;
+    color: #d8dbde;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 56px;
+    font-family: "Geist", sans-serif;
+  }
+  svg { width: 380px; height: 380px; }
+  p { margin: 0; font-size: 104px; font-weight: 600; letter-spacing: -0.02em; }
+</style>
+${result.transparent}
+<p>Silver</p>`);
+await og.evaluate(() => document.fonts.ready);
+await og.screenshot({ path: join(root, "public", "og.png") });
+await browser.close();
+
+console.log(`exported mark.svg, mark-transparent.svg, og.png, angle ${result.angleDeg}°`);

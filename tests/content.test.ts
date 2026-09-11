@@ -43,6 +43,17 @@ describe("projects", () => {
       }
     }
   });
+  test("ProjectCard imports exactly the declared screenshots", () => {
+    const card = readFileSync(
+      join(import.meta.dir, "..", "src", "components", "ProjectCard.astro"),
+      "utf8",
+    );
+    const list = /brand\/screenshots\/\{([^}]+)\}/.exec(card)?.[1];
+    const declared = listJson("projects")
+      .map(([, data]) => ProjectSchema.parse(data).screenshot)
+      .filter((s): s is string => Boolean(s));
+    expect(list?.split(",").toSorted()).toEqual(declared.toSorted());
+  });
   test("store projects link to at least one store", () => {
     for (const [file, data] of listJson("projects")) {
       const p = ProjectSchema.parse(data);

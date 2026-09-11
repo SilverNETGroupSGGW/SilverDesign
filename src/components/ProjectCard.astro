@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import { getEntry } from "astro:content";
-import type { Locale } from "../lib/i18n";
+import { fill, type Locale } from "../lib/i18n";
 import type { Project } from "../lib/schemas";
 
 interface Props {
@@ -24,7 +24,12 @@ const {
 const p = project.data;
 const copy = (await getEntry("copy", locale))!.data;
 
-const screenshots = import.meta.glob<{ default: ImageMetadata }>("../../brand/screenshots/*.{png,jpg}");
+// Listed file by file rather than globbed: every match is emitted into the build whether a project
+// declares it or not, and the masters in that directory are three times the weight of the crops.
+// tests/content.test.ts keeps this list and the declared screenshots in step.
+const screenshots = import.meta.glob<{ default: ImageMetadata }>(
+  "../../brand/screenshots/{kampus-sggw-map-crop.jpg,plan-wzim-day-crop.png}",
+);
 const shot =
   withScreenshot && p.screenshot
     ? (await screenshots[`../../brand/screenshots/${p.screenshot}`]?.())?.default
@@ -52,8 +57,10 @@ const shotQuality = 65;
   {shot && (
     <Image
       src={shot}
-      alt=""
-      width={480}
+      alt={fill(copy.projects.shotAlt, { name: p.name })}
+      width={420}
+      widths={[420, 840]}
+      sizes="(min-width: 60rem) 420px, (min-width: 34rem) 50vw, 100vw"
       class="shot"
       quality={shotQuality}
       loading={eagerScreenshot ? "eager" : "lazy"}
@@ -121,5 +128,8 @@ const shotQuality = 65;
     display: flex;
     gap: var(--space-3);
     flex-wrap: wrap;
+  }
+  .links a {
+    padding-block: 0.45rem;
   }
 </style>
