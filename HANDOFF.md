@@ -1,14 +1,48 @@
 # Handoff — Silver site and brochures
 
-Stan na 2026-09-11 (wieczór), branch `site` (merge-base z `main`: `acdacd2`). Ten plik jest po to, żeby świeża sesja mogła wznowić pracę bez zgadywania.
+Stan na 2026-09-11 (późny wieczór), branch `site` (merge-base z `main`: `acdacd2`). Ten plik jest po to, żeby świeża sesja mogła wznowić pracę bez zgadywania.
 
 ## Gdzie jesteśmy
 
 - **Spec (autorytet):** `docs/superpowers/specs/2026-09-11-silver-site-and-brochure-design.md`
 - **Plan (14 zadań):** `docs/superpowers/plans/2026-09-11-silver-site-and-brochure.md`
-- **Zrobione:** wszystkie 14 zadań + końcowy review całej gałęzi + jedna fala poprawek po nim. Każde zadanie przeszło review (spec + jakość); Important-y naprawione w rundach poprawek, minory odłożone (lista poniżej).
-- **Bramki (na `e1256fd`):** `oxlint` 0 ostrzeżeń, `oxfmt --check` czysto, `astro check` 0/0/0, `bun test` 18/18, `astro build` 11 stron, `bun run brochure` 4× 2480×3508, Lighthouse (zadanie 14) Performance 96–99 / Accessibility 100 na 6 stronach.
+- **Zrobione:** wszystkie 14 zadań + końcowy review całej gałęzi + fala poprawek; potem Impeccable audit/critique i trzy partie poprawek (sekcja niżej). Każde zadanie przeszło review (spec + jakość); Important-y naprawione w rundach poprawek, minory odłożone (lista poniżej).
+- **Bramki (na `0349710`):** `oxlint` 0 ostrzeżeń, `oxfmt --check` czysto, `astro check` 0/0/0, `bun test` 20/20, `astro build` 12 stron, `bun run brochure` 4× 2480×3508, Lighthouse mobile 97–100 / 100, detektor Impeccable `[]`.
 - **Nie zrobione:** push, PR, włączenie Pages. Gałąź `site` czeka na decyzję o integracji.
+
+## Impeccable — audit, critique i trzy partie poprawek (2026-09-11, po południu)
+
+Po zamknięciu planu odpalono `impeccable audit` (14/20) i `impeccable critique` (19/32) w osobnych subagentach; raporty w historii sesji. Właściciel: „napraw wszystko, mocniej, w granicach §8, kopia otwarta w ramach §2". Trzy partie (jeden implementer naraz, review + scoped re-review każdej):
+
+1. **harden/optimize** (`fc02f0b`…`500b3c3`): reflow przy 200 % zoomu; `public/brand/foil-texture.jpg` i cropy zrzutów jako **pochodne** generowane przez `bun run assets:derive` (`scripts/derive-assets.ts`; mastery w `brand/` nietknięte); ścieżka logo emitowana raz na dokument (`MarkDefs.astro` + `<use>`); filtr projektów z live region, nazwą grupy i stanem w URL (`?filtr=` / `?filter=`); glob zrzutów zawężony; fonty **subsetowane** do latin + latin-ext (`subset-font`, 141→80 KB); strona 404 (dwujęzyczna); OG/Twitter meta + `public/og.png` z `export-logo.ts`; `--line-interactive` (3.5:1) na kontrolkach; cele dotyku ≥ 32 px; `plan-wzim-day-crop.png` bez nazwiska.
+2. **mocniej + konwersja** (`60b7f64`…`828f84a`): hero = pas folii (dwie strefy, kąt dokładny z konstrukcji `height = width × tan`, CTA na 466 px przy 1440×900); kąt jako marker `h2`, cięcie kart/przycisku/stopki/pigułek filtra; `JoinStrip` na `/projekty` i `/historia`; siatka 2×2; powierzchnie przeglądarki (selection, caret, scrollbar); test ogranicza długość `hero.title` (38 znaków) jako strażnik podłogi `42rem` hero.
+3. **broszury** (`89b1787`…`0349710`): pas jako grunt dolnej połowy, QR na płycie `--bg` (strefa ciszy 40 px, moduły na całych pikselach: studenci 250/25, firmy 203/29), wordmark „Silver", skala druku w `Brochure.astro`, wspólny `.cut` w `base.css` zamiast dziewięciu kopii wielokąta.
+
+Lighthouse mobile na końcu: `/pl/` 97/100, `/en/` 98/100, `/pl/projekty/` 98/100, `/pl/historia/` 100/100. Detektor: `[]` (Geist/Geist Mono wpisane jako wyjątek w `.impeccable/config.json` z powołaniem na §8).
+
+### Rulingi z tej fazy (do cofnięcia, jeśli złe)
+
+| Ruling | Dlaczego | Koszt, jeśli złe |
+|---|---|---|
+| Pochodne assety (tekstura q85, cropy, subsety fontów, favicon, og.png) generowane skryptem, mastery nietknięte | odtwarzalność; właściciel marki nie traci źródeł | skrypt + commit wyników |
+| `plan-wzim-day.png` przycięty nad linią z nazwiskiem; `plan-wzim-list.png` nieużywany (dwa nazwiska) | §2.7 / prywatność | inny zrzut |
+| Ghost button zachowuje ramkę `--ink` (nie `--line-interactive`) | nowy token = regres kontrastu | jedna linia |
+| Stopka: cięcie o biegu 6rem + linia `--line` po skosie zamiast pełnej diagonali | pełna diagonala 26,17° na 1440 px = 707 px wysokości | kilka linii CSS |
+| Pigułki filtra kwadratowe; wciśnięta z cięciem jak przycisk | jedyne zaokrąglenie w systemie | jedna reguła |
+| `hero.title` ≤ 38 znaków (test) jako strażnik podłogi `42rem` | jedna linia tytułu więcej kładzie `--muted` na folię | zmiana stałej + testu |
+| `.lead { max-width: 60ch }` | lead na `/projekty` miał 93 znaki w linii | jedna linia |
+| Nagłówki `h2` broszur przecinają pas (atrament na folii ≥ 4,77:1) zamiast siedzieć na płycie | kontrakt kierunku dawał podłogę 4,5:1; reviewer uznał to za lepszy ruch | płyta pod h2 |
+| Pas w broszurze firm 40 px niżej niż u studentów (`--band-left: 1140`) | marker h2 „razem" kolidował z krawędzią pasa | jedna wartość |
+| Wyniki projektów z orga (zdania) w Geist, tylko liczby pobrań w Mono | §8 | warunek w widoku |
+| Adres na arkuszach EN zostaje w formie lokalnej („ul.", „budynek") | adres pocztowy | `LocalizedString` w `site.json` |
+
+### Otwarte dla właściciela
+
+- QR jasne-na-ciemnym: jeden fizyczny skan przed drukiem (niektóre skanery laserowe odmawiają inwersji); realny zasięg ~40 cm przy 34–42 mm.
+- Adres EN mieszany językowo (patrz ruling).
+- Podłoga `42rem` hero jest empiryczna; `hero.lead` nie ma strażnika (68–124 px marginesu).
+- `--cut` skaluje się per element z konwencji, nie z mechanizmu.
+- 39 % wierzchołków ścieżki logo poza viewBox — do poprawki w eksporterze, nie w renderze.
 
 ## Do decyzji właściciela (przed deployem)
 
