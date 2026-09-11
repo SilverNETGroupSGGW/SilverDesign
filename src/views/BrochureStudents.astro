@@ -34,7 +34,7 @@ const apps = (await getCollection("projects"))
       <h2 class="angled">{b.stepsHeading}</h2>
       <ol class="steps" role="list">
         {copy.steps.items.map((s, i) => (
-          <li>
+          <li class="cut">
             <span class="n mono muted">0{i + 1}</span>
             <strong>{s.title}</strong>
             <span class="muted">{s.body}</span>
@@ -46,7 +46,7 @@ const apps = (await getCollection("projects"))
       <h2 class="angled">{b.appsHeading}</h2>
       <ul class="apps" role="list">
         {apps.map((p) => (
-          <li>
+          <li class="cut">
             <strong>{p.data.name}</strong>
             <span class="muted">{p.data.summary[locale]}</span>
             <span class="mono">{p.data.result[locale]}</span>
@@ -56,7 +56,7 @@ const apps = (await getCollection("projects"))
     </section>
   </div>
 
-  <footer class="bottom">
+  <footer class="bottom cut">
     <div class="ask">
       <p class="threshold">{b.threshold}</p>
       <div class="lines">
@@ -89,7 +89,6 @@ const apps = (await getCollection("projects"))
     padding: var(--print-space-3);
     background: var(--surface);
     border: 1px solid var(--line);
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
   }
   .steps {
     grid-template-columns: repeat(3, 1fr);

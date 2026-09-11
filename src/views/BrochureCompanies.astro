@@ -36,9 +36,9 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
       <h2 class="angled">{b.builtHeading}</h2>
       <ul class="built" role="list">
         {projects.map((p) => (
-          <li>
+          <li class="cut">
             <strong>{p.data.name}</strong>
-            <span class="mono">{p.data.result[locale]}</span>
+            <span class:list={[p.data.status === "store" && "mono"]}>{p.data.result[locale]}</span>
             {p.data.status === "store" && <span class="tech muted">{p.data.tech.join(" · ")}</span>}
           </li>
         ))}
@@ -47,12 +47,12 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     <section>
       <h2 class="angled">{b.togetherHeading}</h2>
       <ol class="together">
-        {b.together.map((t) => <li>{t}</li>)}
+        {b.together.map((t) => <li class="cut">{t}</li>)}
       </ol>
     </section>
   </div>
 
-  <footer class="bottom">
+  <footer class="bottom cut">
     <div class="ask">
       <div>
         <h2 class="angled">{b.contactHeading}</h2>
@@ -65,15 +65,20 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
       </div>
     </div>
     <div class="qr">
-      <Qr value={`mailto:${site.email}`} size={200} />
+      <Qr value={`mailto:${site.email}`} size={203} />
       <p>{b.qrLabel}</p>
     </div>
   </footer>
 </Brochure>
 
 <style>
-  /* Four shipped things in one row: the two in the stores carry their stack, the two in the org
-     carry what they are. */
+  /* This sheet's third heading marker runs parallel to the band's own edge; 40px further down
+     keeps the two diagonals from reading as one device. */
+  .band {
+    --band-left: 1140px;
+  }
+  /* Four shipped things in one row: the two in the stores carry their stack and a measured result
+     (§8 mono), the two in the org carry a sentence about what they are (§8 Geist). */
   .built {
     list-style: none;
     margin: 0;
@@ -89,7 +94,6 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     padding: var(--print-space-3);
     background: var(--surface);
     border: 1px solid var(--line);
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
   }
   strong {
     font-size: var(--print-step-1);
@@ -108,15 +112,14 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     grid-template-columns: repeat(3, 1fr);
     gap: var(--print-space-3);
   }
-  /* The band is the ground down here, so every offer sits on its own plate rather than on foil. */
   .together li {
     padding: var(--print-space-3);
     background: var(--surface);
     border: 1px solid var(--line);
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
   }
   .bottom {
-    --qr-column: 200px;
+    /* 203 / 29 modules = 7.0 px a module, so the code lands on whole pixels at both scales. */
+    --qr-column: 203px;
   }
   .chair {
     font-size: var(--print-step-2);

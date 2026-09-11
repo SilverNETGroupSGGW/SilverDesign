@@ -41,7 +41,9 @@ const { locale, title } = Astro.props;
     --print-space-2: 16px;
     --print-space-3: 24px;
     --print-space-4: 40px;
-    --print-space-5: 36px;
+    /* Not a step in the scale above: the rhythm between the sheet's three bands and between the
+       body's sections. */
+    --print-rhythm: 36px;
     --print-step--1: 19px;
     --print-step-0: 23px;
     --print-step-1: 26px;
@@ -65,7 +67,7 @@ const { locale, title } = Astro.props;
     padding: 96px;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    gap: var(--print-space-5);
+    gap: var(--print-rhythm);
     font-size: var(--print-step-0);
   }
   .page h1 {
@@ -115,7 +117,7 @@ const { locale, title } = Astro.props;
   }
   .page .body {
     display: grid;
-    gap: var(--print-space-5);
+    gap: var(--print-rhythm);
     align-content: space-between;
   }
   /* The lower third is the band, so everything that lands there sits on a plate of the paper's own
@@ -127,13 +129,6 @@ const { locale, title } = Astro.props;
     grid-template-columns: 1fr var(--qr-column, 240px);
     gap: var(--print-space-4);
     align-items: stretch;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - var(--cut) * tan(var(--angle))),
-      calc(100% - var(--cut)) 100%,
-      0 100%
-    );
   }
   .page .ask {
     display: grid;
