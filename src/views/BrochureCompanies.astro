@@ -14,35 +14,38 @@ const site = (await getEntry("site", "site"))!.data;
 const b = copy.brochure.companies;
 const projects = (await getCollection("projects")).toSorted((a, c) => a.data.order - c.data.order);
 ---
-<Brochure locale={locale} title={b.title}>
+<Brochure locale={locale} title={`${site.name} — ${b.title}`}>
   <div class="band" aria-hidden="true"></div>
   <header class="top">
-    <Mark size="180px" />
+    <Mark size="200px" />
     <div>
-      <h1>{b.title}</h1>
+      <h1>
+        <span class="wordmark">{site.name}</span>
+        <span class="tagline">{b.title}</span>
+      </h1>
       <p class="lead muted">{b.lead}</p>
     </div>
   </header>
 
   <div class="body">
     <section>
-      <h2>{b.whoHeading}</h2>
+      <h2 class="angled">{b.whoHeading}</h2>
       <p>{b.who}</p>
     </section>
     <section>
-      <h2>{b.builtHeading}</h2>
+      <h2 class="angled">{b.builtHeading}</h2>
       <ul class="built" role="list">
         {projects.map((p) => (
           <li>
             <strong>{p.data.name}</strong>
             <span class="mono">{p.data.result[locale]}</span>
-            <span class="muted">{p.data.tech.join(" · ")}</span>
+            {p.data.status === "store" && <span class="tech muted">{p.data.tech.join(" · ")}</span>}
           </li>
         ))}
       </ul>
     </section>
     <section>
-      <h2>{b.togetherHeading}</h2>
+      <h2 class="angled">{b.togetherHeading}</h2>
       <ol class="together">
         {b.together.map((t) => <li>{t}</li>)}
       </ol>
@@ -50,47 +53,74 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
   </div>
 
   <footer class="bottom">
-    <div>
-      <h2>{b.contactHeading}</h2>
-      <p>{site.chair}</p>
-      <p class="mono">{site.email}</p>
-      <p class="mono muted">{site.faculty[locale]}, {site.university}</p>
-      <p class="mono muted">{site.address.join(", ")}</p>
+    <div class="ask">
+      <div>
+        <h2 class="angled">{b.contactHeading}</h2>
+        <p class="chair">{site.chair}</p>
+      </div>
+      <div class="lines">
+        <p class="mono">{site.email}</p>
+        <p class="mono muted">{site.faculty[locale]}, {site.university}</p>
+        <p class="mono muted">{site.address.join(", ")}</p>
+      </div>
     </div>
     <div class="qr">
-      <Qr value={`mailto:${site.email}`} size={220} />
-      <p class="muted">{b.qrLabel}</p>
+      <Qr value={`mailto:${site.email}`} size={200} />
+      <p>{b.qrLabel}</p>
     </div>
   </footer>
 </Brochure>
 
 <style>
-  .top {
-    --mark-column: 180px;
-  }
-  .bottom {
-    --qr-column: 220px;
-  }
+  /* Four shipped things in one row: the two in the stores carry their stack, the two in the org
+     carry what they are. */
   .built {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--print-space-2);
   }
   .built li {
     display: grid;
-    gap: 6px;
+    gap: var(--print-space-1);
     align-content: start;
-    padding: 24px;
+    padding: var(--print-space-3);
     background: var(--surface);
     border: 1px solid var(--line);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
   }
+  strong {
+    font-size: var(--print-step-1);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .tech {
+    font-size: var(--print-step--1);
+  }
+  /* Three offers read as three columns, the way the steps do on the students sheet. */
   .together {
     margin: 0;
-    padding-left: 1.2em;
+    padding: 0;
+    list-style: none;
     display: grid;
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--print-space-3);
+  }
+  /* The band is the ground down here, so every offer sits on its own plate rather than on foil. */
+  .together li {
+    padding: var(--print-space-3);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
+  }
+  .bottom {
+    --qr-column: 200px;
+  }
+  .chair {
+    font-size: var(--print-step-2);
+    font-weight: 500;
+    margin-top: var(--print-space-2);
   }
 </style>

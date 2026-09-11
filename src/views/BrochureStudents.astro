@@ -16,23 +16,26 @@ const apps = (await getCollection("projects"))
   .filter((p) => p.data.status === "store")
   .toSorted((a, c) => a.data.order - c.data.order);
 ---
-<Brochure locale={locale} title={b.title}>
+<Brochure locale={locale} title={`${site.name} — ${b.title}`}>
   <div class="band" aria-hidden="true"></div>
   <header class="top">
-    <Mark size="220px" />
+    <Mark size="200px" />
     <div>
-      <h1>{b.title}</h1>
+      <h1>
+        <span class="wordmark">{site.name}</span>
+        <span class="tagline">{b.title}</span>
+      </h1>
       <p class="lead muted">{b.lead}</p>
     </div>
   </header>
 
   <div class="body">
     <section>
-      <h2>{b.stepsHeading}</h2>
+      <h2 class="angled">{b.stepsHeading}</h2>
       <ol class="steps" role="list">
         {copy.steps.items.map((s, i) => (
           <li>
-            <span class="mono muted">0{i + 1}</span>
+            <span class="n mono muted">0{i + 1}</span>
             <strong>{s.title}</strong>
             <span class="muted">{s.body}</span>
           </li>
@@ -40,7 +43,7 @@ const apps = (await getCollection("projects"))
       </ol>
     </section>
     <section>
-      <h2>{b.appsHeading}</h2>
+      <h2 class="angled">{b.appsHeading}</h2>
       <ul class="apps" role="list">
         {apps.map((p) => (
           <li>
@@ -51,45 +54,42 @@ const apps = (await getCollection("projects"))
         ))}
       </ul>
     </section>
-    <p class="threshold">{b.threshold}</p>
   </div>
 
   <footer class="bottom">
-    <div class="contact">
-      <p class="mono">{site.discord.replace("https://", "")}</p>
-      <p class="mono muted">{site.email}</p>
-      <p class="mono muted">{copy.join.room} {site.room}, {site.address[0]}</p>
+    <div class="ask">
+      <p class="threshold">{b.threshold}</p>
+      <div class="lines">
+        <p class="mono">{site.discord.replace("https://", "")}</p>
+        <p class="mono muted">{site.email}</p>
+        <p class="mono muted">{copy.join.room} {site.room}, {site.address[0]}</p>
+      </div>
     </div>
     <div class="qr">
-      <Qr value={site.discord} size={240} />
-      <p class="muted">{b.qrLabel}</p>
+      <Qr value={site.discord} size={250} />
+      <p>{b.qrLabel}</p>
     </div>
   </footer>
 </Brochure>
 
 <style>
-  .top {
-    --mark-column: 220px;
-  }
-  .bottom {
-    --qr-column: 240px;
-  }
   .steps,
   .apps {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 20px;
+    gap: var(--print-space-2);
   }
   .steps li,
   .apps li {
     display: grid;
-    gap: 6px;
+    gap: var(--print-space-1);
     align-content: start;
-    padding: 24px;
+    padding: var(--print-space-3);
     background: var(--surface);
     border: 1px solid var(--line);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut) * tan(var(--angle))), calc(100% - var(--cut)) 100%, 0 100%);
   }
   .steps {
     grid-template-columns: repeat(3, 1fr);
@@ -97,8 +97,20 @@ const apps = (await getCollection("projects"))
   .apps {
     grid-template-columns: repeat(2, 1fr);
   }
+  .n {
+    font-variant-numeric: tabular-nums;
+  }
+  strong {
+    font-size: var(--print-step-1);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .bottom {
+    --qr-column: 250px;
+  }
   .threshold {
-    font-size: 30px;
+    font-size: var(--print-step-3);
     font-weight: 500;
+    max-width: 26ch;
   }
 </style>
