@@ -1,3 +1,17 @@
 {
-  "angleDeg": 26.17
+  "angleDeg": 26.17,
+  "ribbon": {
+    "units": "viewBox user units; the exported viewBox is 300 300 600 600",
+    "direction": [
+      0.897489,
+      -0.441036
+    ],
+    "axis": [
+      546.3156,
+      499.6512
+    ],
+    "start": 184.8355,
+    "width": 136,
+    "offset": 227.4775
+  }
 }
