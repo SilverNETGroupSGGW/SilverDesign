@@ -1,13 +1,13 @@
 # Handoff — Silver site and brochures
 
-Stan na 2026-09-11 (późny wieczór), branch `site` (merge-base z `main`: `acdacd2`). Ten plik jest po to, żeby świeża sesja mogła wznowić pracę bez zgadywania.
+Stan na 2026-09-12 (noc), branch `site` (merge-base z `main`: `acdacd2`). Ten plik jest po to, żeby świeża sesja mogła wznowić pracę bez zgadywania.
 
 ## Gdzie jesteśmy
 
 - **Spec (autorytet):** `docs/superpowers/specs/2026-09-11-silver-site-and-brochure-design.md`
 - **Plan (14 zadań):** `docs/superpowers/plans/2026-09-11-silver-site-and-brochure.md`
-- **Zrobione:** wszystkie 14 zadań + końcowy review całej gałęzi + fala poprawek; potem Impeccable audit/critique i trzy partie poprawek (sekcja niżej). Każde zadanie przeszło review (spec + jakość); Important-y naprawione w rundach poprawek, minory odłożone (lista poniżej).
-- **Bramki (na `0349710`):** `oxlint` 0 ostrzeżeń, `oxfmt --check` czysto, `astro check` 0/0/0, `bun test` 20/20, `astro build` 12 stron, `bun run brochure` 4× 2480×3508, Lighthouse mobile 97–100 / 100, detektor Impeccable `[]`.
+- **Zrobione:** wszystkie 14 zadań + końcowy review całej gałęzi + fala poprawek; potem Impeccable audit/critique i trzy partie poprawek, potem faza „wstęga” (S na pasie przez całą stronę) — sekcje niżej. Każde zadanie przeszło review (spec + jakość); Important-y naprawione w rundach poprawek, minory odłożone (lista poniżej).
+- **Bramki (na `e81e954`):** `oxlint` 0 ostrzeżeń, `oxfmt --check` czysto, `astro check` 0/0/0, `bun test` 24/24, `astro build` 12 stron, `bun run brochure` 4× 2480×3508 (+ assert bloków), Lighthouse mobile `/pl/` 97/100, detektor Impeccable `[]`.
 - **Nie zrobione:** push, PR, włączenie Pages. Gałąź `site` czeka na decyzję o integracji.
 
 ## Impeccable — audit, critique i trzy partie poprawek (2026-09-11, po południu)
@@ -43,6 +43,20 @@ Lighthouse mobile na końcu: `/pl/` 97/100, `/en/` 98/100, `/pl/projekty/` 98/10
 - Podłoga `42rem` hero jest empiryczna; `hero.lead` nie ma strażnika (68–124 px marginesu).
 - `--cut` skaluje się per element z konwencji, nie z mechanizmu.
 - 39 % wierzchołków ścieżki logo poza viewBox — do poprawki w eksporterze, nie w renderze.
+
+## Wstęga — S na pasie przez całą stronę (2026-09-11, noc)
+
+Decyzja właściciela: pas z S ma przechodzić przez całą stronę i broszurę. Wybrany układ: **jedna wstęga o stałej grubości** pod kątem 26,17°, na hero strony głównej i obu arkuszach; §8 bez zmian (folia tylko w znaku — wstęga jest częścią SVG znaku — i jednym elemencie hero).
+
+**Mechanizm:** `scripts/export-logo.ts` zapisuje do `brand/logo/geometry.json` oś ramion pasa z konfiguratora (`bandAxis`), szerokość ramienia (136 j.) i offset ramion; `Mark.astro` z propem `ribbon` rysuje wielokąt wstęgi **w tej samej przestrzeni użytkownika SVG**, tym samym `<pattern>`, przed `<use>`; `overflow: visible` na SVG, hero/arkusz obcinają. Folia ciągła bez szwu; skrypt kursora przesuwa wstęgę i S razem (jedna interakcja).
+
+**Odkrycie:** ramiona S **nie są współliniowe** (offset 227,5 j. = 38 % znaku). Prosta wstęga albo połyka S (0,6 × znak), albo zostawia garby ramion. Wstęga jest więc **z uskokiem przy S**, grubość = szerokość ramienia (0,227 × znak); spoiny sprawdzone przy 4× — bezszwowe. Test `tests/geometry.test.ts` pilnuje kształtu `geometry.json` i offsetu.
+
+**Hero:** znak ≈ `clamp(20rem, 32cqw, 30rem)` → wstęga 104 px przy 1440, 122 px przy 1920; `min-block-size: max(48rem, 100svh)`, więc wstęga zawsze wychodzi z ekranu przez realną krawędź; tekst i CTA w wolnym trójkącie (prześwit ≥ 36 px), `.ctas` na 555 px przy 1440×900; h1 w trzech liniach (zaakceptowane).
+
+**Broszury:** nagłówek (wordmark + tytuł + lead), rząd 1 na całą szerokość (kroki / kim jesteśmy), rząd 2 na lewych ~60 % (aplikacje / co zbudowaliśmy), wstęga przez dolną połowę z S po prawej, płyta z QR w prawym dolnym rogu (lewy dolny róg to wyjście wstęgi). QR dopasowane do pełnych modułów w `Qr.astro` (zaokrąglanie w dół do wielokrotności modułu; studenci 175 = 25×7, firmy 174 = 29×6), strefa ciszy ≥ 40 px. Renderer sprawdza dodatkowo, czy żaden blok obcinający (płyta, karty) nie ucina treści. Skala druku o stopień mniejsza (treść karty 18 px = 3,05 mm), QR 29,5 mm — jeden fizyczny skan przed drukiem.
+
+**Rulingi:** uskok zamiast prostej wstęgi; znak w hero powiększony, by wstęga czytała się jako pas; układ arkuszy w rzędach zamiast „schodków" (rozsypywały kompozycję); płyta w prawym dolnym rogu; mono dla `result` tylko gdy zaczyna się cyfrą (pomiar) — `isMeasurement` w `schemas.ts`, wspólne dla strony i arkuszy; numeracja kroków 01/02/03 także na arkuszu (sekwencja niesie informację); pusta przestrzeń po lewej między rzędem 2 a wstęgą przyjęta jako negatyw diagonali.
 
 ## Do decyzji właściciela (przed deployem)
 
