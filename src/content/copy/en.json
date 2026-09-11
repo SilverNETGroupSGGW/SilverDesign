@@ -87,14 +87,14 @@
   "brochure": {
     "students": {
       "title": "The computer science club at SGGW",
-      "lead": "We write the apps the campus uses — and learn more from them than from classes.",
+      "lead": "At Silver we write the apps the campus uses — and learn more from them than from classes.",
       "stepsHeading": "How it works",
       "appsHeading": "Our apps in the stores",
       "threshold": "You don't need to know how to code yet. Wanting to build something is enough.",
       "qrLabel": "Scan to join our Discord"
     },
     "companies": {
-      "title": "Silver — SGGW computer science student club",
+      "title": "SGGW computer science student club",
       "lead": "A seven-person student team that ships apps to the stores.",
       "whoHeading": "Who we are",
       "who": "The Silver .NET computer science student club at the Faculty of Applied Informatics and Mathematics, SGGW. We build mobile and web apps — for the campus and for ourselves.",
