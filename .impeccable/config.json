@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "geist",
+        "createdAt": "2026-09-11T08:03:11.385Z",
+        "reason": "spec §8 (docs/superpowers/specs/2026-09-11-silver-site-and-brochure-design.md) pins Geist as the only typeface; owner-authored spec"
+      },
+      {
+        "rule": "overused-font",
+        "value": "geist mono",
+        "createdAt": "2026-09-11T08:03:11.392Z",
+        "reason": "spec §8 pins Geist Mono for identifiers/addresses; owner-authored spec"
+      }
+    ]
+  }
+}
