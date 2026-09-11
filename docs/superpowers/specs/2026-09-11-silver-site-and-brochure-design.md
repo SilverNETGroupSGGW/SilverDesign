@@ -54,8 +54,10 @@ robić_, _czy dam radę_, _kiedy, gdzie i jak dołączyć_. Nic ponad to.
 | Facebook       | `https://www.facebook.com/silvernetgroupsggw` (tylko stopka)                                                  |
 | Aplikacja      | Kampus SGGW — Android (`com.silvers.kampus_sggw_remake`) i iOS (`id1586959639`), 1 tys.+ pobrań w Google Play |
 | Aplikacja | Plan WZIM — Android (`com.silvernet.silvertimetable`) i iOS (`id1384573148`), 1 tys.+ pobrań w Google Play |
-| Aplikacja | Dni SGGW (`sggw_days`) — Flutter + Firebase, ukończona; aplikacja na wydarzenie Dni SGGW 2026, ponad 80 pobrań w dwa dni od premiery |
+| Aplikacja | Dni SGGW (`sggw_days`) — Flutter + Firebase, ukończona; aplikacja na wydarzenie Dni SGGW 2026, ponad 80 pobrań w dwa dni. Na czas wydarzenia była w Google Play, App Store i w przeglądarce; dziś tylko repo w orgu |
 | Projekt        | Charmander — proxy do powiadomień push, FastAPI i .NET Minimal API, repo w orgu                               |
+| Hackathon | HackArena 3.0 (SGGW, 28–29.03.2026, 33 drużyny, boty do gry wyścigowej): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej |
+| Zrzuty ekranu | `brand/screenshots/` — Plan WZIM (2) i Kampus SGGW (2), ze starej prezentacji koła |
 | Stack          | dobierany pod projekt; w orgu: Dart/Flutter, C#/.NET, Python, TypeScript                                      |
 
 ### 3.1 Źródła wpisów historycznych
@@ -68,7 +70,8 @@ robić_, _czy dam radę_, _kiedy, gdzie i jak dołączyć_. Nic ponad to.
 - GitHub org `SilverNETGroupSGGW`: daty utworzenia i ostatnich pushy repo.
 - Google Play / App Store: daty ostatnich aktualizacji aplikacji.
 
-Każdy wpis w `history/*.json` ma pole `source` z adresem, z którego pochodzi.
+Źródła zostają w tym dokumencie. Na stronie nie ma linków do archiwów,
+Wayback Machine ani do dawnych adresów — oś czasu i nic więcej.
 
 ## 4. Struktura strony
 
@@ -80,9 +83,12 @@ Jedna strona główna plus dwie podstrony, wszystkie w PL i EN.
    „Dołącz na Discordzie" i link „Zobacz projekty".
 2. **Jak to działa** — trzy kroki: wchodzisz na Discorda → dołączasz do
    projektu albo zgłaszasz swój → robimy go w małym zespole przez semestr,
-   co jakiś czas spotykając się w 3/79.
+   co jakiś czas spotykając się w 3/79. Pod krokami jedna linijka o
+   hackathonach z bieżącym wynikiem (HackArena 3.0, marzec 2026: 4. miejsce
+   w finale).
 3. **Projekty** — cztery karty (Kampus SGGW, Plan WZIM, Dni SGGW,
-   Charmander) z linkami do sklepów i GitHuba. Karty w sklepach pierwsze,
+   Charmander) z linkami do sklepów i GitHuba; Kampus SGGW i Plan WZIM z
+   prawdziwym zrzutem ekranu z `brand/screenshots/`. Karty w sklepach pierwsze,
    każda z jednym twardym wynikiem (pobrania, platformy) zamiast opisu.
 4. **Technologia** — jeden akapit (zasada §2.4) i lista tego, co realnie
    jest w orgu.
@@ -107,13 +113,14 @@ w §3.1):
 | 2013 | Start koła przy WZIM SGGW. Warsztaty z Construct 2 i podstaw C# dla grupy Junior Silver .NET. |
 | 2013 | IT Academic Day — dzień konferencji Dni Nowych Technologii na SGGW zorganizowany przez koło (Aula Kryształowa). |
 | 2014 | 1. miejsce na Teslathonie (36 h) — system wyborczy na wybory parlamentarne. 3. miejsce wśród ~100 drużyn .NET z Polski na Nocy Żywych Deweloperów (24 h, dziewięć aplikacji). W jury Predica, Microsoft, Vizao. |
-| 2014–2015 | Warsztaty: Windows Phone 8.1, Unity3D, Akademia C#. Pierwsza aplikacja Kampus SGGW. |
+| 2014–2015 | Warsztaty: Windows Phone 8.1, Unity3D, Akademia C#. Pierwsza wersja aplikacji Kampus SGGW (kwiecień 2015). |
 | 2015 | Organizacja koła na GitHubie. Portal dla kół naukowych „Wokół", aplikacja Giełda Pomysłów. |
 | 2016–2018 | Warsztaty: programowanie obiektowe, C#/.NET, Android, Unity, ASP.NET MVC, zaawansowany C#, SFML. |
-| 2019 | Aplikacja Plan WZIM. Warsztaty Unity i Flutter zakończone projektami; gra platformowa STEAMY. |
+| 2018 | Aplikacja Plan WZIM — plan zajęć WZIM w telefonie, powiadomienia o zmianach, widok dla prowadzących. |
+| 2019 | Warsztaty Unity i Flutter zakończone projektami; gra platformowa STEAMY (2D, siedmioosobowy zespół, własna grafika i muzyka). Od tego roku Flutter jest w kole na stałe. |
 | 2021–2022 | Warsztaty z Gita i GitHuba (repozytoria w orgu). Kampus SGGW od nowa, we Flutterze, w Google Play i App Store. |
 | 2023 | Plan WZIM — ostatnia duża aktualizacja. |
-| 2026 | Aplikacja Dni SGGW — ponad 80 pobrań w dwa dni wydarzenia. Charmander, proxy do powiadomień push. |
+| 2026 | HackArena 3.0 (marzec): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej wśród 33 drużyn. Aplikacja Dni SGGW — ponad 80 pobrań w dwa dni wydarzenia. Charmander, proxy do powiadomień push. |
 
 Oś kończy się bieżącym rokiem; nie ma wpisu „przerwa" ani „powrót" — luka
 między latami mówi sama za siebie, czytelnik nie potrzebuje komentarza.
@@ -158,7 +165,7 @@ kolekcje Astro:
   `summary.pl`, `summary.en`.
 - `site.json` — nazwa, adres, sala, Discord, mail, GitHub, Facebook, rok.
 - `history/*.json` — `year` (albo `yearFrom`/`yearTo`), `title.pl/en`,
-  `body.pl/en`, `links[]`, `source` (adres źródła, wymagany).
+  `body.pl/en`. Bez linków: oś czasu nie prowadzi nigdzie.
 
 Broszury czytają te same pliki. Zmiana faktu w jednym miejscu zmienia
 stronę i cztery PNG-i.
@@ -250,7 +257,7 @@ i `brand/` zostają, gdzie są.
   - oba pliki `copy` przechodzą ten sam schemat;
   - każdy projekt ze `status: "store"` ma co najmniej jeden link do sklepu;
   - `site.json` ma wszystkie pola z §3;
-  - każdy wpis `history` ma `source` i rok w zakresie 2013–bieżący.
+  - każdy wpis `history` ma rok w zakresie 2013–bieżący.
 - `bun run brochure` — cztery PNG-i, każdy dokładnie 2480 × 3508, brak
   przewijania.
 - Lighthouse na `/`: Performance ≥ 95, Accessibility ≥ 95, każda strona w
