@@ -16,7 +16,7 @@ const apps = (await getCollection("projects"))
   .filter((p) => p.data.status === "store")
   .toSorted((a, c) => a.data.order - c.data.order);
 ---
-<Brochure locale={locale} title={`${site.name} — ${b.title}`} markTop="478px">
+<Brochure locale={locale} title={`${site.name} — ${b.title}`} markTop="748px">
   <div class="markwrap"><Mark size="var(--mark-size)" ribbon /></div>
 
   <header class="block masthead" style="--left:96px;--w:1048px">
@@ -27,28 +27,32 @@ const apps = (await getCollection("projects"))
     <p class="lead muted">{b.lead}</p>
   </header>
 
-  <h2 class="block over angled" style="--left:96px;--w:228px;--lift:414px">{b.stepsHeading}</h2>
-  <ol class="block over stair" style="--left:96px;--w:724px;--anchor:324px;--n:3;--card-h:390px">
-    {copy.steps.items.map((s, i) => (
-      <li class="card cut" style={`--i:${i}`}>
-        <strong>{s.title}</strong>
-        <span class="muted">{s.body}</span>
-      </li>
-    ))}
-  </ol>
+  <section class="block row" style="--left:96px;--w:1048px;--top:300px">
+    <h2 class="angled">{b.stepsHeading}</h2>
+    <ol class="cards" style="--cols:3">
+      {copy.steps.items.map((s) => (
+        <li class="card cut">
+          <strong>{s.title}</strong>
+          <span class="muted">{s.body}</span>
+        </li>
+      ))}
+    </ol>
+  </section>
 
-  <ul class="block under stair" style="--left:520px;--w:548px;--n:2;--card-h:340px">
-    {apps.map((p, i) => (
-      <li class="card cut" style={`--i:${i}`}>
-        <strong>{p.data.name}</strong>
-        <span class="muted">{p.data.summary[locale]}</span>
-        <span class="mono">{p.data.result[locale]}</span>
-      </li>
-    ))}
-  </ul>
-  <h2 class="block under angled" style="--left:96px;--w:400px">{b.appsHeading}</h2>
+  <section class="block row over" style="--left:96px;--w:644px;--anchor:740px">
+    <h2 class="angled">{b.appsHeading}</h2>
+    <ul class="cards" style="--cols:2">
+      {apps.map((p) => (
+        <li class="card cut">
+          <strong>{p.data.name}</strong>
+          <span class="muted">{p.data.summary[locale]}</span>
+          <span class="mono">{p.data.result[locale]}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
 
-  <footer class="block foot" style="--left:96px;--w:1048px">
+  <footer class="block plate under cut" style="--left:460px;--w:684px">
     <div class="ask">
       <p class="threshold">{b.threshold}</p>
       <div class="lines">
@@ -58,7 +62,7 @@ const apps = (await getCollection("projects"))
       </div>
     </div>
     <div class="code">
-      <Qr value={site.discord} size={203} />
+      <Qr value={site.discord} size={174} />
       <p>{b.qrLabel}</p>
     </div>
   </footer>

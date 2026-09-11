@@ -52,11 +52,11 @@ const ribbonVars = [
     --print-space-2: 16px;
     --print-space-3: 24px;
     --print-space-4: 40px;
-    --print-step--1: 19px;
-    --print-step-0: 23px;
-    --print-step-1: 26px;
-    --print-step-2: 30px;
-    --print-step-3: 32px;
+    --print-step--1: 18px;
+    --print-step-0: 21px;
+    --print-step-1: 24px;
+    --print-step-2: 27px;
+    --print-step-3: 30px;
     --print-step-4: 36px;
     --print-step-5: 82px;
     --cut: 40px;
@@ -93,49 +93,37 @@ const ribbonVars = [
   }
   .page .block {
     position: absolute;
+    top: var(--top, auto);
     left: var(--left);
     width: var(--w);
   }
   /* Above the ribbon: --anchor is the x of the bottom-right corner, the one the diagonal reaches
-     first. --lift stacks a block a fixed distance further up the same diagonal. */
+     first. */
   .page .over {
     bottom: calc(
-      var(--sheet-h) - var(--rb-y) + var(--rb-edge) + var(--clear) + var(--lift, 0px) -
+      var(--sheet-h) - var(--rb-y) + var(--rb-edge) + var(--clear) -
         (var(--rb-x) - var(--anchor, calc(var(--left) + var(--w)))) * tan(var(--angle))
     );
   }
-  /* Below it the top-left corner is the near one, and a staircase hangs from its lowest tread. */
+  /* Below it the top-left corner is the near one. */
   .page .under {
     top: calc(
       var(--rb-y) + var(--rb-edge) + var(--clear) + (var(--rb-x) - var(--anchor, var(--left))) *
-        tan(var(--angle)) - var(--lift, 0px)
+        tan(var(--angle))
     );
   }
-  /* Treads of equal width, each one pitch further right and a pitch's rise higher, so the run of
-     their near corners is parallel to the ribbon. */
-  .page .stair {
-    --pitch: calc((var(--w) + var(--gap)) / var(--n));
-    --rise: calc(var(--pitch) * tan(var(--angle)));
+  .page .row {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--print-space-2);
+    align-content: start;
+  }
+  .page .cards {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     gap: var(--gap);
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-  .page .over.stair {
-    align-items: end;
-  }
-  .page .over.stair > * {
-    margin-block-end: calc(var(--i) * var(--rise));
-  }
-  .page .under.stair {
-    --lift: calc((var(--n) - 1) * var(--rise));
-    align-items: start;
-  }
-  .page .under.stair > * {
-    margin-block-start: calc((var(--n) - 1 - var(--i)) * var(--rise));
   }
 
   .page h1 {
@@ -176,7 +164,6 @@ const ribbonVars = [
     display: grid;
     gap: var(--print-space-1);
     align-content: start;
-    block-size: var(--card-h, auto);
     padding: var(--print-space-3);
     background: var(--surface);
     border: 1px solid var(--line);
@@ -188,26 +175,30 @@ const ribbonVars = [
     letter-spacing: -0.02em;
   }
   .page .masthead {
-    top: var(--pad);
+    top: 60px;
     display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
     gap: var(--print-space-4);
     align-items: start;
   }
   .page .masthead .lead {
     margin-top: 0;
   }
-  .page .foot {
+  /* The sheet's own ground under a rule, so the block reads as a plate without a second value. */
+  .page .plate {
     bottom: var(--pad);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: var(--print-space-4);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--print-space-4);
-    align-items: end;
+    align-items: center;
   }
   .page .ask {
     display: grid;
     gap: var(--print-space-3);
-    align-content: end;
+    align-content: center;
   }
   .page .lines {
     display: grid;
@@ -215,15 +206,10 @@ const ribbonVars = [
   }
   /* The code reads against the sheet's own ground, so the padding around it is the quiet zone;
      the caption keeps the same distance below. */
-  .page .code {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: var(--print-space-4);
-    padding: var(--print-space-4);
-  }
+  /* The caption keeps the code's own quiet zone below it, as the plate's padding does elsewhere. */
   .page .code p {
+    margin-top: var(--print-space-4);
     font-size: var(--print-step--1);
-    max-width: 22ch;
+    max-width: 20ch;
   }
 </style>

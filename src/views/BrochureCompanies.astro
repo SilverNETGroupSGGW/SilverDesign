@@ -14,7 +14,7 @@ const site = (await getEntry("site", "site"))!.data;
 const b = copy.brochure.companies;
 const projects = (await getCollection("projects")).toSorted((a, c) => a.data.order - c.data.order);
 ---
-<Brochure locale={locale} title={`${site.name} — ${b.title}`} markTop="428px">
+<Brochure locale={locale} title={`${site.name} — ${b.title}`} markTop="788px">
   <div class="markwrap"><Mark size="var(--mark-size)" ribbon /></div>
 
   <header class="block masthead" style="--left:96px;--w:1048px">
@@ -22,30 +22,36 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
       <span class="wordmark">{site.name}</span>
       <span class="tagline">{b.title}</span>
     </h1>
-    <div>
-      <p class="lead muted">{b.lead}</p>
-      <h2 class="quiet">{b.whoHeading}</h2>
-      <p class="small">{b.who}</p>
-    </div>
+    <p class="lead muted">{b.lead}</p>
   </header>
 
-  <h2 class="block over angled" style="--left:96px;--w:187px;--lift:284px">{b.togetherHeading}</h2>
-  <ol class="block over stair" style="--left:96px;--w:600px;--anchor:283px;--n:3;--card-h:280px">
-    {b.together.map((t, i) => <li class="card cut" style={`--i:${i}`}>{t}</li>)}
-  </ol>
+  <section class="block pair" style="--left:96px;--w:1048px;--top:300px">
+    <div class="row">
+      <h2 class="angled">{b.whoHeading}</h2>
+      <p>{b.who}</p>
+    </div>
+    <div class="row">
+      <h2 class="angled">{b.togetherHeading}</h2>
+      <ol class="offers">
+        {b.together.map((t) => <li>{t}</li>)}
+      </ol>
+    </div>
+  </section>
 
-  <ul class="block under stair" style="--left:300px;--w:768px;--n:4;--card-h:290px">
-    {projects.map((p, i) => (
-      <li class="card cut" style={`--i:${i}`}>
-        <strong>{p.data.name}</strong>
-        <span class:list={[p.data.status === "store" && "mono"]}>{p.data.result[locale]}</span>
-        {p.data.status === "store" && <span class="muted">{p.data.tech.join(" · ")}</span>}
-      </li>
-    ))}
-  </ul>
-  <h2 class="block under angled" style="--left:96px;--w:200px">{b.builtHeading}</h2>
+  <section class="block row over" style="--left:96px;--w:644px;--anchor:740px">
+    <h2 class="angled">{b.builtHeading}</h2>
+    <ul class="cards" style="--cols:2">
+      {projects.map((p) => (
+        <li class="card cut">
+          <strong>{p.data.name}</strong>
+          <span class:list={[p.data.status === "store" && "mono"]}>{p.data.result[locale]}</span>
+          {p.data.status === "store" && <span class="muted">{p.data.tech.join(" · ")}</span>}
+        </li>
+      ))}
+    </ul>
+  </section>
 
-  <footer class="block foot" style="--left:96px;--w:1048px">
+  <footer class="block plate under cut" style="--left:520px;--w:624px">
     <div class="ask">
       <div>
         <h2 class="quiet">{b.contactHeading}</h2>
@@ -58,20 +64,33 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
       </div>
     </div>
     <div class="code">
-      <Qr value={`mailto:${site.email}`} size={203} />
+      <Qr value={`mailto:${site.email}`} size={174} />
       <p>{b.qrLabel}</p>
     </div>
   </footer>
 </Brochure>
 
 <style>
+  .pair {
+    position: absolute;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--print-space-4);
+    align-items: start;
+  }
+  .offers {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--print-space-2);
+  }
+  .offers li {
+    font-size: var(--print-step--1);
+    color: var(--muted);
+  }
   .quiet {
     font-size: var(--print-step-1);
-    margin-top: var(--print-space-3);
-  }
-  .small {
-    font-size: var(--print-step--1);
-    margin-top: var(--print-space-1);
   }
   .chair {
     font-size: var(--print-step-2);
