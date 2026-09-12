@@ -29,7 +29,7 @@
         "body": "Get into something that's already running, or bring an idea and find two people for it."
       },
       {
-        "title": "Build it over the semester",
+        "title": "Build it with the team over a semester",
         "body": "A small team, your own pace. Every so often we meet up in person in room 3/79."
       }
     ],
@@ -55,14 +55,14 @@
     "platformApi": "API"
   },
   "build": {
-    "heading": "What we build, and with what",
-    "what": "Some of what we build fixes problems we run into at university ourselves — that's where the timetable app and the campus map came from. The rest happens because someone wanted to try a new technology, or do a familiar thing their own way.",
+    "heading": "What we build, and how",
+    "what": "Some of what we build fixes problems we run into at university ourselves — that's where the timetable app and the campus map came from. The rest happens because someone wanted to try a new technology, or do something familiar their own way.",
     "how": "We don't have one stack. We pick the tools that fit the project, and we're happy to try new ones — sometimes before anyone calls them stable.",
     "inOrg": "In our GitHub org:"
   },
   "join": {
     "heading": "Join",
-    "lead": "You don't need to know how to code yet. Wanting to build something is enough.",
+    "lead": "Written something that worked — a script for class, a website, a bot? That's enough to start. You'll learn the rest in a team.",
     "threshold": "Join the Discord, introduce yourself, pick a project. That's where we post the in-person meetups too.",
     "discord": "Discord",
     "email": "Email",
@@ -90,7 +90,7 @@
       "lead": "The apps people use around campus are written by students at your faculty, at Silver. You could build the next one with us.",
       "stepsHeading": "How it works",
       "appsHeading": "Our apps in the stores",
-      "threshold": "You don't need to know how to code yet. Wanting to build something is enough.",
+      "threshold": "Written something that worked — a script for class, a website, a bot? That's enough to start. You'll learn the rest in a team.",
       "qrLabel": "Scan to join our Discord"
     },
     "companies": {

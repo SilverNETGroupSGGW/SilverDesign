@@ -29,7 +29,7 @@
         "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z pomysłem i szukasz dwóch osób."
       },
       {
-        "title": "Robimy to przez semestr",
+        "title": "Robisz to z zespołem przez semestr",
         "body": "W małym zespole, w swoim tempie. Co jakiś czas spotykamy się na żywo w sali 3/79."
       }
     ],
@@ -56,13 +56,13 @@
   },
   "build": {
     "heading": "Co budujemy i czym",
-    "what": "Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni — stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić znaną rzecz po swojemu.",
+    "what": "Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni — stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić coś znanego po swojemu.",
     "how": "Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie sięgamy po nowe rzeczy — czasem zanim ktokolwiek uzna je za stabilne.",
-    "inOrg": "W naszym orgu na GitHubie:"
+    "inOrg": "W naszej organizacji na GitHubie:"
   },
   "join": {
     "heading": "Dołącz",
-    "lead": "Nie musisz jeszcze umieć programować. Wystarczy, że chcesz coś zbudować.",
+    "lead": "Masz za sobą coś, co działało — skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
     "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Tam też ogłaszamy terminy spotkań na żywo.",
     "discord": "Discord",
     "email": "Mail",
@@ -90,7 +90,7 @@
       "lead": "Aplikacje, z których korzysta kampus, piszą studenci z twojego wydziału — w Silverze. Następną możesz napisać z nami.",
       "stepsHeading": "Jak to działa",
       "appsHeading": "Nasze aplikacje w sklepach",
-      "threshold": "Nie musisz jeszcze umieć programować. Wystarczy, że chcesz coś zbudować.",
+      "threshold": "Masz za sobą coś, co działało — skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
       "qrLabel": "Zeskanuj — wejdziesz na nasz Discord"
     },
     "companies": {
