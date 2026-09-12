@@ -62,7 +62,7 @@
   },
   "join": {
     "heading": "Dołącz",
-    "lead": "Masz za sobą coś, co działało: skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
+    "lead": "Masz za sobą coś, co działało: skrypt na zajęcia, stronę, bota? To dobry start. Reszty nauczysz się w zespole.",
     "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Tam też ogłaszamy terminy spotkań na żywo.",
     "discord": "Discord",
     "email": "Mail",
@@ -90,7 +90,7 @@
       "lead": "Aplikacje, z których korzysta kampus, piszą w Silverze studenci z twojego wydziału. Następną możesz napisać z nami.",
       "stepsHeading": "Jak to działa",
       "appsHeading": "Nasze aplikacje",
-      "threshold": "Masz za sobą coś, co działało: skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
+      "threshold": "Masz za sobą coś, co działało: skrypt na zajęcia, stronę, bota? To dobry start. Reszty nauczysz się w zespole.",
       "qrLabel": "Wpadnij na Discorda, gdzie zaczyna się każdy projekt."
     },
     "companies": {

@@ -45,7 +45,7 @@
   --space-6: 4rem;
   --space-7: 6rem;
 
-  --measure: 66ch;
+  --measure: 58ch;
   --container: 72rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
 }

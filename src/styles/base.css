@@ -39,9 +39,10 @@ p {
   max-width: var(--measure);
   text-wrap: pretty;
 }
-/* A lead runs one size up, so --measure would let it past 75 characters a line. */
+/* A lead runs one size up and sits under a heading on its own: at --measure it ran as one long
+   line with a word or two left over, so it gets a measure that breaks it into a few even lines. */
 .lead {
-  max-width: 60ch;
+  max-width: 48ch;
 }
 a {
   color: inherit;

@@ -231,6 +231,9 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .below .lead {
     font-size: var(--lead);
     line-height: 1.35;
+    /* Wider than a section lead: the diagonal shortens its lines from the left, so the measure
+       only has to hold the last line. */
+    max-width: 60ch;
     margin-inline-start: auto;
     text-align: end;
     text-wrap: pretty;
