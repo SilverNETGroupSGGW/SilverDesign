@@ -58,7 +58,7 @@ robić_, _czy dam radę_, _kiedy, gdzie i jak dołączyć_. Nic ponad to.
 | Facebook       | `https://www.facebook.com/silvernetgroupsggw` (tylko stopka)                                                  |
 | Aplikacja      | Kampus SGGW — Android (`com.silvers.kampus_sggw_remake`) i iOS (`id1586959639`), 1 tys.+ pobrań w Google Play |
 | Aplikacja | Plan WZIM — Android (`com.silvernet.silvertimetable`) i iOS (`id1384573148`), 1 tys.+ pobrań w Google Play |
-| Aplikacja | Dni SGGW (`sggw_days`) — Flutter + Firebase, ukończona; aplikacja na wydarzenie Dni SGGW 2026, ponad 80 pobrań w dwa dni. Na czas wydarzenia była w Google Play, App Store i w przeglądarce; dziś tylko repo w orgu |
+| Aplikacja | Dni SGGW (`sggw_days`) — Flutter + Firebase, ukończona; aplikacja na wydarzenie Dni SGGW 2026, ponad 80 pobrań w dwa dni. Na czas wydarzenia była w Google Play, App Store i w przeglądarce; dziś tylko repo w orgu. Z plakatu podsumowującego (właściciel, 2026-09-13): mapa z 24 kodami QR na kampusie (gra terenowa z weryfikacją geolokalizacją), wiki o kampusie, program z powiadomieniami; 15 osób ukończyło grę |
 | Projekt        | Charmander — proxy do powiadomień push, FastAPI i .NET Minimal API, repo w orgu                               |
 | Hackathon | HackArena 3.0 (SGGW, 28–29.03.2026, 33 drużyny, boty do gry wyścigowej): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej |
 | Zrzuty ekranu | `brand/screenshots/` — Plan WZIM (2) i Kampus SGGW (2), ze starej prezentacji koła |
