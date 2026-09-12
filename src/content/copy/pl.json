@@ -26,7 +26,7 @@
       },
       {
         "title": "Wybierasz projekt albo zgłaszasz swój",
-        "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z własnym pomysłem — samodzielnie albo w kilka osób."
+        "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z własnym pomysłem. Samodzielnie albo w kilka osób."
       },
       {
         "title": "Pracujesz nad nim przez semestr",
@@ -56,13 +56,13 @@
   },
   "build": {
     "heading": "Co budujemy i czym",
-    "what": "Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni — stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić coś znanego po swojemu.",
-    "how": "Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie sięgamy po nowe rzeczy — czasem zanim ktokolwiek uzna je za stabilne.",
+    "what": "Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni. Stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić coś znanego po swojemu.",
+    "how": "Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie sięgamy po nowe rzeczy, czasem zanim ktokolwiek uzna je za stabilne.",
     "inOrg": "W naszej organizacji na GitHubie:"
   },
   "join": {
     "heading": "Dołącz",
-    "lead": "Masz za sobą coś, co działało — skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
+    "lead": "Masz za sobą coś, co działało: skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
     "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Tam też ogłaszamy terminy spotkań na żywo.",
     "discord": "Discord",
     "email": "Mail",
@@ -87,11 +87,11 @@
   "brochure": {
     "students": {
       "title": "Koło naukowe informatyków na SGGW",
-      "lead": "Aplikacje, z których korzysta kampus, piszą studenci z twojego wydziału — w Silverze. Następną możesz napisać z nami.",
+      "lead": "Aplikacje, z których korzysta kampus, piszą w Silverze studenci z twojego wydziału. Następną możesz napisać z nami.",
       "stepsHeading": "Jak to działa",
       "appsHeading": "Nasze aplikacje",
-      "threshold": "Masz za sobą coś, co działało — skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
-      "qrLabel": "Wpadnij na Discorda — tam zaczyna się każdy projekt."
+      "threshold": "Masz za sobą coś, co działało: skrypt na zajęcia, stronę, bota? To wystarczy na start. Reszty nauczysz się w zespole.",
+      "qrLabel": "Wpadnij na Discorda, gdzie zaczyna się każdy projekt."
     },
     "companies": {
       "title": "Koło naukowe informatyków SGGW",
@@ -101,9 +101,9 @@
       "builtHeading": "Co zbudowaliśmy",
       "togetherHeading": "Co możemy zrobić razem",
       "together": [
-        "Warsztat lub prelekcja dla studentów informatyki SGGW — sala na WIII, publiczność zapewniamy.",
+        "Warsztat lub prelekcja dla studentów informatyki SGGW: sala na WIII, publiczność zapewniamy.",
         "Wspólny projekt: realny problem z waszej strony, zespół z naszej.",
-        "Wsparcie wydarzenia — hackathonu, konkursu, Dni SGGW."
+        "Wsparcie wydarzenia: hackathonu, konkursu, Dni SGGW."
       ],
       "contactHeading": "Kontakt",
       "qrLabel": "Zeskanuj, żeby napisać do nas maila."
