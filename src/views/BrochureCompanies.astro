@@ -21,14 +21,14 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
 
   <header class="block masthead" style="--left:96px;--w:1048px">
     <h1>
-      <Lockup size="calc(1.4 * var(--print-step-5))" />
+      <Lockup size="calc(1.6 * var(--print-step-5))" />
       <span class="visually-hidden">{site.name}</span>
       <span class="tagline">{b.title}</span>
     </h1>
     <p class="lead muted">{b.lead}</p>
   </header>
 
-  <section class="block pair" style="--left:96px;--w:1048px;--top:300px">
+  <section class="block pair" style="--left:96px;--w:1048px;--top:317px">
     <div class="row">
       <h2 class="angled">{b.whoHeading}</h2>
       <p>{b.who}</p>

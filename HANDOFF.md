@@ -92,13 +92,17 @@ waga 700, wysokość liter 0,56 korpusu S, trzon 49,7 j., reszta obrysu 0,3 j. (
 
 ### Otwarte dla właściciela
 
-- **Wielkość lockupu.** Płyta to w 2,86 × wysokość korpusu S (padding 0,45 korpusu + rozciągnięcie do
-  900 : 460), więc litery mają ~19,6 % jej wysokości. Przy `size="2.5rem"` w headerze korpus S ma
-  15,7 px, a litery ~8,8 px — mniej niż nawigacja (kapitalik ~11 px); stary header miał znak 32 px
-  plus tekst 16 px. W broszurach przy `1.4 × --print-step-5` (114,8 px) litery mają ~22,5 px, a
-  tagline pod nimi 36 px — hierarchia odwrócona względem starego wordmarku 82 px. Wartości są z
-  kontraktu kierunku; zmiana to jedna liczba na każdym z dwóch miejsc (parytet z nawigacją: ~4rem
-  w headerze, ~3,4 × `--print-step-5` na arkuszu).
+- **Wielkość lockupu.** Płyta to 2,86 × wysokość korpusu S (padding 0,45 korpusu + rozciągnięcie do
+  900 : 460), więc litery mają ~19,6 % jej wysokości. Po rundzie poprawek: header `4rem` (płyta
+  72 px, litery 14,1 px, pasek 109 px zamiast 82), arkusze `1.6 × --print-step-5` (płyta 131,2 px,
+  litery 25,7 px przy taglinie 36 px), rząd 1 przesunięty o +17 px (studenci `--top:287`, firmy
+  `--top:317`). Kontroler chciał `2 × --print-step-5`; **nie wchodzi** na arkuszu studentów: nagłówek
+  kończy się wtedy na 311 px, a rząd 1 odsunięty od niego wchodzi 24 px w rząd 2, którego spód jest
+  przypięty do wstęgi (marker `h2` rządu 2 ląduje na karcie — zrzut `collision-2x-studenci.png`;
+  detektor obcięć tego nie łapie, bo to nachodzenie, nie obcięcie). Budżet arkusza studentów:
+  nagłówek ≤ 279 px, czyli płyta ≤ 132 px. Żeby dostać litery 32 px trzeba ruszyć `markTop` wstęgi
+  studentów (752 → ~777), skrócić najdłuższą kartę kroków o linię albo wyeksportować płytę z
+  paddingiem 0,30 korpusu zamiast 0,45 (to zmienia master).
 - `lockup.svg` waży 289 KB (jedna kopia tekstury w data-URI, cztery kafle przez `<use>`).
 
 ## Do decyzji właściciela (przed deployem)
