@@ -133,11 +133,11 @@ obcięcie + 6 par na nachodzenie), Lighthouse mobile: `/pl/` 97 perf / 100 a11y 
 
 | właściwość | home | page | sheet |
 |---|---|---|---|
-| `--m` | `clamp(7.8rem, 23.6cqw, 22rem)` | `clamp(6.5rem, 20.8cqw, 19rem)` | 240 px |
-| `--bx` | `clamp(3rem, 48.42cqw - 135.7px, 60rem)` | `clamp(3rem, 41.5cqw - 117px, 40rem)` | 490 px |
-| `--by` | `max(12.5rem, 360.8px - 7.69cqw)` | `max(11rem, 270px - 8.65cqw)` | 140 px |
+| `--m` | `clamp(7.8rem, 23.6cqw, 22rem)` | `clamp(6.5rem, 18cqw, 16rem)` | 200 px |
+| `--bx` | `clamp(3rem, 48.42cqw - 135.7px, 60rem)` | `clamp(3rem, 41.5cqw - 117px, 40rem)` | 420 px |
+| `--by` | szeroki: `--above-y + 0.50583·--m` (wierzch słowa = wierzch tytułu); wąski: `max(--above-y + --title-band + --g + 0.50583·--m, prześwit nawigacji)` | to samo | `96px + 0.50583·--m` |
 | `--g` | `clamp(12px, 1.39cqw, 20px)` | `clamp(12px, 1.11cqw, 16px)` | 16 px |
-| `--h` | `max(48rem, 100svh, wyjście+2rem)` | `max(26rem, wyjście+2rem)` | 585 px |
+| `--h` | `max(48rem, 100svh, wyjście+2rem)` | `max(26rem, wyjście+2rem)` | `max(585px, wyjście+1rem)` |
 | `--above-x` | `min(max(--gutter, 50cqw - 36rem), 24rem)` | to samo | 96 px |
 | `--above-y` | `max(clamp(4.5rem, 8.9cqw, 7.5rem), --nav-top + 4rem)` | to samo | 96 px |
 | `--below-x` | `max(--above-x, --bx - 0.77·--m)` | to samo | `max(96px, …)` |
@@ -147,6 +147,19 @@ obcięcie + 6 par na nachodzenie), Lighthouse mobile: `/pl/` 97 perf / 100 a11y 
 
 Przy 1440×900 wychodzi z tego dokładnie mock: `--m` 340, `--bx` 562, `--by` 250, lead na 473 px,
 tytuł na 128 px, wstęga na lewej krawędzi 688–774 px, wyjście górą 1109–1284 px.
+
+**Poprawka po przeglądzie właściciela (2026-09-12, noc):** lead trzymał się ~200 j. od słowa, bo
+„dolna linia słowa" była liczona z rogów osiowego bboxa obróconego napisu (ten sam błąd był w
+zatwierdzonym mocku). `export-lockup.ts` zapisuje teraz `wordSpan` — rzut konturu słowa na oś
+ramienia i jej normalną — i opener używa go zamiast `wordBox`. Druga poprawka: granica pod S szła
+pionowo w lewej krawędzi korpusu i wpuszczała pierwszą literę leadu pod róg dolnego ramienia; teraz
+biegnie wzdłuż krawędzi ramienia do linii spodu S. Trzecia: pozycja logo od góry ma regułę zamiast
+dopasowanej liczby — na szerokim openerze wierzch słowa leży na wierzchu tytułu (`--by-wide`), na
+wąskim pod pasmem tytułu (`--title-band` = linie tytułu × 1,02 × `--title`, linie liczone z długości
+tytułu: ~14 znaków na linię przy 320 px), z dolnym ograniczeniem, przy którym górne ramię na prawej
+krawędzi mija pudełko nawigacji; wybór szeroki/wąski to `@container (width < 64rem)` na `.frame`,
+w teście `narrow: w < 64·rem`. Arkusz: znak 200 px (był 240), bo z wierzchem słowa na wierzchu tytułu
+wyjście dolnego ramienia zjeżdżało o 68 px za budżet arkusza studentów.
 
 **Niezmienniki** (`tests/opener.test.ts`, 400/768/1024/1440/1920/2560, `--h` na podłodze):
 1. dolna krawędź dolnego ramienia przecina `x = 0` nad spodem openera;

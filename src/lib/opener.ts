@@ -74,7 +74,7 @@ export const formCss = (f: Form): string => {
 
 const [vbX, vbY, vbSize] = lockup.markViewBox as [number, number, number];
 const [bodyX, bodyY, bodyW, bodyH] = lockup.bodyBox as [number, number, number, number];
-const { direction, axis, start, width } = geometry.ribbon;
+const { direction, axis, width } = geometry.ribbon;
 const dir = [direction[0]!, direction[1]!] as const;
 const across = [-dir[1], dir[0]] as const;
 const centre = [vbX + vbSize / 2, vbY + vbSize / 2] as const;
@@ -110,11 +110,17 @@ const wordCorners = ((): [number, number][] => {
     [x + w, y + h],
   ];
 })();
-const project = (p: [number, number], onto: readonly [number, number]): number =>
-  (p[0] - axis[0]!) * onto[0] + (p[1] - axis[1]!) * onto[1];
-/** How far the word's box reaches along the arm, and how far below the arm's centreline it hangs. */
-const wordEndT = Math.max(...wordCorners.map((c) => project(c, dir)));
-const wordOff = Math.max(...wordCorners.map((c) => project(c, across)));
+/**
+ * How far the word's outline reaches along the arm and below its centreline. The axis-aligned
+ * `wordBox` is the wrong thing to hug: its corners lie well outside the rotated letters.
+ */
+const wordSpan = lockup.wordSpan as { along: [number, number]; across: [number, number] };
+const wordStartT = wordSpan.along[0];
+const wordEndT = wordSpan.along[1];
+const wordOff = wordSpan.across[1];
+
+/** The lockup's top (the word rises above the S body) as a fraction of the mark box below `by`. */
+export const lockupTop = (bodyY - Math.min(bodyY, lockup.wordBox[1]!)) / vbSize;
 
 /**
  * The four arm edges and the word's bottom rule, each as a point the line runs through: the upper
@@ -136,7 +142,7 @@ const BX = form({ bx: 1 });
 const BY = form({ by: 1 });
 const bodyRight = add(BX, form({ m: body.w }), G);
 const bodyBottom = add(BY, form({ m: body.h }), G);
-const wordStart = at(along(axis as [number, number], start, wordOff));
+const wordStart = at(along(axis as [number, number], wordStartT, wordOff));
 const wordEnd = at(along(axis as [number, number], wordEndT, wordOff));
 
 /** Where an arm edge leaves through the top. Past the right edge it is clipped, not wrong. */
@@ -161,8 +167,9 @@ export const aboveBoundary: Point[] = [
  */
 export const belowBoundary: Point[] = [
   [ZERO_F, lineY(edges.lowerBottom, ZERO_F)],
-  [BX, lineY(edges.lowerBottom, BX)],
-  [BX, bodyBottom],
+  // The lower arm runs into the S's bottom-left: the boundary follows its edge up to the S's
+  // bottom rule, since a vertical step at the S's left would let text under the arm's corner.
+  [lineX(edges.lowerBottom, bodyBottom), bodyBottom],
   [add(BX, form({ m: body.w })), bodyBottom],
   [wordStart[0], lineY(edges.wordBottom, wordStart[0])],
   [wordEnd[0], lineY(edges.wordBottom, wordEnd[0])],
@@ -241,7 +248,7 @@ export const wordEndPoint = (v: OpenerVars): [number, number] => [
 /* The sizes the construction is driven by, written once so the component's custom properties and
    the invariant test read the same numbers. */
 
-const SIZE_UNITS = ["px", "rem", "cqw", "svh", "m", "bx", "by", "g"] as const;
+const SIZE_UNITS = ["px", "rem", "cqw", "svh", "m", "bx", "by", "g", "tb"] as const;
 type SizeUnit = (typeof SIZE_UNITS)[number];
 type Terms = Partial<Record<SizeUnit, number>>;
 export type Size =
@@ -249,16 +256,29 @@ export type Size =
   | { sum: Size[] }
   | { min: Size[] }
   | { max: Size[] }
-  | { clamp: [Size, Size, Size] };
+  | { clamp: [Size, Size, Size] }
+  /** Two values, one per side of the opener's narrow breakpoint (a container query, not a calc). */
+  | { wide: Size; narrow: Size };
+
+/** Below this container width the title takes the whole width and the lockup sits under it. */
+export const NARROW_REM = 64;
 
 /** What a length resolves against: the opener's box, the root font size, and the sizes above. */
 export interface SizeContext extends Record<SizeUnit, number> {
   px: 1;
+  narrow: boolean;
 }
 
-const VAR: Partial<Record<SizeUnit, string>> = { m: "--m", bx: "--bx", by: "--by", g: "--g" };
+const VAR: Partial<Record<SizeUnit, string>> = {
+  m: "--m",
+  bx: "--bx",
+  by: "--by",
+  g: "--g",
+  tb: "--title-band",
+};
 
 export const sizeValue = (s: Size, c: SizeContext): number => {
+  if ("wide" in s) return sizeValue(c.narrow ? s.narrow : s.wide, c);
   if ("sum" in s) return s.sum.reduce((total, x) => total + sizeValue(x, c), 0);
   if ("min" in s) return Math.min(...s.min.map((x) => sizeValue(x, c)));
   if ("max" in s) return Math.max(...s.max.map((x) => sizeValue(x, c)));
@@ -270,6 +290,8 @@ export const sizeValue = (s: Size, c: SizeContext): number => {
 };
 
 export const sizeCss = (s: Size): string => {
+  if ("wide" in s)
+    throw new Error("a wide/narrow size is written as two properties, not one calc()");
   if ("sum" in s) return `calc(${s.sum.map(sizeCss).join(" + ")})`;
   if ("min" in s) return `min(${s.min.map(sizeCss).join(", ")})`;
   if ("max" in s) return `max(${s.max.map(sizeCss).join(", ")})`;
@@ -340,7 +362,32 @@ const ABOVE_Y: Size = {
  * is bounded by the opener's own width too: a display line has to stay inside its column on a phone
  * whose root font size is 32 px, and the lead, the navigation and the buttons still scale in rem.
  */
-const TITLE: Size = { clamp: [{ min: [{ rem: 2 }, { cqw: 8 }] }, { cqw: 4.4 }, { rem: 3.6 }] };
+const titleTimes = (k: number): Size => ({
+  clamp: [{ min: [{ rem: 2 * k }, { cqw: 8 * k }] }, { cqw: 4.4 * k }, { rem: 3.6 * k }],
+});
+const TITLE: Size = titleTimes(1);
+export const TITLE_LINE_HEIGHT = 1.02;
+/** How many lines a title takes on the narrowest phone (320 px, 32 px type): about 14 characters each. */
+export const titleLines = (title: string): number => Math.max(1, Math.ceil(title.length / 14));
+/**
+ * Where the lockup's top sits: level with the title on a wide opener, and under the title's band
+ * (`--title-band` = its lines × line height × size) on a narrow one. `by` follows from it.
+ */
+/**
+ * On a narrow opener the upper arm leaves through the right edge, above the lead and under the
+ * navigation: the S has to sit low enough that the arm's upper edge at the right edge clears the
+ * box the navigation reserves (a one-line title would otherwise put the band across the links).
+ */
+const ARM_CLEAR_BY: Size = ((): Size => {
+  const p = edges.upperTop;
+  return {
+    sum: [NAV_TOP, NAV_H, { g: 1 }, { cqw: 100 * tan, bx: -tan, m: -(p[0].m * tan + p[1].m) }],
+  };
+})();
+const BY_SIZE: Size = {
+  wide: { sum: [ABOVE_Y, { m: lockupTop }] },
+  narrow: { max: [{ sum: [ABOVE_Y, { tb: 1, g: 1, m: lockupTop }] }, ARM_CLEAR_BY] },
+};
 const LEAD: Size = { clamp: [{ rem: 1.05 }, { cqw: 1.67 }, { rem: 1.35 }] };
 
 /** The left edge of the page's own container, so the title starts where the body copy does. */
@@ -370,7 +417,7 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   home: {
     m: { clamp: [{ rem: 7.8 }, { cqw: 23.6 }, { rem: 22 }] },
     bx: { clamp: [{ rem: 3 }, { cqw: 48.42, px: -135.7 }, { rem: 60 }] },
-    by: { max: [{ rem: 12.5 }, { px: 360.8, cqw: -7.69 }] },
+    by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.39 }, { px: 20 }] },
     h: { max: [{ rem: 48 }, { svh: 100 }, leftExitFloor(2)] },
     aboveX: CONTAINER_LEFT,
@@ -384,9 +431,9 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     lead: LEAD,
   },
   page: {
-    m: { clamp: [{ rem: 6.5 }, { cqw: 20.8 }, { rem: 19 }] },
+    m: { clamp: [{ rem: 6.5 }, { cqw: 18 }, { rem: 16 }] },
     bx: { clamp: [{ rem: 3 }, { cqw: 41.5, px: -117 }, { rem: 40 }] },
-    by: { max: [{ rem: 11 }, { px: 270, cqw: -8.65 }] },
+    by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.11 }, { px: 16 }] },
     h: { max: [{ rem: 26 }, leftExitFloor(2)] },
     aboveX: CONTAINER_LEFT,
@@ -400,11 +447,12 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     lead: LEAD,
   },
   sheet: {
-    m: { px: 240 },
-    bx: { px: 490 },
-    by: { px: 140 },
+    m: { px: 200 },
+    bx: { px: 420 },
+    // The word's top is level with the title's, as on the pages.
+    by: { px: 96, m: lockupTop },
     g: { px: 16 },
-    h: { px: 585 },
+    h: { max: [{ px: 585 }, leftExitFloor(1)] },
     aboveX: { px: 96 },
     aboveY: { px: 96 },
     belowX: { max: [{ px: 96 }, { bx: 1, m: -0.77 }] },
@@ -426,11 +474,12 @@ export const rootFontSize = (w: number): number =>
 /** Every size of one opener, resolved to px at a given viewport. */
 export const openerSizes = (
   layout: OpenerLayout,
-  viewport: { w: number; h: number; rem?: number },
+  viewport: { w: number; h: number; rem?: number; titleLines?: number },
 ): Record<keyof OpenerLayout, number> & OpenerVars => {
   const rem = viewport.rem ?? rootFontSize(viewport.w);
   const c: SizeContext = {
     px: 1,
+    narrow: viewport.w < NARROW_REM * rem,
     rem,
     cqw: viewport.w / 100,
     svh: viewport.h / 100,
@@ -438,7 +487,9 @@ export const openerSizes = (
     bx: 0,
     by: 0,
     g: 0,
+    tb: 0,
   };
+  c.tb = (viewport.titleLines ?? 3) * TITLE_LINE_HEIGHT * sizeValue(layout.title, c);
   for (const key of ["m", "bx", "by", "g"] as const) c[key] = sizeValue(layout[key], c);
   const out = Object.fromEntries(
     (Object.keys(OPENER_PROPS) as (keyof OpenerLayout)[]).map((k) => [k, sizeValue(layout[k], c)]),
@@ -446,7 +497,13 @@ export const openerSizes = (
   return { ...out, w: viewport.w, zx: 0, zy: 0 };
 };
 
+/** A wide/narrow size becomes `--x-wide` and `--x-narrow`; the component picks one by container query. */
 export const openerStyle = (layout: OpenerLayout): string =>
   (Object.keys(OPENER_PROPS) as (keyof OpenerLayout)[])
-    .map((k) => `${OPENER_PROPS[k]}:${sizeCss(layout[k])}`)
+    .map((k) => {
+      const s = layout[k];
+      return "wide" in s
+        ? `${OPENER_PROPS[k]}-wide:${sizeCss(s.wide)};${OPENER_PROPS[k]}-narrow:${sizeCss(s.narrow)}`
+        : `${OPENER_PROPS[k]}:${sizeCss(s)}`;
+    })
     .join(";");

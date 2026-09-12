@@ -27,13 +27,13 @@ const overlaps = (a: [number, number], b: [number, number]): boolean => a[0] < b
 describe("the opener's construction", () => {
   test("the boundaries run from the left edge to the top, around the S and the word", () => {
     expect(aboveBoundary).toHaveLength(6);
-    expect(belowBoundary).toHaveLength(8);
+    expect(belowBoundary).toHaveLength(7);
     // Both leave through the top: a point past the right edge is clipped by the float's box, so one
     // polygon serves the widths where the ribbon leaves through the right edge too.
     expect(aboveBoundary.at(-1)![1]).toEqual(expect.objectContaining({ px: 0, m: 0, by: 0 }));
     expect(belowBoundary.at(-1)![1]).toEqual(expect.objectContaining({ px: 0, m: 0, by: 0 }));
     expect(shapeAbove).toHaveLength(9);
-    expect(shapeBelow).toHaveLength(9);
+    expect(shapeBelow).toHaveLength(8);
   });
 
   test("the S body is the fraction of the mark box the lockup was fitted to", () => {
@@ -69,7 +69,8 @@ describe("the ribbon never ends inside the opener", () => {
     const layout = openerLayouts[variant];
     for (const w of WIDTHS) {
       // The floor of --h is the tight case: a taller window only moves the exit further from it.
-      const v = openerSizes(layout, { w, h: SHORT });
+      // A subpage title is one line; the home title is three on the narrowest phone.
+      const v = openerSizes(layout, { w, h: SHORT, titleLines: variant === "page" ? 1 : 3 });
       const rem = rootFontSize(w);
       const e = exits(v);
 

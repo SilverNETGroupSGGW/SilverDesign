@@ -12,6 +12,8 @@ import {
   polygonCss,
   shapeAbove,
   shapeBelow,
+  TITLE_LINE_HEIGHT,
+  titleLines,
 } from "../lib/opener";
 import LocaleSwitch from "./LocaleSwitch.astro";
 
@@ -36,6 +38,7 @@ const links = route === undefined ? [] : [
 const uid = Math.random().toString(36).slice(2, 8);
 const style = [
   openerStyle(openerLayouts[variant]),
+  `--title-band:calc(${titleLines(title)} * ${TITLE_LINE_HEIGHT} * var(--title))`,
   `--mark-x:${formCss(markOrigin[0])}`,
   `--mark-y:${formCss(markOrigin[1])}`,
   `--link-x:${formCss(lockupBox.origin[0])}`,
@@ -99,6 +102,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   }
   .opener {
     --w: 100cqw;
+    --by: var(--by-wide);
     position: relative;
     isolation: isolate;
     display: grid;
@@ -110,6 +114,12 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     /* The ribbon runs thousands of user units past the mark's box on both ends; the opener is what
        cuts it to the page, so every end of it lands on a real edge of the document. */
     overflow: hidden;
+  }
+  /* Under the breakpoint the title takes the whole width, so the lockup moves under it. */
+  @container (width < 64rem) {
+    .opener {
+      --by: var(--by-narrow);
+    }
   }
   /* Inline-level and in flow: a block-level box would clear the float's whole margin box instead of
      following its shape, and out of flow it could not push the title down when it wraps to a second
@@ -187,6 +197,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
        landing on it. */
     margin-block-start: calc(var(--above-y) - var(--nav-top) - var(--nav-h));
     font-size: var(--title);
+    /* --title-band, which places the lockup under the title on a narrow opener, assumes this. */
     line-height: 1.02;
     letter-spacing: -0.025em;
     max-width: none;

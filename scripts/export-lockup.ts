@@ -449,17 +449,48 @@ const frame = layout.frame.map(round) as [number, number, number, number];
 
 // The page lays the word and the S body out against the ribbon's edges, so the boxes it measures
 // them by are exported next to the path instead of being retyped wherever a layout needs them.
-const wordBox = await (async (): Promise<[number, number, number, number]> => {
+// `wordBox` is axis-aligned; the word is not, so the box's corners reach well past the letters
+// across the arm. `wordSpan` is the outline itself projected on the arm's axis (along) and on its
+// normal (across, positive below the centreline), which is what a layout hugging the word needs.
+const { wordBox, wordSpan } = await (async (): Promise<{
+  wordBox: [number, number, number, number];
+  wordSpan: { along: [number, number]; across: [number, number] };
+}> => {
   const page = await browser.newPage();
   await page.setContent(
     `<!doctype html><svg width="0" height="0" style="position:absolute"><path id="word" d="${wordPath}"/></svg>`,
   );
-  const box = await page.evaluate(() => {
-    const { x, y, width, height } = document.querySelector<SVGPathElement>("#word")!.getBBox();
-    return [x, y, width, height] as [number, number, number, number];
-  });
+  const measured = await page.evaluate(
+    ({ axis, dir }) => {
+      const path = document.querySelector<SVGPathElement>("#word")!;
+      const { x, y, width, height } = path.getBBox();
+      const across = [-dir[1]!, dir[0]!];
+      const total = path.getTotalLength();
+      let along: [number, number] = [Infinity, -Infinity];
+      let over: [number, number] = [Infinity, -Infinity];
+      for (let i = 0; i <= 4000; i++) {
+        const p = path.getPointAtLength((total * i) / 4000);
+        const t = (p.x - axis[0]!) * dir[0]! + (p.y - axis[1]!) * dir[1]!;
+        const u = (p.x - axis[0]!) * across[0]! + (p.y - axis[1]!) * across[1]!;
+        along = [Math.min(along[0], t), Math.max(along[1], t)];
+        over = [Math.min(over[0], u), Math.max(over[1], u)];
+      }
+      return {
+        box: [x, y, width, height] as [number, number, number, number],
+        along,
+        across: over,
+      };
+    },
+    { axis: geometry.ribbon.axis, dir: geometry.ribbon.direction },
+  );
   await page.close();
-  return box.map(round) as [number, number, number, number];
+  return {
+    wordBox: measured.box.map(round) as [number, number, number, number],
+    wordSpan: {
+      along: measured.along.map(round) as [number, number],
+      across: measured.across.map(round) as [number, number],
+    },
+  };
 })();
 const lockup = {
   font: { family: FAMILY, weight: layout.weight, file: `brand/fonts/${cut.file}` },
@@ -476,6 +507,7 @@ const lockup = {
   },
   path: wordPath,
   wordBox,
+  wordSpan,
   frame,
   markViewBox: viewBox,
   bodyBox: [BODY.l, BODY.t, BODY.r - BODY.l, BODY.b - BODY.t].map(round),
