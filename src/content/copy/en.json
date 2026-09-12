@@ -71,7 +71,7 @@
     "stripHistory": "The list is still growing. What we're building now, and when we meet, is on the Discord."
   },
   "footer": {
-    "since": "At WZIM SGGW since {year}",
+    "since": "At WIII SGGW (formerly WZIM) since {year}",
     "contact": "Contact",
     "links": "Links"
   },
@@ -97,11 +97,11 @@
       "title": "SGGW computer science student club",
       "lead": "A seven-person student team that ships apps to the stores.",
       "whoHeading": "Who we are",
-      "who": "The Silver .NET computer science student club at the Faculty of Applied Informatics and Mathematics, SGGW. We build mobile and web apps — for students on campus and for ourselves.",
+      "who": "The Silver .NET computer science student club at WIII (formerly WZIM), SGGW. We build mobile and web apps — for students on campus and for ourselves.",
       "builtHeading": "What we've built",
       "togetherHeading": "What we can do together",
       "together": [
-        "A workshop or a talk for computer science students at SGGW — we take care of the room at WZIM and the audience.",
+        "A workshop or a talk for computer science students at SGGW — we take care of the room at WIII and the audience.",
         "A joint project: a real problem from your side, a team from ours.",
         "Backing an event — a hackathon, a contest, SGGW Days."
       ],

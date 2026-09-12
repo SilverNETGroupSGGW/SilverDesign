@@ -71,7 +71,7 @@
     "stripHistory": "Ciąg dalszy dzieje się teraz. Projekty i terminy spotkań ogłaszamy na Discordzie."
   },
   "footer": {
-    "since": "Przy WZIM SGGW od {year}",
+    "since": "Przy WIII SGGW (dawniej WZIM) od {year}",
     "contact": "Kontakt",
     "links": "Linki"
   },
@@ -97,11 +97,11 @@
       "title": "Koło naukowe informatyków SGGW",
       "lead": "Siedmioosobowy zespół studentów, który wypuszcza aplikacje do sklepów.",
       "whoHeading": "Kim jesteśmy",
-      "who": "Koło Naukowe Informatyków Silver .NET przy Wydziale Zastosowań Informatyki i Matematyki SGGW. Robimy aplikacje mobilne i webowe — dla studentów z kampusu i dla siebie.",
+      "who": "Koło Naukowe Informatyków Silver .NET przy WIII SGGW (dawniej WZIM). Robimy aplikacje mobilne i webowe — dla studentów z kampusu i dla siebie.",
       "builtHeading": "Co zbudowaliśmy",
       "togetherHeading": "Co możemy zrobić razem",
       "together": [
-        "Warsztat lub prelekcja dla studentów informatyki SGGW — sala na WZIM, publiczność zapewniamy.",
+        "Warsztat lub prelekcja dla studentów informatyki SGGW — sala na WIII, publiczność zapewniamy.",
         "Wspólny projekt: realny problem z waszej strony, zespół z naszej.",
         "Wsparcie wydarzenia — hackathonu, konkursu, Dni SGGW."
       ],
