@@ -390,13 +390,16 @@ const BY_SIZE: Size = {
 };
 const LEAD: Size = { clamp: [{ rem: 1.05 }, { cqw: 1.67 }, { rem: 1.35 }] };
 
-/** The left edge of the page's own container, so the title starts where the body copy does. */
+/**
+ * The left edge of the page's own container, so the title starts where the body copy does — until
+ * 24rem, where it stops. `--bx` stops with it, and past that point the container keeps centring on
+ * 72rem while the S does not: letting this follow it squeezes the title's column against the
+ * diagonal until a single word breaks mid-word (`Projekt/y` at 2560 on a page).
+ */
 const CONTAINER_LEFT: Size = {
   min: [
     { max: [{ clamp: [{ rem: 1 }, { cqw: 4 }, { rem: 2.5 }] }, { cqw: 50, rem: -36 }] },
-    {
-      rem: 24,
-    },
+    { rem: 24 },
   ],
 };
 /** The S sits clear of the title's column, and the lead starts short of the S. */
@@ -419,7 +422,13 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     bx: { clamp: [{ rem: 3 }, { cqw: 48.42, px: -135.7 }, { rem: 60 }] },
     by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.39 }, { px: 20 }] },
-    h: { max: [{ rem: 48 }, { svh: 100 }, leftExitFloor(2)] },
+    /* Filling the window is what makes the ribbon read as crossing the page on a wide opener, where
+       the diagonal occupies the space it adds. Under the breakpoint the ribbon has already left the
+       left edge above the lead, so the same floor would only add empty canvas under the composition. */
+    h: {
+      wide: { max: [{ rem: 48 }, { svh: 100 }, leftExitFloor(2)] },
+      narrow: leftExitFloor(2),
+    },
     aboveX: CONTAINER_LEFT,
     aboveY: ABOVE_Y,
     belowX: BELOW_X,

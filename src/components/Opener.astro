@@ -103,6 +103,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .opener {
     --w: 100cqw;
     --by: var(--by-wide);
+    --h: var(--h-wide);
     position: relative;
     isolation: isolate;
     display: grid;
@@ -119,6 +120,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   @container (width < 64rem) {
     .opener {
       --by: var(--by-narrow);
+      --h: var(--h-narrow);
     }
   }
   /* Inline-level and in flow: a block-level box would clear the float's whole margin box instead of
@@ -203,8 +205,10 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     max-width: none;
     color: var(--bright);
     text-wrap: pretty;
-    /* At 200% text zoom a single Polish word is wider than a phone viewport. */
+    /* At 200% text zoom a single Polish word is wider than a phone viewport. The limit keeps the
+       hyphen for those and off the ordinary ones: at 400 px the EN title broke as "sci-/ence". */
     hyphens: auto;
+    hyphenate-limit-chars: 10 4 4;
     overflow-wrap: break-word;
   }
   /* A hyphen in a display line is a defect on a printed sheet, and the sheet's column is wide
@@ -227,5 +231,10 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     inline-size: var(--link-w);
     block-size: var(--link-h);
     z-index: 1;
+  }
+  /* The ring runs across the foil, which is as light as --bright: on its own it measures 1.3:1
+     there. Filling the outline's offset with --bg gives it a 3:1 neighbour the whole way round. */
+  .lockup-link:focus-visible {
+    box-shadow: 0 0 0 3px var(--bg);
   }
 </style>
