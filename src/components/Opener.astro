@@ -2,8 +2,9 @@
 import { getEntry } from "astro:content";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import { lockupPath } from "../lib/lockup";
-import { markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
+import { markBandPath, markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
 import {
+  bandVariants,
   formCss,
   lockupBox,
   markOrigin,
@@ -26,6 +27,7 @@ interface Props {
   route?: RouteKey;
 }
 const { locale, variant, title, lead, route } = Astro.props;
+const band = bandVariants.has(variant);
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const links = route === undefined ? [] : [
@@ -52,44 +54,69 @@ const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
 const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
 <div class="frame">
-  <header class:list={["opener", variant]} style={style} data-foil={variant === "home" ? "" : undefined}>
-    {route !== undefined && (
+  <header class:list={["opener", variant, band && "band"]} style={style} data-foil={variant === "home" ? "" : undefined}>
+    {route !== undefined && !band && (
       <a class="lockup-link" href={pathFor("home", locale)} aria-label={site.name}></a>
     )}
 
     <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
       <defs set:html={markPattern(uid)} />
       <g fill={`url(#foil-${uid})`}>
-        <path d={markRibbonPath} />
-        <use href={`#${markPathId}`} />
-        <path d={lockupPath} />
+        {band ? (
+          <path d={markBandPath} />
+        ) : (
+          <>
+            <path d={markRibbonPath} />
+            <use href={`#${markPathId}`} />
+            <path d={lockupPath} />
+          </>
+        )}
       </g>
     </svg>
 
-    <div class="zone above" style={polyAbove}>
-      <div class="sh"></div>
-      {route !== undefined && (
-        <nav aria-label={copy.nav.mainLabel}>
-          {links.map((l) => (
-            <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
-          ))}
-          <LocaleSwitch locale={locale} route={route} />
-        </nav>
-      )}
-      <h1
-        id={route === undefined ? undefined : "main"}
-        tabindex={route === undefined ? undefined : "-1"}
-      >
-        {route === undefined && <span class="visually-hidden">{site.name}</span>}
-        {title}
-      </h1>
-    </div>
+    {band ? (
+      <div class="zone below">
+        {route !== undefined && (
+          <nav aria-label={copy.nav.mainLabel}>
+            <a class="home" href={pathFor("home", locale)}>{site.name}</a>
+            {links.map((l) => (
+              <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
+            ))}
+            <LocaleSwitch locale={locale} route={route} />
+          </nav>
+        )}
+        <h1 id="main" tabindex="-1">{title}</h1>
+        <p class="lead">{lead}</p>
+        <slot />
+      </div>
+    ) : (
+      <>
+        <div class="zone above" style={polyAbove}>
+          <div class="sh"></div>
+          {route !== undefined && (
+            <nav aria-label={copy.nav.mainLabel}>
+              {links.map((l) => (
+                <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
+              ))}
+              <LocaleSwitch locale={locale} route={route} />
+            </nav>
+          )}
+          <h1
+            id={route === undefined ? undefined : "main"}
+            tabindex={route === undefined ? undefined : "-1"}
+          >
+            {route === undefined && <span class="visually-hidden">{site.name}</span>}
+            {title}
+          </h1>
+        </div>
 
-    <div class="zone below" style={polyBelow}>
-      <div class="sh"></div>
-      <p class="lead">{lead}</p>
-      <slot />
-    </div>
+        <div class="zone below" style={polyBelow}>
+          <div class="sh"></div>
+          <p class="lead">{lead}</p>
+          <slot />
+        </div>
+      </>
+    )}
   </header>
 </div>
 
@@ -241,6 +268,37 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   }
   /* Over the ribbon, and under the buttons, which carry the same z-index one step up: the title and
      the lead are static, so they stay below it wherever their boxes reach across the diagonal. */
+  /* A page carries the band alone across the top-left corner, and everything else in one column
+     under it: nothing wraps, the mark is not there, and the page's content starts where a header's
+     would. The home link the mark used to be is the club's name at the head of the navigation. */
+  .band .below {
+    /* The one zone is the second row: the first is the band's, kept clear by --below-y. */
+    grid-row: 2;
+    display: block;
+    padding-block-end: var(--space-5);
+  }
+  .band nav {
+    display: flex;
+    max-inline-size: none;
+  }
+  .band nav .home {
+    color: var(--bright);
+    font-weight: 500;
+  }
+  .band h1 {
+    margin-block-start: var(--space-4);
+    font-size: var(--title);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--bright);
+    max-width: none;
+  }
+  .band .below .lead {
+    margin-block-start: var(--space-3);
+    margin-inline-start: 0;
+    max-width: 48ch;
+    text-align: start;
+  }
   .lockup-link {
     position: absolute;
     inset-block-start: var(--link-y);

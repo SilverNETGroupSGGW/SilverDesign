@@ -280,6 +280,21 @@ Twarde spacje w leadach: po jednoliterowych, wokół myślnika („semestr — i
 Uwaga: `text-wrap: pretty` na leadzie nie działa obok floata z kształtem (Chromium wyłącza łamanie
 wynikowe przy zmiennej szerokości wierszy), więc dwuwyrazowe wdowy w leadzie zostają.
 
+### Podstrony: sama wstęga (2026-09-13)
+
+Decyzja właściciela: „Silver" ma wybrzmieć na stronie głównej, a na podstronach nie przeszkadzać.
+Wariant `page` openera rysuje więc **tylko prosty pas** (`markBandPath`, oś górnego ramienia bez
+uskoku, bez S i bez słowa) przez lewy górny róg: wchodzi lewą krawędzią, wychodzi górną. Nawigacja,
+tytuł i lead stoją pod nim w jednej kolumnie, wyrównane do lewej, bez zawijania; link do strony
+głównej to nazwa koła na początku nawigacji (S, które było linkiem, zniknęło). Geometria:
+`BAND_Y = tan·--above-x + 6rem` to punkt, w którym dolna krawędź pasa przecina lewą krawędź, więc
+pas zawsze wchodzi ~220 px w kolumnę treści; `--by` jest z tego rozwiązane (`BAND_BY`), `--bx = 0`,
+`--below-y = BAND_Y + --g`, `--h = BAND_Y + 2rem` (podłoga; treść i tak jest wyższa). Testy: dla
+wariantów z `bandVariants` sprawdzane są wyjścia pasa (`exits(v, true)`), pudełko nawigacji liczone od
+`--below-y`; niezmienniki o słowie i S pomijane. `Size` dostał `{ times: [Size, k] }`
+(`calc(k * …)`). Skrypt `wedge.ts` (wiersze leadu od najkrótszego do najdłuższego pod wstęgą) na
+podstronach nic nie zmienia, bo nie ma tam floata.
+
 ### Otwarte dla właściciela (opener)
 
 - **Puste pole pod wstęgą.** Na `page` przy 1920–2560 px opener rośnie do 818–838 px (geometria: im
