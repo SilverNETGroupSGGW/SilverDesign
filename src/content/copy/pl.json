@@ -26,11 +26,11 @@
       },
       {
         "title": "Wybierasz projekt albo zgłaszasz swój",
-        "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z pomysłem i szukasz dwóch osób."
+        "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z własnym pomysłem — samodzielnie albo w kilka osób."
       },
       {
-        "title": "Robisz to z zespołem przez semestr",
-        "body": "W małym zespole, w swoim tempie. Co jakiś czas spotykamy się na żywo w sali 3/79."
+        "title": "Pracujesz nad nim przez semestr",
+        "body": "Samodzielnie albo w zespole, w swoim tempie. Co jakiś czas spotykamy się na żywo w sali 3/79."
       }
     ],
     "hackathons": "Jeździmy też na hackathony. HackArena 3.0, marzec 2026: 4. miejsce w finale."
@@ -67,7 +67,7 @@
     "discord": "Discord",
     "email": "Mail",
     "room": "Sala",
-    "stripProjects": "Takie rzeczy robimy w małych zespołach. Wybierasz projekt albo przychodzisz ze swoim.",
+    "stripProjects": "Takie rzeczy robimy samodzielnie albo w małych zespołach. Wybierasz projekt albo przychodzisz ze swoim.",
     "stripHistory": "Ciąg dalszy dzieje się teraz. Projekty i terminy spotkań ogłaszamy na Discordzie."
   },
   "footer": {

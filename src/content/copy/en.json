@@ -26,11 +26,11 @@
       },
       {
         "title": "Pick a project or pitch your own",
-        "body": "Get into something that's already running, or bring an idea and find two people for it."
+        "body": "Get into something that's already running, or bring an idea of your own — solo or with a few people."
       },
       {
-        "title": "Build it with the team over a semester",
-        "body": "A small team, your own pace. Every so often we meet up in person in room 3/79."
+        "title": "Work on it over a semester",
+        "body": "On your own or in a small team, at your own pace. Every so often we meet up in person in room 3/79."
       }
     ],
     "hackathons": "We go to hackathons too. HackArena 3.0, March 2026: 4th place in the final."
@@ -67,7 +67,7 @@
     "discord": "Discord",
     "email": "Email",
     "room": "Room",
-    "stripProjects": "We build this kind of thing in small teams. Pick a project that's running, or bring your own.",
+    "stripProjects": "We build this kind of thing solo or in small teams. Pick a project that's running, or bring your own.",
     "stripHistory": "The list is still growing. What we're building now, and when we meet, is on the Discord."
   },
   "footer": {
