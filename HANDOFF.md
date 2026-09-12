@@ -268,6 +268,15 @@ liczbie ekranów.
 | CTA: `text-align: end`, margines z lewej strony przycisku | rząd przycisków pod prawym brzegiem leadu; na telefonie schodkują w prawo |
 | Test „lead startuje obok dolnej połowy S" (`belowY ≥ by + 0.269·m`), szerokości 980 i 1000 | niezmiennik dopasowany do nowej reguły; obie strony nowego punktu przełączenia |
 
+**Teksty (ta sama noc).** Lead strony głównej napisany od nowa na życzenie właściciela (PL:
+„Plan zajęć i mapa kampusu w telefonie to nasza robota. Następne aplikacje piszemy w małych
+zespołach, przez semestr — i szukamy do nich ludzi."; EN nie słowo w słowo). Potem właściciel:
+„przepisz wszystkie teksty opisujące na bardziej naturalne — nie brzmiące na bezpośrednio
+przetłumaczone": 30 stringów (15 EN w `copy/en.json`, 3 PL, 4 w projektach, 8 w historii), raport
+z tabelą przed/po w scratchpadzie sesji (`copy-report.md`), review `copy-review.md`. Zasada: żaden
+fakt nie doszedł ani nie ubył (§2/§3); lead arkusza studentów niesie ten sam komunikat co hero.
+Twarde spacje w leadach: po jednoliterowych, wokół myślnika („semestr — i"), w „nich ludzi".
+
 Uwaga: `text-wrap: pretty` na leadzie nie działa obok floata z kształtem (Chromium wyłącza łamanie
 wynikowe przy zmiennej szerokości wierszy), więc dwuwyrazowe wdowy w leadzie zostają.
 

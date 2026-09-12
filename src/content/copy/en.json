@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Silver — SGGW computer science student club",
-    "description": "The computer science student club at SGGW. We write the apps the campus uses."
+    "description": "The computer science student club at SGGW. We build the apps the campus uses."
   },
   "nav": {
     "projects": "Projects",
@@ -13,7 +13,7 @@
   },
   "hero": {
     "title": "The computer science club at SGGW.",
-    "lead": "We write the apps the campus uses — and learn more from them than from classes.",
+    "lead": "The campus map and the faculty timetable on your phone are ours. We build the next ones in small teams over a semester — and we're looking for people.",
     "ctaDiscord": "Join on Discord",
     "ctaProjects": "See the projects"
   },
@@ -22,15 +22,15 @@
     "items": [
       {
         "title": "Join the Discord",
-        "body": "Everything is there: projects, dates, people. Introduce yourself in one sentence."
+        "body": "It's all there: projects, meetups, people. Introduce yourself in one sentence."
       },
       {
         "title": "Pick a project or pitch your own",
-        "body": "Join something already moving, or bring an idea and find two people for it."
+        "body": "Get into something that's already running, or bring an idea and find two people for it."
       },
       {
         "title": "Build it over the semester",
-        "body": "In a small team, at your own pace. Every so often we meet in person in room 3/79."
+        "body": "A small team, your own pace. Every so often we meet up in person in room 3/79."
       }
     ],
     "hackathons": "We go to hackathons too. HackArena 3.0, March 2026: 4th place in the final."
@@ -56,19 +56,19 @@
   },
   "build": {
     "heading": "What we build, and with what",
-    "what": "Some of what we make solves problems we have at university ourselves — hence the timetable app and the campus map. The rest exists because someone wanted to try a new technology or do a familiar thing their own way.",
-    "how": "There is no single stack. We pick tools per project and happily reach for new things — sometimes before anyone calls them stable.",
+    "what": "Some of what we build fixes problems we run into at university ourselves — that's where the timetable app and the campus map came from. The rest happens because someone wanted to try a new technology, or do a familiar thing their own way.",
+    "how": "We don't have one stack. We pick the tools that fit the project, and we're happy to try new ones — sometimes before anyone calls them stable.",
     "inOrg": "In our GitHub org:"
   },
   "join": {
     "heading": "Join",
     "lead": "You don't need to know how to code yet. Wanting to build something is enough.",
-    "threshold": "Join the Discord, introduce yourself, pick a project. In-person meetings are announced there.",
+    "threshold": "Join the Discord, introduce yourself, pick a project. That's where we post the in-person meetups too.",
     "discord": "Discord",
     "email": "Email",
     "room": "Room",
-    "stripProjects": "Small teams, one project at a time. Take one that is running, or bring your own.",
-    "stripHistory": "This list is still growing. What we are building now, and when we meet, is on the Discord."
+    "stripProjects": "We build this kind of thing in small teams. Pick a project that's running, or bring your own.",
+    "stripHistory": "The list is still growing. What we're building now, and when we meet, is on the Discord."
   },
   "footer": {
     "since": "At WZIM SGGW since {year}",
@@ -77,17 +77,17 @@
   },
   "history": {
     "heading": "History",
-    "lead": "What happened in the club, year by year."
+    "lead": "What the club has been up to, year by year."
   },
   "notFound": {
     "title": "Page not found",
-    "body": "The address is out of date, or it has a typo.",
+    "body": "This address is either out of date or has a typo.",
     "home": "Home page"
   },
   "brochure": {
     "students": {
       "title": "The computer science club at SGGW",
-      "lead": "At Silver we write the apps the campus uses — and learn more from them than from classes.",
+      "lead": "The campus map and the faculty timetable on your phone are Silver's. We build the next ones in small teams over a semester — and we need people.",
       "stepsHeading": "How it works",
       "appsHeading": "Our apps in the stores",
       "threshold": "You don't need to know how to code yet. Wanting to build something is enough.",
@@ -97,11 +97,11 @@
       "title": "SGGW computer science student club",
       "lead": "A seven-person student team that ships apps to the stores.",
       "whoHeading": "Who we are",
-      "who": "The Silver .NET computer science student club at the Faculty of Applied Informatics and Mathematics, SGGW. We build mobile and web apps — for the campus and for ourselves.",
+      "who": "The Silver .NET computer science student club at the Faculty of Applied Informatics and Mathematics, SGGW. We build mobile and web apps — for students on campus and for ourselves.",
       "builtHeading": "What we've built",
       "togetherHeading": "What we can do together",
       "together": [
-        "A workshop or talk for SGGW computer science students — we provide the room and the audience.",
+        "A workshop or a talk for computer science students at SGGW — we take care of the room at WZIM and the audience.",
         "A joint project: a real problem from your side, a team from ours.",
         "Backing an event — a hackathon, a contest, SGGW Days."
       ],

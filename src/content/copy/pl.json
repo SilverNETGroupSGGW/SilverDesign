@@ -13,7 +13,7 @@
   },
   "hero": {
     "title": "Koło naukowe informatyków na SGGW.",
-    "lead": "Piszemy aplikacje, z których korzysta kampus — i uczymy się na nich więcej niż na zajęciach.",
+    "lead": "Plan zajęć i mapa kampusu w telefonie to nasza robota. Następne aplikacje piszemy w małych zespołach, przez semestr — i szukamy do nich ludzi.",
     "ctaDiscord": "Dołącz na Discordzie",
     "ctaProjects": "Zobacz projekty"
   },
@@ -63,7 +63,7 @@
   "join": {
     "heading": "Dołącz",
     "lead": "Nie musisz jeszcze umieć programować. Wystarczy, że chcesz coś zbudować.",
-    "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Terminy spotkań na żywo ogłaszamy tam.",
+    "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Tam też ogłaszamy terminy spotkań na żywo.",
     "discord": "Discord",
     "email": "Mail",
     "room": "Sala",
@@ -87,7 +87,7 @@
   "brochure": {
     "students": {
       "title": "Koło naukowe informatyków na SGGW",
-      "lead": "W Silverze piszemy aplikacje, z których korzysta kampus — i uczymy się na nich więcej niż na zajęciach.",
+      "lead": "Mapa kampusu i plan zajęć w telefonie to aplikacje Silvera. Następne piszemy w małych zespołach, przez semestr — i szukamy ludzi.",
       "stepsHeading": "Jak to działa",
       "appsHeading": "Nasze aplikacje w sklepach",
       "threshold": "Nie musisz jeszcze umieć programować. Wystarczy, że chcesz coś zbudować.",
@@ -97,7 +97,7 @@
       "title": "Koło naukowe informatyków SGGW",
       "lead": "Siedmioosobowy zespół studentów, który wypuszcza aplikacje do sklepów.",
       "whoHeading": "Kim jesteśmy",
-      "who": "Koło Naukowe Informatyków Silver .NET przy Wydziale Zastosowań Informatyki i Matematyki SGGW. Robimy aplikacje mobilne i webowe — dla studentów kampusu i dla siebie.",
+      "who": "Koło Naukowe Informatyków Silver .NET przy Wydziale Zastosowań Informatyki i Matematyki SGGW. Robimy aplikacje mobilne i webowe — dla studentów z kampusu i dla siebie.",
       "builtHeading": "Co zbudowaliśmy",
       "togetherHeading": "Co możemy zrobić razem",
       "together": [
