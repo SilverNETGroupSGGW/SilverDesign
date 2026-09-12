@@ -13,7 +13,7 @@
   },
   "hero": {
     "title": "The computer science club at SGGW.",
-    "lead": "Got Plan WZIM on your phone? We built it. The next one takes a few people and a semester — you could be one of them.",
+    "lead": "The app you find your exam room in was built by students at this faculty. You could be building the next one with us.",
     "ctaDiscord": "Join on Discord",
     "ctaProjects": "See the projects"
   },
@@ -87,7 +87,7 @@
   "brochure": {
     "students": {
       "title": "The computer science club at SGGW",
-      "lead": "Got Plan WZIM on your phone? Silver built it. The next one takes a few people and a semester — you could be one of them.",
+      "lead": "The app you find your exam room in was built by students at this faculty, at Silver. You could be building the next one with us.",
       "stepsHeading": "How it works",
       "appsHeading": "Our apps in the stores",
       "threshold": "You don't need to know how to code yet. Wanting to build something is enough.",
