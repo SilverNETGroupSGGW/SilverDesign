@@ -2,6 +2,7 @@
   "name": "Plan WZIM",
   "order": 2,
   "status": "store",
+  "sheet": true,
   "platforms": ["android", "ios"],
   "links": {
     "play": "https://play.google.com/store/apps/details?id=com.silvernet.silvertimetable",

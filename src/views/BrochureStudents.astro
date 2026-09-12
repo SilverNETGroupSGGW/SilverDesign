@@ -14,7 +14,7 @@ const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const b = copy.brochure.students;
 const apps = (await getCollection("projects"))
-  .filter((p) => p.data.status === "store")
+  .filter((p) => p.data.sheet)
   .toSorted((a, c) => a.data.order - c.data.order);
 ---
 <Brochure locale={locale} title={`${site.name} — ${b.title}`}>
@@ -35,7 +35,7 @@ const apps = (await getCollection("projects"))
 
   <section class="row">
     <h2 class="angled">{b.appsHeading}</h2>
-    <ul class="cards" style="--cols:2">
+    <ul class="cards" style="--cols:3">
       {apps.map((p) => (
         <li class="card cut">
           <strong>{p.data.name}</strong>

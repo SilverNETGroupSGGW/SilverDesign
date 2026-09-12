@@ -64,7 +64,8 @@ const { locale, title } = Astro.props;
     font-size: var(--print-step-0);
     display: flex;
     flex-direction: column;
-    gap: var(--print-space-3);
+    /* Three rows and a plate on one A4: the space-2 gap is what leaves the third app card room. */
+    gap: var(--print-space-2);
     padding-block-end: var(--pad);
   }
   /* A sheet is a fixed box: a block that does not fit has to report as overflow, not be squeezed
@@ -112,7 +113,7 @@ const { locale, title } = Astro.props;
     display: grid;
     gap: var(--print-space-1);
     align-content: start;
-    padding: var(--print-space-3);
+    padding: 20px var(--print-space-3);
     background: var(--surface);
     border: 1px solid var(--line);
     font-size: var(--print-step--1);
@@ -126,7 +127,7 @@ const { locale, title } = Astro.props;
   .page .plate {
     background: var(--bg);
     border: 1px solid var(--line);
-    padding: var(--print-space-4);
+    padding: var(--print-space-3);
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--print-space-4);
@@ -144,7 +145,7 @@ const { locale, title } = Astro.props;
   /* The plate's padding is the code's quiet zone on three sides; the caption keeps the same
      distance below it. */
   .page .code p {
-    margin-top: var(--print-space-4);
+    margin-top: var(--print-space-3);
     font-size: var(--print-step--1);
     max-width: 20ch;
   }

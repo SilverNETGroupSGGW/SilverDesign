@@ -2,6 +2,7 @@
   "name": "Dni SGGW",
   "order": 3,
   "status": "github",
+  "sheet": true,
   "platforms": ["android", "ios", "web"],
   "links": { "github": "https://github.com/SilverNETGroupSGGW/sggw_days" },
   "tech": ["Flutter", "Firebase", "GitHub Actions"],

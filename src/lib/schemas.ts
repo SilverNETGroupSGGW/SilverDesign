@@ -23,6 +23,8 @@ export const ProjectSchema = z.object({
   name: z.string(),
   order: z.number().int(),
   status: z.enum(["store", "github"]),
+  /** Shown on the students' sheet, which has room for three apps and picks them by hand. */
+  sheet: z.boolean().default(false),
   platforms: z.array(z.enum(["android", "ios", "web", "api"])),
   links: z.object({
     play: z.url().optional(),
