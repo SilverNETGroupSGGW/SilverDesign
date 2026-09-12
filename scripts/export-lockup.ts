@@ -446,6 +446,21 @@ const wordPath = compactPath(word);
 
 const round = (n: number): number => Math.round(n * 10) / 10;
 const frame = layout.frame.map(round) as [number, number, number, number];
+
+// The page lays the word and the S body out against the ribbon's edges, so the boxes it measures
+// them by are exported next to the path instead of being retyped wherever a layout needs them.
+const wordBox = await (async (): Promise<[number, number, number, number]> => {
+  const page = await browser.newPage();
+  await page.setContent(
+    `<!doctype html><svg width="0" height="0" style="position:absolute"><path id="word" d="${wordPath}"/></svg>`,
+  );
+  const box = await page.evaluate(() => {
+    const { x, y, width, height } = document.querySelector<SVGPathElement>("#word")!.getBBox();
+    return [x, y, width, height] as [number, number, number, number];
+  });
+  await page.close();
+  return box.map(round) as [number, number, number, number];
+})();
 const lockup = {
   font: { family: FAMILY, weight: layout.weight, file: `brand/fonts/${cut.file}` },
   capRatio: Math.round(layout.capRatio * 100) / 100,
@@ -460,7 +475,10 @@ const lockup = {
     glyphs: [...TEXT].map((ch, i) => ({ ch, penEm: Math.round(layout.penEm[i]! * 10000) / 10000 })),
   },
   path: wordPath,
+  wordBox,
   frame,
+  markViewBox: viewBox,
+  bodyBox: [BODY.l, BODY.t, BODY.r - BODY.l, BODY.b - BODY.t].map(round),
 };
 writeFileSync(join(out, "lockup.json"), JSON.stringify(lockup, null, 2) + "\n");
 

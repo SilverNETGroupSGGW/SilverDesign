@@ -19,7 +19,10 @@ const lockup = read("lockup.json") as {
     glyphs: { ch: string; penEm: number }[];
   };
   path: string;
+  wordBox: number[];
   frame: number[];
+  markViewBox: number[];
+  bodyBox: number[];
 };
 const geometry = read("geometry.json") as {
   ribbon: { direction: number[]; axis: number[]; start: number };
@@ -64,6 +67,21 @@ describe("brand/logo/lockup.json", () => {
     expect(y).toBeLessThan(BODY.t);
     expect(x + w).toBeGreaterThan(BODY.r);
     expect(y + h).toBeGreaterThan(BODY.b);
+  });
+
+  test("the boxes the page lays text out against come from the export", () => {
+    const [vbX, vbY, vbSize] = lockup.markViewBox as [number, number, number];
+    expect([vbX, vbY, vbSize]).toEqual([300, 300, 600]);
+    expect(lockup.bodyBox.map((n) => Math.round(n * 10) / 10)).toEqual(
+      [BODY.l, BODY.t, BODY.r - BODY.l, BODY.b - BODY.t].map((n) => Math.round(n * 10) / 10),
+    );
+    const [x, y, w, h] = lockup.wordBox as [number, number, number, number];
+    // The word starts on the S's end and runs out past the frame's right edge, above its bottom.
+    expect(x).toBeGreaterThan(BODY.r - lockup.gapU * 4);
+    expect(x + w).toBeGreaterThan(vbX + vbSize);
+    expect(y).toBeGreaterThan(vbY - vbSize);
+    expect(y + h).toBeLessThan(BODY.b);
+    expect(h).toBeGreaterThan(lockup.capRatio * (BODY.b - BODY.t));
   });
 
   test("the word hangs under the arm, past the notch the ribbon starts at", () => {
