@@ -64,18 +64,18 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
 
 <style>
   /* The buttons stay inline-level: a block-level flex row clears the float's whole box instead of
-     following its shape, and the tall line box is what finds a band beside the ribbon wide enough
-     to hold the row. */
+     following its shape, and the line box they make is what finds a band beside the ribbon wide
+     enough to hold the row. Their own block margins are that line box's only leading, so the row
+     keeps its gap where it wraps beside the diagonal. */
   .ctas {
     position: relative;
     z-index: 2;
     margin-block-start: 1.2em;
-    font-size: var(--step-0);
-    line-height: 2.6;
     max-width: none;
   }
   .ctas :global(.button) {
     margin-inline-end: 0.6em;
+    margin-block: 0.35em;
   }
   /* minmax(0, …) instead of a bare column: a grid track sized to auto never shrinks below the
      longest word, which at 200% text zoom is wider than a phone. */
