@@ -48,6 +48,8 @@ for (const job of jobs) {
     // codes. One of those losing a line does not move the sheet's own scroll size, which is how a
     // card shipped with its last line cut once already.
     const clipped = [...el.querySelectorAll<HTMLElement>("*")].filter((node) => {
+      // The visually-hidden utility clips by design: a 1 px box carrying an accessible name.
+      if (node.classList.contains("visually-hidden")) return false;
       const style = getComputedStyle(node);
       return (
         style.overflowX !== "visible" || style.overflowY !== "visible" || style.clipPath !== "none"

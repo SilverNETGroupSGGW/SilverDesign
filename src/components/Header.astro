@@ -2,7 +2,7 @@
 import { getEntry } from "astro:content";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import LocaleSwitch from "./LocaleSwitch.astro";
-import Mark from "./Mark.astro";
+import Lockup from "./Lockup.astro";
 
 interface Props {
   locale: Locale;
@@ -20,8 +20,7 @@ const links = [
 <header class="header">
   <div class="container row">
     <a class="brand" href={pathFor("home", locale)} aria-label={site.name}>
-      <Mark size="2rem" />
-      <span>{site.name}</span>
+      <Lockup size="2.5rem" />
     </a>
     <nav aria-label={copy.nav.mainLabel}>
       {links.map((l) => (
@@ -47,8 +46,6 @@ const links = [
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    font-weight: 600;
     text-decoration: none;
   }
   nav {

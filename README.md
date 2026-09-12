@@ -17,6 +17,7 @@ Statyczna strona koła (PL/EN) i cztery broszury A4 renderowane z tej samej tre�
 | `mise run build`                 | statyczny build do `dist/`                               |
 | `mise run brochure`              | build + cztery PNG 2480×3508 do `dist/brochure/`         |
 | `mise run logo:export`           | eksport logo z `logo-configurator.html` do `brand/logo/` |
+| `mise run lockup:export`         | eksport lockupu „Silver" do `brand/logo/`                |
 
 Pierwsze uruchomienie Playwrighta: `bunx playwright install chromium`.
 

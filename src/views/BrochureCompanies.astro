@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntry } from "astro:content";
+import Lockup from "../components/Lockup.astro";
 import Mark from "../components/Mark.astro";
 import Qr from "../components/Qr.astro";
 import Brochure from "../layouts/Brochure.astro";
@@ -20,7 +21,8 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
 
   <header class="block masthead" style="--left:96px;--w:1048px">
     <h1>
-      <span class="wordmark">{site.name}</span>
+      <Lockup size="calc(1.4 * var(--print-step-5))" />
+      <span class="visually-hidden">{site.name}</span>
       <span class="tagline">{b.title}</span>
     </h1>
     <p class="lead muted">{b.lead}</p>

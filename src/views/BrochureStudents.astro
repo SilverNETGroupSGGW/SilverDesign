@@ -1,5 +1,6 @@
 ---
 import { getCollection, getEntry } from "astro:content";
+import Lockup from "../components/Lockup.astro";
 import Mark from "../components/Mark.astro";
 import Qr from "../components/Qr.astro";
 import Brochure from "../layouts/Brochure.astro";
@@ -22,7 +23,8 @@ const apps = (await getCollection("projects"))
 
   <header class="block masthead" style="--left:96px;--w:1048px">
     <h1>
-      <span class="wordmark">{site.name}</span>
+      <Lockup size="calc(1.4 * var(--print-step-5))" />
+      <span class="visually-hidden">{site.name}</span>
       <span class="tagline">{b.title}</span>
     </h1>
     <p class="lead muted">{b.lead}</p>

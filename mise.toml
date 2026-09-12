@@ -19,6 +19,8 @@ run = "bun run build"
 run = "bun run preview"
 [tasks."logo:export"]
 run = "bun run logo:export"
+[tasks."lockup:export"]
+run = "bun run lockup:export"
 [tasks."assets:derive"]
 run = "bun run assets:derive"
 [tasks.brochure]

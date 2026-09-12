@@ -219,12 +219,18 @@ Od zera; z poprzedniego systemu nic nie wraca.
   Silver). Kolory pochodne (tekst drugorzędny, linie, powierzchnie kart)
   wyprowadzane z tych dwóch; każdy kolor tekstu mierzony ≥ 4.5 : 1 na swoim
   tle. Żadnej barwy poza szarościami.
-- **Tekstura**: `brand/foil-texture.jpg` wyłącznie wewnątrz znaku S i w
-  jednym elemencie hero (pas). Nigdzie indziej.
+- **Tekstura**: `brand/foil-texture.jpg` wyłącznie wewnątrz znaku S (także jego
+  wstęgi i słowa w lockupie) i w jednym elemencie hero (pas). Nigdzie indziej.
 - **Logo**: `brand/logo/mark.svg` i `mark-transparent.svg` eksportowane z
   konfiguratora z ustawieniami z §11 skryptem `bun run logo:export`
   (Playwright uruchamia `logo-configurator.html`, wczytuje JSON ustawień,
   zapisuje SVG). Eksport odtwarzalny, nie ręczny.
+- **Wordmark**: lockup „Silver" = znak S + słowo „ilver" pod górnym ramieniem
+  w Syncopate 700 (Apache 2.0, plik w `brand/fonts/`), eksportowany jako kontury
+  do `brand/logo/lockup.json` i `lockup.svg` skryptem `bun run lockup:export`
+  (reguły dopasowania w skrypcie: trzon liter = kreska S, jedno światło mierzone
+  S→„i", litery kończą się nad spodem S). Syncopate nigdzie indziej — nie jest
+  webfontem.
 - **Motyw**: jedna przekątna w całym systemie — kąt pasa w wyeksportowanym
   SVG. Cięcia kart, podkreślenia i pas w hero używają tego kąta i żadnego
   innego.

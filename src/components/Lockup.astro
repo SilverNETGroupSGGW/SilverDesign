@@ -1,0 +1,46 @@
+---
+import { lockupArmsPath, lockupFrame, lockupPath, lockupRatio } from "../lib/lockup";
+import { markPathId, markPattern } from "../lib/mark";
+
+interface Props {
+  /** The plaque's height; the arms run to its edges. */
+  size?: string;
+  interactive?: boolean;
+}
+const { size = "2.5rem", interactive = false } = Astro.props;
+// Each render gets its own pattern id: two marks on one page would otherwise both
+// resolve url(#foil) to the first one's pattern.
+const uid = Math.random().toString(36).slice(2, 8);
+---
+<span
+  class="lockup"
+  style={`--size:${size};--ratio:${lockupRatio}`}
+  data-foil={interactive ? "" : undefined}
+  aria-hidden="true"
+>
+  <svg viewBox={lockupFrame}>
+    <defs set:html={markPattern(uid)} />
+    <path d={lockupArmsPath} fill={`url(#foil-${uid})`} />
+    <use href={`#${markPathId}`} fill={`url(#foil-${uid})`} />
+    <path d={lockupPath} fill={`url(#foil-${uid})`} />
+  </svg>
+</span>
+
+<style>
+  .lockup {
+    display: inline-block;
+    block-size: var(--size);
+    aspect-ratio: var(--ratio);
+  }
+  /* The arms run thousands of user units past the frame on both ends: the plaque is the container
+     they end on. */
+  .lockup :global(svg) {
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  import "../lib/foil";
+</script>

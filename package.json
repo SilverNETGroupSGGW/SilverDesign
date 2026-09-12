@@ -12,6 +12,7 @@
     "preview": "astro preview",
     "test": "bun test",
     "logo:export": "bun scripts/export-logo.ts",
+    "lockup:export": "bun scripts/export-lockup.ts",
     "assets:derive": "bun scripts/derive-assets.ts",
     "brochure": "bun scripts/render-brochures.ts"
   },
@@ -21,9 +22,11 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@types/opentype.js": "^1.3.10",
     "@types/qrcode": "^1.5.5",
     "bun-types": "^1.4.0",
     "geist": "^1.7.2",
+    "opentype.js": "^2.0.0",
     "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",
     "playwright": "^1.63.0",

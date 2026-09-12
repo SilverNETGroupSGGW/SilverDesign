@@ -58,6 +58,49 @@ Decyzja właściciela: pas z S ma przechodzić przez całą stronę i broszurę.
 
 **Rulingi:** uskok zamiast prostej wstęgi; znak w hero powiększony, by wstęga czytała się jako pas; układ arkuszy w rzędach zamiast „schodków" (rozsypywały kompozycję); płyta w prawym dolnym rogu; mono dla `result` tylko gdy zaczyna się cyfrą (pomiar) — `isMeasurement` w `schemas.ts`, wspólne dla strony i arkuszy; numeracja kroków 01/02/03 także na arkuszu (sekwencja niesie informację); pusta przestrzeń po lewej między rzędem 2 a wstęgą przyjęta jako negatyw diagonali.
 
+## Lockup „Silver" — znak S + słowo „ilver" (2026-09-12)
+
+Decyzja właściciela: wordmark to lockup — znak S ze słowem „ilver" pod górnym ramieniem, równolegle
+do niego, w **Syncopate 700**, jako **kontury** (nie żywy tekst, nie webfont). Ramiona nie kończą się
+w powietrzu: kadr lockupu („płyta" 900 : 460) je obcina.
+
+**Mechanizm:** `scripts/export-lockup.ts` (`bun run lockup:export`) odpala Playwrighta, mierzy
+sylwetki liter na canvasie i zapisuje `brand/logo/lockup.json` (kontur słowa w jednostkach znaku,
+kadr, metryki), `brand/logo/lockup.svg` (master do rozdawania) i `public/og.png` (eksport og
+przeniesiony tu z `export-logo.ts`). Kontury buduje `opentype.js` z tego samego TTF-a; skrypt
+sprawdza, że szerokość znaku z przeglądarki i z opentype zgadzają się do 0,002 em. Strona czyta
+`lockup.json` przez `src/lib/lockup.ts` i rysuje `src/components/Lockup.astro` (własny `<pattern>`,
+ramiona z `markRibbonPath`, `<use>` znaku, kontur słowa — wszystko na jednej folii).
+
+**Reguły dopasowania (port z zatwierdzonego arkusza):** trzon liter = kreska S (50 j.) — najcięższy
+krój, którego trzon się w niej mieści; jedno światło (62 j.) zmierzone S→„i" po sylwetkach, ono samo
+ustawia słowo pod ramieniem i optycznie między literami; litery kończą się nad spodem S. Wyniki:
+waga 700, wysokość liter 0,56 korpusu S, trzon 49,7 j., reszta obrysu 0,3 j. (porzucona — reguła:
+< 1 j. porzuć, inaczej eksport pada), kadr `160 -15.8 1804.9 922.5`.
+
+### Rulingi z tej fazy (do cofnięcia, jeśli złe)
+
+| Ruling | Dlaczego | Koszt, jeśli złe |
+|---|---|---|
+| Syncopate jest w google/fonts na **Apache 2.0**, nie OFL — plik licencji nazwany `LICENSE-Syncopate.txt` | kierunek zakładał OFL; nazwanie licencji Apache „OFL" byłoby błędem | nazwa pliku + zdanie w §8 |
+| `brand/fonts/Syncopate-Regular.ttf` zacommitowany, choć nieużywany w renderze | reguła „najcięższy krój, który się mieści" musi mieć nad czym pracować; z listą samego 700 pętla zatrzymuje się na 0,61 korpusu i trzon liter przekracza kreskę S o 4,2 j. | 60 KB w `brand/` |
+| Sylwetkę S mierzy **ostatnia podścieżka** ścieżki znaku, nie cała | cała ścieżka niesie też wstęgę, która biegnie tysiące jednostek za kadr | jedna linia |
+| Szerokości znaków mierzone przy 2048 px (em kroju), nie przy 200 px | Chromium zaokrągla je do pełnych pikseli — przy 200 px różnica z opentype wychodzi 0,0021 em i asercja pada | jedna stała |
+| `src/lib/ribbon.ts` — konstrukcja wielokątów ramion wyjęta z `mark.ts`, bo skrypt eksportu nie może użyć importu `?raw` | jedna kopia geometrii, bez dryfu między masterem SVG i stroną | scalenie z powrotem |
+| `src/lib/foil.ts` — skrypt folii wyjęty z `Mark.astro`, importowany przez `Mark` i `Lockup` | jedna kopia; moduł wykonuje się raz, `[data-foil]` szuka po całym dokumencie | dwa `<script>` |
+| `render-brochures.ts` pomija `.visually-hidden` w detektorze obcięć | ta klasa obcina z założenia (1 px na nazwę dostępną) | jedna linia |
+
+### Otwarte dla właściciela
+
+- **Wielkość lockupu.** Płyta to w 2,86 × wysokość korpusu S (padding 0,45 korpusu + rozciągnięcie do
+  900 : 460), więc litery mają ~19,6 % jej wysokości. Przy `size="2.5rem"` w headerze korpus S ma
+  15,7 px, a litery ~8,8 px — mniej niż nawigacja (kapitalik ~11 px); stary header miał znak 32 px
+  plus tekst 16 px. W broszurach przy `1.4 × --print-step-5` (114,8 px) litery mają ~22,5 px, a
+  tagline pod nimi 36 px — hierarchia odwrócona względem starego wordmarku 82 px. Wartości są z
+  kontraktu kierunku; zmiana to jedna liczba na każdym z dwóch miejsc (parytet z nawigacją: ~4rem
+  w headerze, ~3,4 × `--print-step-5` na arkuszu).
+- `lockup.svg` waży 289 KB (jedna kopia tekstury w data-URI, cztery kafle przez `<use>`).
+
 ## Do decyzji właściciela (przed deployem)
 
 1. **Ścieżka bazowa Pages.** `astro.config.ts` ma `site: https://silvernetgroupsggw.github.io`, a repo nazywa się `SilverDesign` — project Pages serwuje pod `/SilverDesign/`, a strona używa ścieżek od korzenia (`/pl/`, `/fonts/`, `/brand/`). Trzeba: własna domena (`silver.sggw.pl`, `public/CNAME`) albo repo user-site, albo zmiana `site`/`base` (inwazyjna: `pathFor` + URL-e assetów). Do tego Pages → Source: „GitHub Actions".
