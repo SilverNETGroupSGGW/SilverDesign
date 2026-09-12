@@ -370,10 +370,6 @@ export const TITLE_LINE_HEIGHT = 1.02;
 /** How many lines a title takes on the narrowest phone (320 px, 32 px type): about 14 characters each. */
 export const titleLines = (title: string): number => Math.max(1, Math.ceil(title.length / 14));
 /**
- * Where the lockup's top sits: level with the title on a wide opener, and under the title's band
- * (`--title-band` = its lines × line height × size) on a narrow one. `by` follows from it.
- */
-/**
  * On a narrow opener the upper arm leaves through the right edge, above the lead and under the
  * navigation: the S has to sit low enough that the arm's upper edge at the right edge clears the
  * box the navigation reserves (a one-line title would otherwise put the band across the links).
@@ -384,6 +380,10 @@ const ARM_CLEAR_BY: Size = ((): Size => {
     sum: [NAV_TOP, NAV_H, { g: 1 }, { cqw: 100 * tan, bx: -tan, m: -(p[0].m * tan + p[1].m) }],
   };
 })();
+/**
+ * Where the lockup's top sits: level with the title on a wide opener, and under the title's band
+ * (`--title-band` = its lines × line height × size) on a narrow one. `by` follows from it.
+ */
 const BY_SIZE: Size = {
   wide: { sum: [ABOVE_Y, { m: lockupTop }] },
   narrow: { max: [{ sum: [ABOVE_Y, { tb: 1, g: 1, m: lockupTop }] }, ARM_CLEAR_BY] },
