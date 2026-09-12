@@ -43,6 +43,10 @@ let failed = false;
 for (const job of jobs) {
   await page.goto(`http://127.0.0.1:${server.port}${job.path}`, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  // The lead's line script lays out again in a frame after the fonts land; measure after it.
+  await page.evaluate(
+    () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
+  );
   const metrics = await page.evaluate(() => {
     const el = document.querySelector(".page")!;
     const rect = el.getBoundingClientRect();

@@ -177,15 +177,6 @@ export const belowBoundary: Point[] = [
   topExit(edges.upperBottom),
 ];
 
-/**
- * A page carries the band alone, across the top-left corner: its lower edge from the left edge to
- * the top exit is the one line the page's content keeps below.
- */
-export const bandBoundary: Point[] = [
-  [ZERO_F, lineY(edges.upperBottom, ZERO_F)],
-  topExit(edges.upperBottom),
-];
-
 /** The float above the ribbon holds everything below the boundary; the one below it, everything above. */
 export const shapeAbove: Point[] = [...aboveBoundary, [W, ZERO_F], [W, H], [ZERO_F, H]];
 export const shapeBelow: Point[] = [
@@ -225,7 +216,6 @@ export const resolve = (points: Point[], v: OpenerVars): [number, number][] =>
 /** Where the ribbon leaves the opener's box: the left edge low, the top edge (or right edge) high. */
 export const exits = (
   v: OpenerVars,
-  band = false,
 ): {
   leftTop: number;
   leftBottom: number;
@@ -239,8 +229,8 @@ export const exits = (
   const atW = (line: Point): number => evalForm(lineY(line, W), v);
   const xAt0 = (line: Point): number => evalForm(lineX(line, ZERO_F), v);
   return {
-    leftTop: at0(band ? edges.upperTop : edges.lowerTop),
-    leftBottom: at0(band ? edges.upperBottom : edges.lowerBottom),
+    leftTop: at0(edges.lowerTop),
+    leftBottom: at0(edges.lowerBottom),
     topStart: xAt0(edges.upperTop),
     topEnd: xAt0(edges.upperBottom),
     rightTop: atW(edges.upperTop),
@@ -267,7 +257,6 @@ export type Size =
   | { min: Size[] }
   | { max: Size[] }
   | { clamp: [Size, Size, Size] }
-  | { times: [Size, number] }
   /** Two values, one per side of the opener's narrow breakpoint (a container query, not a calc). */
   | { wide: Size; narrow: Size };
 
@@ -302,7 +291,6 @@ export const sizeValue = (s: Size, c: SizeContext): number => {
     const [lo, mid, hi] = s.clamp;
     return Math.min(Math.max(sizeValue(mid, c), sizeValue(lo, c)), sizeValue(hi, c));
   }
-  if ("times" in s) return sizeValue(s.times[0], c) * s.times[1];
   return SIZE_UNITS.reduce((sum, u) => sum + (s[u] ?? 0) * c[u], 0);
 };
 
@@ -313,7 +301,6 @@ export const sizeCss = (s: Size): string => {
   if ("min" in s) return `min(${s.min.map(sizeCss).join(", ")})`;
   if ("max" in s) return `max(${s.max.map(sizeCss).join(", ")})`;
   if ("clamp" in s) return `clamp(${s.clamp.map(sizeCss).join(", ")})`;
-  if ("times" in s) return `calc(${round(s.times[1])} * ${sizeCss(s.times[0])})`;
   const terms: string[] = [];
   for (const u of SIZE_UNITS) {
     const k = round(s[u] ?? 0);
@@ -420,39 +407,27 @@ const CONTAINER_LEFT: Size = {
     { rem: 24 },
   ],
 };
-/** The pages that carry the band alone, without the S and the word. */
-export const bandVariants: ReadonlySet<string> = new Set(["page"]);
-/**
- * Where the band's lower edge crosses the page's left edge: high enough that the edge leaves through
- * the top 6rem past the content column's left edge, so the band always cuts into the column the
- * navigation and the title stand in, whatever the gutter.
- */
-const BAND_Y: Size = { sum: [{ times: [CONTAINER_LEFT, tan] }, { rem: 6 }] };
-/**
- * The band is placed by where it crosses the left edge, not by an S: `by` is solved from that line
- * so the band's lower edge lands on BAND_Y at x = 0, whatever the mark box scales to.
- */
-const BAND_BY: Size = ((): Size => {
-  const y = lineY(edges.upperBottom, ZERO_F);
-  return { sum: [BAND_Y, { m: -y.m }] };
-})();
 /** The S sits clear of the title's column, and the lead starts short of the S. */
 const BELOW_X: Size = { max: [CONTAINER_LEFT, { bx: 1, m: -0.77 }] };
 /**
- * The lead starts halfway down the S, not under it: the word's bottom edge runs up from the S's
- * bottom-right corner, so lines placed beside the lower half of the S sit under the word and step
- * along it — the shape's margin keeps them --g off the foil, so no clearance is added here.
+ * The lead starts a third of the way down the S, not under it: the word's bottom edge runs up from
+ * the S's bottom-right corner, so lines placed beside the S sit under the word and step along it —
+ * the shape's margin keeps them --g off the foil, so no clearance is added here. Starting this high
+ * makes the upper lines short enough that the steps between them show at laptop widths too.
  */
-const BELOW_Y: Size = { by: 1, m: body.h / 2 };
+const BELOW_Y: Size = { by: 1, m: body.h * 0.3 };
 /**
  * The opener is never shorter than the height at which the lower arm's lower edge still leaves
  * through the left edge: that exit is what makes the ribbon read as crossing the page, so it sets
  * the floor rather than being checked against one.
  */
-const leftExitFloor = (slack: number, edge: Point = edges.lowerBottom): Size => {
-  const y = lineY(edge, ZERO_F);
+const leftExitFloor = (slack: number): Size => {
+  const y = lineY(edges.lowerBottom, ZERO_F);
   return { by: y.by, bx: y.bx, m: y.m, rem: slack };
 };
+
+/** The variants whose lockup is a dimmed background the copy stands on, not a shape it wraps. */
+export const backdropVariants: ReadonlySet<string> = new Set(["page"]);
 
 export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   home: {
@@ -480,19 +455,21 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     lead: LEAD,
   },
   /**
-   * A page shows the band alone across the top-left corner, and its navigation, title and lead sit
-   * under it in one column: the ribbon is present, but only the home page lets the mark sound.
+   * A page carries the whole lockup, but as a dimmed background: the navigation, the title and the
+   * lead stand in one column over it and nothing wraps. The S sits to the right of the title's
+   * column with the word's top level with the navigation, and the opener is only as tall as the
+   * ribbon needs to leave through the left edge.
    */
   page: {
-    m: { clamp: [{ rem: 6.5 }, { cqw: 18 }, { rem: 16 }] },
-    bx: { px: 0 },
-    by: BAND_BY,
+    m: { clamp: [{ rem: 6 }, { cqw: 12.5 }, { rem: 11 }] },
+    bx: { sum: [CONTAINER_LEFT, { clamp: [{ rem: 10 }, { cqw: 25 }, { rem: 16 }] }] },
+    by: { sum: [NAV_TOP, { m: lockupTop }] },
     g: { clamp: [{ px: 12 }, { cqw: 1.11 }, { px: 16 }] },
-    h: { sum: [BAND_Y, { rem: 2 }] },
+    h: leftExitFloor(2),
     aboveX: CONTAINER_LEFT,
     aboveY: ABOVE_Y,
     belowX: CONTAINER_LEFT,
-    belowY: { sum: [BAND_Y, { g: 1 }] },
+    belowY: { px: 0 },
     navTop: NAV_TOP,
     navW: NAV_W,
     navH: NAV_H,

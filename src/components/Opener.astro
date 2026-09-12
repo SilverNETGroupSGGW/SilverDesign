@@ -2,9 +2,9 @@
 import { getEntry } from "astro:content";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import { lockupPath } from "../lib/lockup";
-import { markBandPath, markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
+import { markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
 import {
-  bandVariants,
+  backdropVariants,
   formCss,
   lockupBox,
   markOrigin,
@@ -27,7 +27,7 @@ interface Props {
   route?: RouteKey;
 }
 const { locale, variant, title, lead, route } = Astro.props;
-const band = bandVariants.has(variant);
+const backdrop = backdropVariants.has(variant);
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const links = route === undefined ? [] : [
@@ -54,31 +54,24 @@ const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
 const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
 <div class="frame">
-  <header class:list={["opener", variant, band && "band"]} style={style} data-foil={variant === "home" ? "" : undefined}>
-    {route !== undefined && !band && (
+  <header class:list={["opener", variant, backdrop && "backdrop"]} style={style} data-foil={variant === "home" ? "" : undefined}>
+    {route !== undefined && (
       <a class="lockup-link" href={pathFor("home", locale)} aria-label={site.name}></a>
     )}
 
     <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
       <defs set:html={markPattern(uid)} />
       <g fill={`url(#foil-${uid})`}>
-        {band ? (
-          <path d={markBandPath} />
-        ) : (
-          <>
-            <path d={markRibbonPath} />
-            <use href={`#${markPathId}`} />
-            <path d={lockupPath} />
-          </>
-        )}
+        <path d={markRibbonPath} />
+        <use href={`#${markPathId}`} />
+        <path d={lockupPath} />
       </g>
     </svg>
 
-    {band ? (
+    {backdrop ? (
       <div class="zone below">
         {route !== undefined && (
           <nav aria-label={copy.nav.mainLabel}>
-            <a class="home" href={pathFor("home", locale)}>{site.name}</a>
             {links.map((l) => (
               <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
             ))}
@@ -258,9 +251,9 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .below .lead {
     font-size: var(--lead);
     line-height: 1.35;
-    /* Wider than a section lead: the diagonal shortens its lines from the left, so the measure
-       only has to hold the last line. */
-    max-width: 60ch;
+    /* No measure: the diagonal sets where every line starts, so the lines grow with it all the way
+       to the margin; a measure would level the lower ones. */
+    max-width: none;
     margin-inline-start: auto;
     text-align: end;
     text-wrap: pretty;
@@ -268,24 +261,21 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   }
   /* Over the ribbon, and under the buttons, which carry the same z-index one step up: the title and
      the lead are static, so they stay below it wherever their boxes reach across the diagonal. */
-  /* A page carries the band alone across the top-left corner, and everything else in one column
-     under it: nothing wraps, the mark is not there, and the page's content starts where a header's
-     would. The home link the mark used to be is the club's name at the head of the navigation. */
-  .band .below {
-    /* The one zone is the second row: the first is the band's, kept clear by --below-y. */
-    grid-row: 2;
+  /* On a page the lockup is a backdrop: dimmed until white copy reads on it, with the navigation,
+     the title and the lead in one plain column over it, so the page's content starts where a
+     header's would and nothing wraps. The mark still links home. */
+  .backdrop .ribbon {
+    opacity: 0.25;
+  }
+  .backdrop .below {
+    grid-row: 1;
     display: block;
-    padding-block-end: var(--space-5);
+    padding-block: var(--nav-top) var(--space-5);
   }
-  .band nav {
+  .backdrop nav {
     display: flex;
-    max-inline-size: none;
   }
-  .band nav .home {
-    color: var(--bright);
-    font-weight: 500;
-  }
-  .band h1 {
+  .backdrop h1 {
     margin-block-start: var(--space-4);
     font-size: var(--title);
     line-height: 1.02;
@@ -293,7 +283,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     color: var(--bright);
     max-width: none;
   }
-  .band .below .lead {
+  .backdrop .below .lead {
     margin-block-start: var(--space-3);
     margin-inline-start: 0;
     max-width: 48ch;

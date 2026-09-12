@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   aboveBoundary,
-  bandBoundary,
-  bandVariants,
+  backdropVariants,
   belowBoundary,
   body,
   evalForm,
@@ -29,7 +28,6 @@ const overlaps = (a: [number, number], b: [number, number]): boolean => a[0] < b
 
 describe("the opener's construction", () => {
   test("the boundaries run from the left edge to the top, around the S and the word", () => {
-    expect(bandBoundary).toHaveLength(2);
     expect(aboveBoundary).toHaveLength(6);
     expect(belowBoundary).toHaveLength(7);
     // Both leave through the top: a point past the right edge is clipped by the float's box, so one
@@ -76,10 +74,10 @@ describe("the ribbon never ends inside the opener", () => {
       // A subpage title is one line; the home title is three on the narrowest phone.
       const v = openerSizes(layout, { w, h: SHORT, titleLines: variant === "page" ? 1 : 3 });
       const rem = rootFontSize(w);
-      const band = bandVariants.has(variant);
-      const e = exits(v, band);
+      const backdrop = backdropVariants.has(variant);
+      const e = exits(v);
 
-      test(`${variant} at ${w}: the ${band ? "band" : "lower arm"} leaves through the left edge`, () => {
+      test(`${variant} at ${w}: the lower arm leaves through the left edge`, () => {
         expect(e.leftBottom).toBeLessThan(v.h - rem);
         expect(e.leftTop).toBeGreaterThan(0);
       });
@@ -94,7 +92,6 @@ describe("the ribbon never ends inside the opener", () => {
       });
 
       test(`${variant} at ${w}: the word stays on screen`, () => {
-        if (band) return;
         expect(wordEndPoint(v)[0]).toBeLessThanOrEqual(0.95 * w);
         // In y as well as in x: the word is the one part of the composition that may not leave
         // through an edge, and the opener clips it.
@@ -102,11 +99,12 @@ describe("the ribbon never ends inside the opener", () => {
       });
 
       test(`${variant} at ${w}: the navigation's box is clear of the foil`, () => {
-        // On a page the navigation sits under the band, at the top of the one zone.
-        const navY = band ? v.belowY : v.navTop;
+        // On a page the lockup is a dimmed backdrop the copy stands on, so the foil may run under
+        // the navigation; the S itself still keeps clear of it (next test).
+        if (backdrop) return;
         const nav = {
           x: [v.aboveX, v.aboveX + v.navW] as [number, number],
-          y: [navY, navY + v.navH] as [number, number],
+          y: [v.navTop, v.navTop + v.navH] as [number, number],
         };
         // Both bands, where they reach highest inside the nav's box: its right edge. The upper arm
         // is taken as a full line, which is stricter than the drawn arm, since that one starts at
@@ -119,13 +117,14 @@ describe("the ribbon never ends inside the opener", () => {
       });
 
       test(`${variant} at ${w}: the S sits below the navigation's box`, () => {
-        if (band) return;
-        expect(v.by).toBeGreaterThanOrEqual(v.navTop + v.navH + v.g);
+        // The backdrop's word sits level with the navigation's line, so the S starts under that
+        // line (about 2.4rem tall) rather than under the 4rem box the wrapping variants reserve.
+        expect(v.by).toBeGreaterThanOrEqual(v.navTop + (backdrop ? 2.4 * rem : v.navH + v.g));
       });
 
-      test(`${variant} at ${w}: the lead starts beside the lower half of the S`, () => {
-        if (band) return;
-        expect(v.belowY).toBeGreaterThanOrEqual(v.by + (body.h / 2) * v.m);
+      test(`${variant} at ${w}: the lead starts beside the S, below its top third`, () => {
+        if (backdrop) return;
+        expect(v.belowY).toBeGreaterThanOrEqual(v.by + body.h * 0.3 * v.m);
         expect(v.belowX).toBeGreaterThanOrEqual(v.aboveX);
       });
     }

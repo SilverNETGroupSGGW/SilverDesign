@@ -1,6 +1,6 @@
 import geometryJson from "../../brand/logo/geometry.json?raw";
 import markSvg from "../../brand/logo/mark-transparent.svg?raw";
-import { ribbonArms, ribbonBand } from "./ribbon";
+import { ribbonArms } from "./ribbon";
 import { compactPath } from "./svg-path";
 
 export const markPathId = "silver-mark-path";
@@ -32,4 +32,3 @@ const [vbX, vbY, vbSize] = markViewBox.split(" ").map(Number) as [number, number
 const centre = [vbX + vbSize / 2, vbY + vbSize / 2];
 
 export const markRibbonPath = compactPath(ribbonArms(geometry.ribbon, centre));
-export const markBandPath = compactPath(ribbonBand(geometry.ribbon));

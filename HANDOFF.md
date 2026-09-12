@@ -280,20 +280,27 @@ Twarde spacje w leadach: po jednoliterowych, wokół myślnika („semestr — i
 Uwaga: `text-wrap: pretty` na leadzie nie działa obok floata z kształtem (Chromium wyłącza łamanie
 wynikowe przy zmiennej szerokości wierszy), więc dwuwyrazowe wdowy w leadzie zostają.
 
-### Podstrony: sama wstęga (2026-09-13)
+### Podstrony: logo jako przyciemnione tło (2026-09-13)
 
-Decyzja właściciela: „Silver" ma wybrzmieć na stronie głównej, a na podstronach nie przeszkadzać.
-Wariant `page` openera rysuje więc **tylko prosty pas** (`markBandPath`, oś górnego ramienia bez
-uskoku, bez S i bez słowa) przez lewy górny róg: wchodzi lewą krawędzią, wychodzi górną. Nawigacja,
-tytuł i lead stoją pod nim w jednej kolumnie, wyrównane do lewej, bez zawijania; link do strony
-głównej to nazwa koła na początku nawigacji (S, które było linkiem, zniknęło). Geometria:
-`BAND_Y = tan·--above-x + 6rem` to punkt, w którym dolna krawędź pasa przecina lewą krawędź, więc
-pas zawsze wchodzi ~220 px w kolumnę treści; `--by` jest z tego rozwiązane (`BAND_BY`), `--bx = 0`,
-`--below-y = BAND_Y + --g`, `--h = BAND_Y + 2rem` (podłoga; treść i tak jest wyższa). Testy: dla
-wariantów z `bandVariants` sprawdzane są wyjścia pasa (`exits(v, true)`), pudełko nawigacji liczone od
-`--below-y`; niezmienniki o słowie i S pomijane. `Size` dostał `{ times: [Size, k] }`
-(`calc(k * …)`). Skrypt `wedge.ts` (wiersze leadu od najkrótszego do najdłuższego pod wstęgą) na
-podstronach nic nie zmienia, bo nie ma tam floata.
+Decyzja właściciela: „Silver" ma wybrzmieć na stronie głównej, a na podstronach nie przeszkadzać —
+ale każdy Silver, także ten mały w hero podstron, ma być prawdziwym logiem z nieskończoną wstęgą.
+Wariant `page` rysuje więc cały lockup (ramiona, S, słowo) jako **tło z `opacity: 0.25`**, a
+nawigacja, tytuł i lead stoją na nim w jednej kolumnie do lewej, bez zawijania i bez floatów
+(`backdropVariants`). S siedzi na prawo od kolumny tytułu (`--bx = --above-x + clamp(10rem, 25cqw,
+16rem)`), wierzch słowa na wysokości nawigacji (`--by = --nav-top + 0,506·--m`), znak
+`clamp(6rem, 12.5cqw, 11rem)`, `--h = wyjście + 2rem` (treść i tak jest niższa, więc opener jest
+tak wysoki, jak potrzebuje wstęga, ~470 px przy 1440 zamiast ~720). S ze słowem dalej jest linkiem
+do strony głównej. Testy dla `backdropVariants`: pudełko nawigacji może leżeć na folii (tło),
+S startuje pod realną linią nawigacji (2,4rem), niezmiennik o leadzie obok S pominięty. Próba
+z samym pasem przez róg (`c18ced5`) cofnięta tą decyzją.
+
+**Wiersze leadu (`src/lib/wedge.ts`).** Pod wstęgą miejsce rośnie z każdym wierszem, więc lead ma
+kończyć się najdłuższym. Skrypt po `document.fonts.ready` (i przy `resize`) dobiera `text-indent`
+pierwszego wiersza spośród 24 kandydatów tak, by każdy kolejny wiersz zaczynał się co najmniej
+o jedną wysokość wiersza bardziej w lewo (schodki, nie blok z krótkim pierwszym wierszem);
+na podstronach i tam, gdzie nie ma floata, nic nie zmienia. Lead openera nie ma miary — przekątna
+wyznacza początki wierszy. Renderer arkuszy czeka dwie klatki po `fonts.ready`, bo skrypt układa
+lead w klatce.
 
 ### Otwarte dla właściciela (opener)
 
