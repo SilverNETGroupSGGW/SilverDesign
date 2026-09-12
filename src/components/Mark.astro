@@ -1,25 +1,17 @@
 ---
-import { markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
+import { markPathId, markPattern, markViewBox } from "../lib/mark";
 
 interface Props {
   size?: string;
-  interactive?: boolean;
-  ribbon?: boolean;
 }
-const { size = "4rem", interactive = false, ribbon = false } = Astro.props;
+const { size = "4rem" } = Astro.props;
 // Each render gets its own pattern id: two marks on one page would otherwise both
 // resolve url(#foil) to the first one's pattern.
 const uid = Math.random().toString(36).slice(2, 8);
 ---
-<span
-  class:list={["mark", { ribbon }]}
-  style={`--size:${size}`}
-  data-foil={interactive ? "" : undefined}
-  aria-hidden="true"
->
+<span class="mark" style={`--size:${size}`} aria-hidden="true">
   <svg viewBox={markViewBox}>
     <defs set:html={markPattern(uid)} />
-    {ribbon && <path class="arm" d={markRibbonPath} fill={`url(#foil-${uid})`} />}
     <use href={`#${markPathId}`} fill={`url(#foil-${uid})`} />
   </svg>
 </span>
@@ -34,18 +26,4 @@ const uid = Math.random().toString(36).slice(2, 8);
     inline-size: 100%;
     block-size: 100%;
   }
-  /* The ribbon runs thousands of user units past the viewBox on both ends; whatever the mark sits
-     in clips it. */
-  .mark.ribbon :global(svg) {
-    overflow: visible;
-  }
-  /* The arm reaches far past the mark's own box, and the foil script reads pointer positions as
-     fractions of that box — hits out there would map to multiples of the range. */
-  .arm {
-    pointer-events: none;
-  }
 </style>
-
-<script>
-  import "../lib/foil";
-</script>

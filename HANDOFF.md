@@ -7,7 +7,7 @@ Stan na 2026-09-12 (noc), branch `site` (merge-base z `main`: `acdacd2`). Ten pl
 - **Spec (autorytet):** `docs/superpowers/specs/2026-09-11-silver-site-and-brochure-design.md`
 - **Plan (14 zadań):** `docs/superpowers/plans/2026-09-11-silver-site-and-brochure.md`
 - **Zrobione:** wszystkie 14 zadań + końcowy review całej gałęzi + fala poprawek; potem Impeccable audit/critique i trzy partie poprawek, potem faza „wstęga” (S na pasie przez całą stronę) — sekcje niżej. Każde zadanie przeszło review (spec + jakość); Important-y naprawione w rundach poprawek, minory odłożone (lista poniżej).
-- **Bramki (na `e81e954`):** `oxlint` 0 ostrzeżeń, `oxfmt --check` czysto, `astro check` 0/0/0, `bun test` 24/24, `astro build` 12 stron, `bun run brochure` 4× 2480×3508 (+ assert bloków), Lighthouse mobile `/pl/` 97/100, detektor Impeccable `[]`.
+- **Bramki (na `0a320d8` + faza openera):** patrz sekcja „Wstęga jako oś strony". Poprzednio (na `e81e954`): `oxlint` 0 ostrzeżeń, `oxfmt --check` czysto, `astro check` 0/0/0, `bun test` 24/24, `astro build` 12 stron, `bun run brochure` 4× 2480×3508 (+ assert bloków), Lighthouse mobile `/pl/` 97/100, detektor Impeccable `[]`.
 - **Nie zrobione:** push, PR, włączenie Pages. Gałąź `site` czeka na decyzję o integracji.
 
 ## Impeccable — audit, critique i trzy partie poprawek (2026-09-11, po południu)
@@ -92,18 +92,104 @@ waga 700, wysokość liter 0,56 korpusu S, trzon 49,7 j., reszta obrysu 0,3 j. (
 
 ### Otwarte dla właściciela
 
-- **Wielkość lockupu.** Płyta to 2,86 × wysokość korpusu S (padding 0,45 korpusu + rozciągnięcie do
-  900 : 460), więc litery mają ~19,6 % jej wysokości. Po rundzie poprawek: header `4rem` (płyta
-  72 px, litery 14,1 px, pasek 109 px zamiast 82), arkusze `1.6 × --print-step-5` (płyta 131,2 px,
-  litery 25,7 px przy taglinie 36 px), rząd 1 przesunięty o +17 px (studenci `--top:287`, firmy
-  `--top:317`). Kontroler chciał `2 × --print-step-5`; **nie wchodzi** na arkuszu studentów: nagłówek
-  kończy się wtedy na 311 px, a rząd 1 odsunięty od niego wchodzi 24 px w rząd 2, którego spód jest
-  przypięty do wstęgi (marker `h2` rządu 2 ląduje na karcie — zrzut `collision-2x-studenci.png`;
-  detektor obcięć tego nie łapie, bo to nachodzenie, nie obcięcie). Budżet arkusza studentów:
-  nagłówek ≤ 279 px, czyli płyta ≤ 132 px. Żeby dostać litery 32 px trzeba ruszyć `markTop` wstęgi
-  studentów (752 → ~777), skrócić najdłuższą kartę kroków o linię albo wyeksportować płytę z
-  paddingiem 0,30 korpusu zamiast 0,45 (to zmienia master).
-- `lockup.svg` waży 289 KB (jedna kopia tekstury w data-URI, cztery kafle przez `<use>`).
+- `lockup.svg` waży 289 KB (jedna kopia tekstury w data-URI, cztery kafle przez `<use>`). Płyta
+  lockupu (`frame`) nie jest już nigdzie rysowana na stronie — została jako master do rozdawania
+  (`lockup.svg`, `og.png`).
+
+## Wstęga jako oś strony — opener (2026-09-12, wieczór)
+
+Decyzja właściciela: wstęga **nigdy nie kończy się w kadrze**. Na każdej stronie i obu arkuszach
+wchodzi lewą krawędzią dokumentu i wychodzi górną albo prawą — nigdy dnem sekcji, nigdy pod
+niewidoczną plakietką. Znak nie jest prostokątem: tytuł nad wstęgą skraca wiersze wzdłuż jej górnej
+krawędzi i wokół S, lead (i CTA na stronie głównej) pod wstęgą zaczyna wiersze od jej dolnej
+krawędzi i od spodu słowa. Plakietka lockupu w headerze i masthead arkuszy **zniknęły**
+(`Header.astro` i `Lockup.astro` usunięte).
+
+**Mechanizm.** `src/lib/opener.ts` liczy całą konstrukcję z `geometry.json` + `lockup.json`
+(dorzucone tam przy eksporcie: `wordBox`, `bodyBox`, `markViewBox` — nic nie jest przepisywane
+ręcznie):
+
+- `Form` — każdy punkt jest **liniowy** w `--m` (rozmiar kadru znaku), `--bx`/`--by` (lewy górny róg
+  korpusu S), `--g` (światło do folii), `--w`/`--h` (kadr openera) i origin strefy. `formCss()`
+  wypisuje go jako `calc()`, `evalForm()` liczy jako liczbę — jedna definicja dla CSS i dla testu.
+- `aboveBoundary` / `belowBoundary` — te same łamane co w zatwierdzonym mocku (`ribbon-layout`
+  `scene()`), `shapeAbove` / `shapeBelow` → `polygon()` w `shape-outside`. Punkty poza kadrem są
+  legalne (wielokąt obcina się do margin-boxa floata), więc **zawsze** wypisujemy wyjście górą; przy
+  400–768 px wstęga wychodzi prawą krawędzią i ten sam wielokąt nadal jest poprawny.
+- `Size` + `openerLayouts` — rozmiary trzech wariantów (`home`, `page`, `sheet`) jako dane
+  (`clamp`/`min`/`max`/`sum` nad `px`/`rem`/`cqw`/`svh` i nad `--m`…`--g`). `openerStyle()` robi z
+  nich atrybut `style` komponentu, `openerSizes()` te same wartości dla testu. Zero media queries:
+  jedno wyrażenie płynne na wariant.
+- `--h` **nie jest zgadywane**: jednym ze składników `max()` jest wysokość, na której dolna krawędź
+  dolnego ramienia jeszcze wychodzi lewą krawędzią. Niezmiennik 1 jest więc spełniony konstrukcyjnie
+  na każdej szerokości.
+
+**Bramka po tej fazie:** `oxlint` czysto, `oxfmt --check` czysto, `astro check` 0/0/0, `bun test`
+107/107 (6 plików), `astro build` 12 stron, `bun run brochure` 4× 2480×3508 (14/13 pudełek na
+obcięcie + 6 par na nachodzenie), Lighthouse mobile: `/pl/` 97 perf / 100 a11y / 100 bp / 100 seo,
+`/pl/projekty/` 95/100, `/pl/historia/` 99/100.
+
+**Wartości** (px przy danej szerokości; `rem` = `clamp(16, 15.2 + 0.25vw, 18)`):
+
+| właściwość | home | page | sheet |
+|---|---|---|---|
+| `--m` | `clamp(7.8rem, 23.6cqw, 22rem)` | `clamp(6.5rem, 20.8cqw, 19rem)` | 240 px |
+| `--bx` | `clamp(3rem, 48.42cqw - 135.7px, 60rem)` | `clamp(3rem, 41.5cqw - 117px, 40rem)` | 500 px |
+| `--by` | `max(11rem, 360.8px - 7.69cqw)` | `max(8.5rem, 270px - 8.65cqw)` | 130 px |
+| `--g` | `clamp(12px, 1.39cqw, 20px)` | `clamp(12px, 1.11cqw, 16px)` | 16 px |
+| `--h` | `max(48rem, 100svh, wyjście+2rem)` | `max(26rem, wyjście+2rem)` | 585 px |
+| `--above-x` | `min(max(--gutter, 50cqw - 36rem), 24rem)` | to samo | 96 px |
+| `--above-y` | `max(clamp(4.5rem, 8.9cqw, 7.5rem), --nav-top + 4rem)` | to samo | 96 px |
+| `--below-x` | `max(--above-x, --bx - 0.77·--m)` | to samo | `max(96px, …)` |
+| `--below-y` | `--by + 0.538·--m + 2·--g` | to samo | to samo |
+| `--title` | `clamp(2rem, 4.4cqw, 3.6rem)` | to samo | 52 px |
+
+Przy 1440×900 wychodzi z tego dokładnie mock: `--m` 340, `--bx` 562, `--by` 250, lead na 473 px,
+tytuł na 128 px, wstęga na lewej krawędzi 688–774 px, wyjście górą 1109–1284 px.
+
+**Niezmienniki** (`tests/opener.test.ts`, 400/768/1024/1440/1920/2560, `--h` na podłodze):
+1. dolna krawędź dolnego ramienia przecina `x = 0` nad spodem openera;
+2. górne ramię wychodzi górą albo prawą krawędzią (jedna krawędź pasma może minąć prawy górny róg,
+   jeśli druga wychodzi prawą krawędzią nad spodem);
+3. koniec słowa ≤ 0,95 × szerokość;
+4. pudełko nawigacji (`--above-x`, `--nav-top`, `--nav-w` × `--nav-h`) nie przecina żadnego z dwóch
+   pasm — liczone na jego prawej krawędzi, gdzie pasmo jest najwyżej;
+5. `--by ≥ --nav-top + --nav-h + --g`; lead startuje pod spodem S i nie bliżej lewej niż tytuł.
+
+**Arkusze.** `Brochure.astro` nie pozycjonuje już bloków (`--left/--top/--w`, `.over`, `.under`,
+`markTop`, `.markwrap` — wszystko usunięte): sheet to kolumna flex (`gap: 24px`, `flex: 0 0 auto`,
+płyta z `margin-block-start: auto`), a wstęga jest w górnej trzeciej jako opener `variant="sheet"`.
+Renderer dostał dodatkowo **detektor nachodzenia** par bloków (`.page > *`) — 6 par na arkusz.
+
+### Rulingi z tej fazy (do cofnięcia, jeśli złe)
+
+| Ruling | Dlaczego | Koszt, jeśli złe |
+|---|---|---|
+| `--g` o połowę mniejsze niż w mocku (20/16/12 px zamiast 40/32/20) | decyzja właściciela w trakcie implementacji | jedna wartość na wariant |
+| Link do strony głównej obejmuje **ciasny** box S + słowa (`bodyBox ∪ wordBox`), nie płytę `frame` | płyta sięga 0,48 kadru w lewo i 0,5 w górę — przezroczysty link wchodziłby na tytuł | dwie linie w `lockupBox` |
+| Opener to `<header>`, `<main>` startuje po nim | h1 i lead poza landmarkiem byłyby „orphan content"; skip-link ma przeskakiwać nawigację i hero | jeden tag |
+| Strefa pod wstęgą jest w flow (`display: flow-root`), strefa nad nią absolutna | dłuższa kopia wydłuża opener, zamiast zostać obcięta przez `overflow: hidden` | jedna reguła |
+| Wielokąty w `style` **strefy**, nie openera | własność custom rozwija swoje `var()` na elemencie, na którym jest zadeklarowana; na openerze `var(--zone-x)` nie istnieje i cały wielokąt przepada w ciszy (float na pełną szerokość) | dwie linie |
+| `calc(0px - var(--x))` zamiast `-var(--x)` | calc nie zna unarnego minusa przed `var()`; test pilnuje, że w wielokącie nie ma `-var(` | jedna linia |
+| `.zone > :global(*) { pointer-events: auto }` | CTA są slotowane, więc mają scope `Home.astro`; scoped selektor ich nie łapał i przyciski nie dały się kliknąć | jedna reguła |
+| `text-wrap: pretty` na h1 openera (selektor `.above h1`, żeby pobić `h1` z `base.css`) | `balance` liczy znaki względem prostokąta, który shape już rozebrał | jedna reguła |
+| `--title` zatrzymane na 3,6rem; na arkuszu 52 px | przy 4rem najdłuższe polskie słowo tytułu nie wchodzi w kolumnę obok S i `break-word` łamie je w środku (arkusz: wiersz spadał pod wstęgę) | dwie stałe |
+| `--nav-w` = `min(80cqw, 21rem)` | pudełko nawigacji jest asercją: przy 30rem pasmo górnego ramienia realnie wchodziło pod „English" na podstronie przy 400 px | jedna wartość |
+| Arkusz firm: „co zbudowaliśmy" w 4 kolumnach | 2 kolumny × 2 rzędy nie wchodziły w 1754 px po dodaniu openera | jedna wartość `--cols` |
+| Płyta z QR na całą szerokość treści arkusza, na dole | dolny lewy róg jest już wolny (wstęga jest u góry), a kod dostaje strefę ciszy z paddingu płyty | jedna reguła |
+| Tekstura folii preloadowana na każdej stronie (nie tylko home) | wstęga jest teraz na każdej stronie i jest elementem LCP | jedna linia w `Base.astro` |
+
+### Otwarte dla właściciela (opener)
+
+- **Puste pole pod wstęgą.** Na `page` przy 1920–2560 px opener rośnie do 773–793 px (geometria: im
+  dalej w prawo siedzi S, tym niżej wstęga wychodzi lewą krawędzią). Negatyw diagonali przyjęty jak
+  w mocku; alternatywa to niższe `--bx` (S bliżej lewej) albo mniejszy `--m`.
+- **Długie słowo w tytule.** Kolumna obok S jest węższa niż cały kadr, więc podłoga to najdłuższe
+  słowo tytułu przy `--title`. Sprawdzone na zrzutach dla PL i EN; testem nie da się tego złapać bez
+  metryk fontu.
+- **Wyjście prawą krawędzią przy 768 px** (home): górne ramię mija prawy górny róg 50 px pod
+  krawędzią. Zgodne z decyzją („górną albo prawą"), ale trójkąt nad wstęgą jest tam mały.
+- Na telefonie CTA układają się jeden pod drugim (pasmo obok wstęgi jest za wąskie na dwa).
 
 ## Do decyzji właściciela (przed deployem)
 

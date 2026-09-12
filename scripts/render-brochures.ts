@@ -13,6 +13,8 @@ const dist = join(root, "dist");
 const out = join(dist, "brochure");
 mkdirSync(out, { recursive: true });
 
+const boxPairs = (n: number): number => (n * (n - 1)) / 2;
+
 const jobs = [
   { path: "/pl/broszura/studenci/", file: "silver-studenci-pl.png" },
   { path: "/pl/broszura/firmy/", file: "silver-firmy-pl.png" },
@@ -64,7 +66,28 @@ for (const job of jobs) {
         const name = `${node.tagName.toLowerCase()}.${[...node.classList].join(".")}`;
         return `${name} by ${node.scrollWidth - node.clientWidth}×${node.scrollHeight - node.clientHeight} px`;
       });
+    // The clip check above misses blocks that land on top of each other, which is how a heading
+    // once ended up on a card.
+    const boxes = [...el.children]
+      .filter((node): node is HTMLElement => node instanceof HTMLElement)
+      .map((node) => ({
+        name: `${node.tagName.toLowerCase()}.${[...node.classList].join(".")}`,
+        box: node.getBoundingClientRect(),
+      }))
+      .filter((entry) => entry.box.width > 0 && entry.box.height > 0);
+    const overlaps: string[] = [];
+    for (const [i, a] of boxes.entries()) {
+      for (const b of boxes.slice(i + 1)) {
+        const dx = Math.min(a.box.right, b.box.right) - Math.max(a.box.left, b.box.left);
+        const dy = Math.min(a.box.bottom, b.box.bottom) - Math.max(a.box.top, b.box.top);
+        if (dx > 1 && dy > 1) {
+          overlaps.push(`${a.name} and ${b.name} by ${Math.round(dx)}×${Math.round(dy)} px`);
+        }
+      }
+    }
     return {
+      overlaps,
+      blocks: boxes.length,
       overflowX: el.scrollWidth - el.clientWidth,
       overflowY: el.scrollHeight - el.clientHeight,
       width: rect.width,
@@ -73,6 +96,10 @@ for (const job of jobs) {
       cut,
     };
   });
+  if (metrics.overlaps.length > 0) {
+    console.error(`${job.path}: blocks overlap: ${metrics.overlaps.join(", ")}`);
+    failed = true;
+  }
   if (metrics.cut.length > 0) {
     console.error(`${job.path}: content is cut off in ${metrics.cut.join(", ")}`);
     failed = true;
@@ -100,7 +127,8 @@ for (const job of jobs) {
   }
   writeFileSync(join(out, job.file), png);
   console.log(
-    `${job.file} ${size.width}×${size.height}, ${metrics.checked} boxes checked for cut content`,
+    `${job.file} ${size.width}×${size.height}, ${metrics.checked} boxes checked for cut content, ` +
+      `${boxPairs(metrics.blocks)} block pairs checked for overlap`,
   );
 }
 

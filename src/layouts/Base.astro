@@ -1,8 +1,8 @@
 ---
 import { getEntry } from "astro:content";
 import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
 import MarkDefs from "../components/MarkDefs.astro";
+import Opener from "../components/Opener.astro";
 import { locales, pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import "../styles/tokens.css";
 import "../styles/base.css";
@@ -12,9 +12,12 @@ interface Props {
   route: RouteKey;
   title: string;
   description: string;
-  preloadTexture?: boolean;
+  /** The opener: the page's own heading and lead, wrapped around the ribbon. */
+  variant: "home" | "page";
+  heading: string;
+  lead: string;
 }
-const { locale, route, title, description, preloadTexture = false } = Astro.props;
+const { locale, route, title, description, variant, heading, lead } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const canonical = new URL(pathFor(route, locale), Astro.site);
@@ -48,15 +51,15 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
-    {preloadTexture && (
-      <link rel="preload" href="/brand/foil-texture.jpg" as="image" fetchpriority="high" />
-    )}
+    <link rel="preload" href="/brand/foil-texture.jpg" as="image" fetchpriority="high" />
     <meta name="theme-color" content="#16161B" />
   </head>
   <body>
     <a class="visually-hidden skip-link" href="#main">{copy.nav.skip}</a>
     <MarkDefs />
-    <Header locale={locale} route={route} />
+    <Opener locale={locale} route={route} variant={variant} title={heading} lead={lead}>
+      <slot name="cta" />
+    </Opener>
     <main id="main" tabindex="-1">
       <slot />
     </main>

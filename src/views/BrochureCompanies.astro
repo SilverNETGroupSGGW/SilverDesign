@@ -1,7 +1,6 @@
 ---
 import { getCollection, getEntry } from "astro:content";
-import Lockup from "../components/Lockup.astro";
-import Mark from "../components/Mark.astro";
+import Opener from "../components/Opener.astro";
 import Qr from "../components/Qr.astro";
 import Brochure from "../layouts/Brochure.astro";
 import type { Locale } from "../lib/i18n";
@@ -16,19 +15,10 @@ const site = (await getEntry("site", "site"))!.data;
 const b = copy.brochure.companies;
 const projects = (await getCollection("projects")).toSorted((a, c) => a.data.order - c.data.order);
 ---
-<Brochure locale={locale} title={`${site.name} — ${b.title}`} markTop="788px">
-  <div class="markwrap"><Mark size="var(--mark-size)" ribbon /></div>
+<Brochure locale={locale} title={`${site.name} — ${b.title}`}>
+  <Opener locale={locale} variant="sheet" title={b.title} lead={b.lead} />
 
-  <header class="block masthead" style="--left:96px;--w:1048px">
-    <h1>
-      <Lockup class="masthead-mark" size="calc(1.6 * var(--print-step-5))" />
-      <span class="visually-hidden">{site.name}</span>
-      <span class="tagline">{b.title}</span>
-    </h1>
-    <p class="lead muted">{b.lead}</p>
-  </header>
-
-  <section class="block pair" style="--left:96px;--w:1048px;--top:317px">
+  <section class="pair">
     <div class="row">
       <h2 class="angled">{b.whoHeading}</h2>
       <p>{b.who}</p>
@@ -41,9 +31,9 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     </div>
   </section>
 
-  <section class="block row over" style="--left:96px;--w:644px;--anchor:740px">
+  <section class="row">
     <h2 class="angled">{b.builtHeading}</h2>
-    <ul class="cards" style="--cols:2">
+    <ul class="cards" style="--cols:4">
       {projects.map((p) => (
         <li class="card cut">
           <strong>{p.data.name}</strong>
@@ -56,7 +46,7 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
     </ul>
   </section>
 
-  <footer class="block plate under cut" style="--left:520px;--w:624px">
+  <footer class="plate cut">
     <div class="ask">
       <div>
         <h2 class="quiet">{b.contactHeading}</h2>
@@ -77,7 +67,6 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
 
 <style>
   .pair {
-    position: absolute;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
     gap: var(--print-space-4);

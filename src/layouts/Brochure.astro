@@ -1,25 +1,14 @@
 ---
 import MarkDefs from "../components/MarkDefs.astro";
 import type { Locale } from "../lib/i18n";
-import { markRibbon } from "../lib/mark";
 import "../styles/tokens.css";
 import "../styles/base.css";
 
 interface Props {
   locale: Locale;
   title: string;
-  /** Where the mark's box starts, which is what puts the ribbon on the sheet. */
-  markTop: string;
 }
-const { locale, title, markTop } = Astro.props;
-// The ribbon's place on the sheet is a function of where the mark sits, so the sheet carries the
-// mark's own fractions and works the rest out in calc().
-const ribbonVars = [
-  `--rb-ax:${markRibbon.lowerAxis[0]!.toFixed(6)}`,
-  `--rb-ay:${markRibbon.lowerAxis[1]!.toFixed(6)}`,
-  `--rb-half:${markRibbon.halfRise.toFixed(6)}`,
-  `--mark-top:${markTop}`,
-].join(";");
+const { locale, title } = Astro.props;
 ---
 <!doctype html>
 <html lang={locale}>
@@ -31,7 +20,7 @@ const ribbonVars = [
   </head>
   <body>
     <MarkDefs />
-    <div class="page" style={ribbonVars}>
+    <div class="page">
       <slot />
     </div>
   </body>
@@ -58,7 +47,6 @@ const ribbonVars = [
     --print-step-2: 27px;
     --print-step-3: 30px;
     --print-step-4: 36px;
-    --print-step-5: 82px;
     --cut: 40px;
     --marker: 40px;
     --marker-weight: 4px;
@@ -66,16 +54,7 @@ const ribbonVars = [
     --sheet-w: 1240px;
     --sheet-h: 1754px;
     --pad: 96px;
-    /* 32px measured square to the ribbon, which a block set by its vertical distance overshoots. */
-    --clear: calc(32px / cos(var(--angle)));
     --gap: 20px;
-    --mark-size: 280px;
-
-    /* A point on the centreline of the arm that leaves the mark towards the bottom left, and the
-       vertical distance from any centreline to the ribbon's own edge. */
-    --rb-x: calc(var(--sheet-w) - var(--pad) - (1 - var(--rb-ax)) * var(--mark-size));
-    --rb-y: calc(var(--mark-top) + var(--rb-ay) * var(--mark-size));
-    --rb-edge: calc(var(--rb-half) * var(--mark-size));
 
     position: relative;
     isolation: isolate;
@@ -83,34 +62,28 @@ const ribbonVars = [
     height: var(--sheet-h);
     overflow: hidden;
     font-size: var(--print-step-0);
-  }
-  .page .markwrap {
-    position: absolute;
     display: flex;
-    inset-block-start: var(--mark-top);
-    inset-inline-end: var(--pad);
-    inline-size: var(--mark-size);
+    flex-direction: column;
+    gap: var(--print-space-3);
+    padding-block-end: var(--pad);
   }
-  .page .block {
-    position: absolute;
-    top: var(--top, auto);
-    left: var(--left);
-    width: var(--w);
+  /* A sheet is a fixed box: a block that does not fit has to report as overflow, not be squeezed
+     into the space that is left. */
+  .page > * {
+    flex: 0 0 auto;
   }
-  /* Above the ribbon: --anchor is the x of the bottom-right corner, the one the diagonal reaches
-     first. */
-  .page .over {
-    bottom: calc(
-      var(--sheet-h) - var(--rb-y) + var(--rb-edge) + var(--clear) -
-        (var(--rb-x) - var(--anchor, calc(var(--left) + var(--w)))) * tan(var(--angle))
-    );
+  /* Astro leaves the opener's module script in place, and a flex container would give it a row of
+     its own. */
+  .page > script {
+    display: none;
   }
-  /* Below it the top-left corner is the near one. */
-  .page .under {
-    top: calc(
-      var(--rb-y) + var(--rb-edge) + var(--clear) + (var(--rb-x) - var(--anchor, var(--left))) *
-        tan(var(--angle))
-    );
+  /* The opener is the only block that reaches the sheet's edges: the ribbon has to leave through
+     them. */
+  .page > :not(.opener) {
+    margin-inline: var(--pad);
+  }
+  .page > .plate {
+    margin-block-start: auto;
   }
   .page .row {
     display: grid;
@@ -124,20 +97,6 @@ const ribbonVars = [
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-
-  .page h1 {
-    display: grid;
-    gap: var(--print-space-1);
-    max-width: none;
-  }
-  /* The h1 is a grid, which would otherwise stretch the plaque's inline size and letterbox it. */
-  .page h1 .masthead-mark {
-    justify-self: start;
-  }
-  .page .tagline {
-    font-size: var(--print-step-4);
-    font-weight: 500;
   }
   .page h2 {
     font-size: var(--print-step-3);
@@ -154,11 +113,6 @@ const ribbonVars = [
   .page .muted {
     color: var(--muted);
   }
-  .page .lead {
-    font-size: var(--print-step-2);
-    margin-top: var(--print-space-3);
-    max-width: none;
-  }
   .page .card {
     display: grid;
     gap: var(--print-space-1);
@@ -173,19 +127,8 @@ const ribbonVars = [
     font-weight: 600;
     letter-spacing: -0.02em;
   }
-  .page .masthead {
-    top: 60px;
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    gap: var(--print-space-4);
-    align-items: start;
-  }
-  .page .masthead .lead {
-    margin-top: 0;
-  }
   /* The sheet's own ground under a rule, so the block reads as a plate without a second value. */
   .page .plate {
-    bottom: var(--pad);
     background: var(--bg);
     border: 1px solid var(--line);
     padding: var(--print-space-4);

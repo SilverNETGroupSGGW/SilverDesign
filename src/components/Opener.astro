@@ -1,0 +1,202 @@
+---
+import { getEntry } from "astro:content";
+import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
+import { lockupPath } from "../lib/lockup";
+import { markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
+import {
+  formCss,
+  lockupBox,
+  markOrigin,
+  openerLayouts,
+  openerStyle,
+  polygonCss,
+  shapeAbove,
+  shapeBelow,
+} from "../lib/opener";
+import LocaleSwitch from "./LocaleSwitch.astro";
+
+interface Props {
+  locale: Locale;
+  variant: "home" | "page" | "sheet";
+  title: string;
+  lead: string;
+  /** Given for a page of the site, which carries the navigation and links the mark home. */
+  route?: RouteKey;
+}
+const { locale, variant, title, lead, route } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+const site = (await getEntry("site", "site"))!.data;
+const links = route === undefined ? [] : [
+  { href: pathFor("projects", locale), label: copy.nav.projects, key: "projects" },
+  { href: pathFor("history", locale), label: copy.nav.history, key: "history" },
+  { href: `${pathFor("home", locale)}#join`, label: copy.nav.join, key: "join" },
+];
+// Each render gets its own pattern id: two marks on one page would otherwise both
+// resolve url(#foil) to the first one's pattern.
+const uid = Math.random().toString(36).slice(2, 8);
+const style = [
+  openerStyle(openerLayouts[variant]),
+  `--mark-x:${formCss(markOrigin[0])}`,
+  `--mark-y:${formCss(markOrigin[1])}`,
+  `--link-x:${formCss(lockupBox.origin[0])}`,
+  `--link-y:${formCss(lockupBox.origin[1])}`,
+  `--link-w:${formCss(lockupBox.w)}`,
+  `--link-h:${formCss(lockupBox.h)}`,
+].join(";");
+// The polygons name the zone's own origin, and a custom property resolves its var() references on
+// the element it is declared on: they have to sit on the zone, not on the opener.
+const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
+const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
+---
+<header class:list={["opener", variant]} style={style} data-foil={variant === "home" ? "" : undefined}>
+  {route !== undefined && (
+    <nav aria-label={copy.nav.mainLabel}>
+      {links.map((l) => (
+        <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
+      ))}
+      <LocaleSwitch locale={locale} route={route} />
+    </nav>
+  )}
+
+  <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
+    <defs set:html={markPattern(uid)} />
+    <g fill={`url(#foil-${uid})`}>
+      <path d={markRibbonPath} />
+      <use href={`#${markPathId}`} />
+      <path d={lockupPath} />
+    </g>
+  </svg>
+
+  <div class="zone above" style={polyAbove}>
+    <div class="sh"></div>
+    <h1>
+      {route === undefined && <span class="visually-hidden">{site.name}</span>}
+      {title}
+    </h1>
+  </div>
+
+  <div class="zone below" style={polyBelow}>
+    <div class="sh"></div>
+    <p class="lead">{lead}</p>
+    <slot />
+  </div>
+
+  {route !== undefined && (
+    <a class="lockup-link" href={pathFor("home", locale)} aria-label={site.name}></a>
+  )}
+</header>
+
+<style>
+  .opener {
+    --w: 100cqw;
+    position: relative;
+    container-type: inline-size;
+    isolation: isolate;
+    min-block-size: var(--h);
+    /* The ribbon runs thousands of user units past the mark's box on both ends; the opener is what
+       cuts it to the page, so every end of it lands on a real edge of the document. */
+    overflow: hidden;
+  }
+  nav {
+    position: absolute;
+    inset-block-start: var(--nav-top);
+    inset-inline-start: var(--above-x);
+    max-inline-size: var(--nav-w);
+    min-block-size: var(--nav-h);
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    align-items: start;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--muted);
+    padding-block: 0.45rem;
+  }
+  nav a:hover,
+  nav a[aria-current="page"] {
+    color: var(--ink);
+  }
+  .ribbon {
+    position: absolute;
+    inset-block-start: var(--mark-y);
+    inset-inline-start: var(--mark-x);
+    inline-size: var(--m);
+    block-size: var(--m);
+    /* The arms are drawn well outside the mark's own box: the opener clips them, not the svg. */
+    overflow: visible;
+    pointer-events: none;
+  }
+  .zone {
+    box-sizing: border-box;
+    /* The zones cover the ribbon, so only what carries text or a link takes the pointer. The CTAs
+       are slotted in, so this cannot be scoped to the component. */
+    pointer-events: none;
+  }
+  .zone > :global(*) {
+    pointer-events: auto;
+  }
+  .sh {
+    float: right;
+    pointer-events: none;
+    inline-size: 100%;
+    shape-outside: var(--poly);
+    shape-margin: var(--g);
+  }
+  .above {
+    position: absolute;
+    inset: 0 0 auto;
+    padding: var(--above-y) var(--above-x) 0;
+    --zone-x: var(--above-x);
+    --zone-y: var(--above-y);
+  }
+  .above .sh {
+    block-size: calc(var(--h) - var(--above-y));
+  }
+  /* The zone below the ribbon is the one in flow, so copy longer than the composition expects
+     lengthens the opener instead of being cut off by it. */
+  .below {
+    display: flow-root;
+    padding: var(--below-y) var(--above-x) 0 var(--below-x);
+    --zone-x: var(--below-x);
+    --zone-y: var(--below-y);
+  }
+  .below .sh {
+    float: left;
+    block-size: calc(var(--h) - var(--below-y));
+  }
+  /* base.css balances headings, which counts characters against a rectangle the shape has already
+     taken apart; the diagonal is what should set the line lengths. */
+  .above h1 {
+    font-size: var(--title);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    max-width: none;
+    color: var(--bright);
+    text-wrap: pretty;
+    /* At 200% text zoom a single Polish word is wider than a phone viewport. */
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+  .below .lead {
+    font-size: var(--lead);
+    line-height: 1.35;
+    max-width: none;
+    color: var(--ink);
+  }
+  /* The variant is a class on the opener itself, so this one cannot be named after the page it
+     points at. */
+  .lockup-link {
+    position: absolute;
+    inset-block-start: var(--link-y);
+    inset-inline-start: var(--link-x);
+    inline-size: var(--link-w);
+    block-size: var(--link-h);
+    z-index: 1;
+  }
+</style>
+
+<script>
+  import "../lib/foil";
+</script>

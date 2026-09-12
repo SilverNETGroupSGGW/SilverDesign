@@ -81,10 +81,15 @@ Wayback Machine ani do dawnych adresów — oś czasu i nic więcej.
 
 Jedna strona główna plus dwie podstrony, wszystkie w PL i EN.
 
+Każda strona otwiera się **wstęgą**: nawigacja w lewym górnym rogu, znak S ze
+słowem „ilver" na pasie folii, który wchodzi lewą krawędzią dokumentu i wychodzi
+górną albo prawą, tytuł nad pasem i lead pod nim, oba z wierszami opływającymi
+krawędzie folii (`shape-outside`). Wstęga nigdy nie kończy się w kadrze.
+
 `/pl/` · `/en/` (`/` przekierowuje na `/pl/`):
 
-1. **Hero** — znak S, jedno zdanie, kim jesteśmy i dla kogo, przycisk
-   „Dołącz na Discordzie" i link „Zobacz projekty".
+1. **Hero** — wstęga otwierająca (patrz wyżej): jedno zdanie, kim jesteśmy i dla
+   kogo, przycisk „Dołącz na Discordzie" i link „Zobacz projekty".
 2. **Jak to działa** — trzy kroki: wchodzisz na Discorda → dołączasz do
    projektu albo zgłaszasz swój → robimy go w małym zespole przez semestr,
    co jakiś czas spotykając się w 3/79. Pod krokami jedna linijka o
@@ -195,6 +200,10 @@ wymiary **1240 × 1754 px CSS**; Playwright robi zrzut przy
 `deviceScaleFactor: 2`, co daje dokładnie wymagany rozmiar. Kolory jak na
 stronie (ciemne tło); wersja do druku na czarnym tle to decyzja świadoma —
 broszura ma wyglądać jak strona, nie jak ulotka z drukarki wydziałowej.
+
+Arkusz otwiera się tą samą wstęgą co strona (bez nawigacji): tytuł nad pasem po
+lewej, znak S ze słowem „ilver" na pasie, lead pod pasem po prawej; rzędy treści
+niżej, płyta z kodem QR na dole.
 
 Wersja **studenci**: hero, „jak to działa", dwie aplikacje ze sklepów, próg
 wejścia, kod QR do Discorda, sala i mail.

@@ -14,10 +14,16 @@ const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const projects = (await getCollection("projects")).toSorted((a, b) => a.data.order - b.data.order);
 ---
-<Base locale={locale} route="projects" title={`${copy.projects.heading} — ${site.name}`} description={copy.projects.lead}>
+<Base
+  locale={locale}
+  route="projects"
+  title={`${copy.projects.heading} — ${site.name}`}
+  description={copy.projects.lead}
+  variant="page"
+  heading={copy.projects.heading}
+  lead={copy.projects.lead}
+>
   <section class="container page">
-    <h1 class="angled">{copy.projects.heading}</h1>
-    <p class="lead">{copy.projects.lead}</p>
     <ProjectFilter copy={copy.projects} locale={locale} />
     <div class="grid">
       {projects.map((p, i) => (
@@ -40,13 +46,6 @@ const projects = (await getCollection("projects")).toSorted((a, b) => a.data.ord
     padding-block: var(--space-6);
     display: grid;
     gap: var(--space-4);
-  }
-  h1 {
-    font-size: var(--step-4);
-  }
-  .lead {
-    color: var(--muted);
-    font-size: var(--step-1);
   }
   .grid {
     display: grid;

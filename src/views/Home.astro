@@ -1,12 +1,10 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import Button from "../components/Button.astro";
-import Mark from "../components/Mark.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import Steps from "../components/Steps.astro";
 import Base from "../layouts/Base.astro";
 import { pathFor, type Locale } from "../lib/i18n";
-import { markRibbon } from "../lib/mark";
 
 interface Props {
   locale: Locale;
@@ -16,35 +14,22 @@ const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const projects = (await getCollection("projects")).toSorted((a, b) => a.data.order - b.data.order);
 const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
-
-// How far below the mark's top edge the ribbon's lower edge sits once it has run back to the mark
-// box's own left side, per unit of mark size. The narrow layout's copy starts under that line, so
-// the clearance holds at every width without a breakpoint of its own.
-const dropPerMark =
-  markRibbon.lowerAxis[1]! + markRibbon.halfRise - (1 - markRibbon.lowerAxis[0]!) * markRibbon.slope;
 ---
 <Base
   locale={locale}
   route="home"
   title={copy.meta.title}
   description={copy.meta.description}
-  preloadTexture
+  variant="home"
+  heading={copy.hero.title}
+  lead={copy.hero.lead}
 >
-  <section class="hero" style={`--rb-drop:${dropPerMark.toFixed(5)}`}>
-    <div class="container inner">
-      <div class="markwrap">
-        <Mark size="var(--mark-size)" interactive ribbon />
-      </div>
-      <div class="copy">
-        <h1>{copy.hero.title}</h1>
-        <p class="lead">{copy.hero.lead}</p>
-        <div class="ctas">
-          <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
-          <Button href={pathFor("projects", locale)} variant="ghost">{copy.hero.ctaProjects}</Button>
-        </div>
-      </div>
-    </div>
-  </section>
+  <Fragment slot="cta">
+    <p class="ctas">
+      <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
+      <Button href={pathFor("projects", locale)} variant="ghost">{copy.hero.ctaProjects}</Button>
+    </p>
+  </Fragment>
 
   <Steps steps={copy.steps} />
 
@@ -78,89 +63,19 @@ const dropPerMark =
 </Base>
 
 <style>
-  .hero {
-    --mark-size: clamp(8rem, 34cqw, 11rem);
-    --mark-top: var(--space-4);
-    position: relative;
-    container-type: inline-size;
-    display: grid;
-    padding-block-end: var(--space-6);
-    /* The ribbon runs off both ends of the mark's svg; the hero is what cuts it to the screen. */
-    overflow: hidden;
-  }
-  .markwrap {
-    /* An inline-block on a line box carries the strut's descent; the ribbon's geometry is measured
-       from the mark's own box. */
-    display: flex;
-    position: absolute;
-    inset-block-start: var(--mark-top);
-    inset-inline-end: var(--gutter);
-    inline-size: var(--mark-size);
-  }
-  .inner {
-    display: grid;
-    gap: var(--space-4);
-    grid-template-columns: minmax(0, 1fr);
-    align-content: start;
-    /* Clears the ribbon's upper edge where it meets the left gutter: the mark's own offset plus the
-       rise over the run from the mark to that edge. */
-    padding-block-start: calc(
-      var(--mark-top) + (100cqw - 2 * var(--gutter)) * tan(var(--angle)) + var(--mark-size) *
-        var(--rb-drop) + var(--space-5)
-    );
-  }
-  .copy {
-    display: grid;
-    gap: var(--space-4);
-    grid-template-columns: minmax(0, 1fr);
-  }
-  h1 {
-    font-size: var(--step-4);
-    max-width: 18ch;
-    /* At 200% text zoom a single Polish word is wider than a phone viewport. */
-    hyphens: auto;
-    overflow-wrap: break-word;
-  }
-  .lead {
-    font-size: var(--step-1);
-    color: var(--muted);
-    max-width: 42rem;
-  }
+  /* The buttons stay inline-level: a block-level flex row clears the float's whole box instead of
+     following its shape, and the tall line box is what finds a band beside the ribbon wide enough
+     to hold the row. */
   .ctas {
-    display: flex;
-    gap: var(--space-3);
-    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+    margin-block-start: 1.2em;
+    font-size: var(--step-0);
+    line-height: 2.6;
+    max-width: none;
   }
-  @media (min-width: 64rem) {
-    .hero {
-      --mark-size: clamp(20rem, 32cqw, 30rem);
-      /* The ribbon has to run off the edge of the screen, not stop at the hero's own bottom, so the
-         hero is never shorter than the viewport; the header above it means it overshoots the fold by
-         the header's height, which is cheaper than pinning that height to a number. The 48rem floor
-         holds the composition together on a short window. */
-      min-block-size: max(48rem, 100svh);
-      padding-block: var(--space-6);
-    }
-    .inner {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      align-content: stretch;
-      gap: var(--space-5);
-      padding-block-start: 0;
-    }
-    .copy {
-      /* The mark comes first in the markup so the copy paints over the ribbon, never under it. */
-      grid-area: 1 / 1;
-      align-self: start;
-      /* The copy column stops well left of the mark, so the diagonal passes under it, not through
-         it. */
-      max-inline-size: 38rem;
-    }
-    .markwrap {
-      grid-area: 1 / 2;
-      position: static;
-      inline-size: var(--mark-size);
-    }
+  .ctas :global(.button) {
+    margin-inline-end: 0.6em;
   }
   /* minmax(0, …) instead of a bare column: a grid track sized to auto never shrinks below the
      longest word, which at 200% text zoom is wider than a phone. */
