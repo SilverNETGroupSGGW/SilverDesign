@@ -205,10 +205,13 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     max-width: none;
     color: var(--bright);
     text-wrap: pretty;
-    /* At 200% text zoom a single Polish word is wider than a phone viewport. The limit keeps the
-       hyphen for those and off the ordinary ones: at 400 px the EN title broke as "sci-/ence". */
+    /* At 200% text zoom a single Polish word is wider than a phone viewport. The limits keep the
+       hyphen for those and off the ordinary ones: at 400 px the EN title broke as "sci-/ence".
+       Chromium reads the first, WebKit the second; Firefox has neither and falls back to plain
+       hyphens: auto, which is what shipped before. */
     hyphens: auto;
     hyphenate-limit-chars: 10 4 4;
+    -webkit-hyphenate-limit-before: 4;
     overflow-wrap: break-word;
   }
   /* A hyphen in a display line is a defect on a printed sheet, and the sheet's column is wide

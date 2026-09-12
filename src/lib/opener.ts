@@ -422,9 +422,11 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     bx: { clamp: [{ rem: 3 }, { cqw: 48.42, px: -135.7 }, { rem: 60 }] },
     by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.39 }, { px: 20 }] },
-    /* Filling the window is what makes the ribbon read as crossing the page on a wide opener, where
-       the diagonal occupies the space it adds. Under the breakpoint the ribbon has already left the
-       left edge above the lead, so the same floor would only add empty canvas under the composition. */
+    /**
+     * Filling the window is what makes the ribbon read as crossing the page on a wide opener, where
+     * the diagonal occupies the space it adds. Under the breakpoint the ribbon has already left the
+     * left edge above the lead, so the same floor would only add empty canvas under the composition.
+     */
     h: {
       wide: { max: [{ rem: 48 }, { svh: 100 }, leftExitFloor(2)] },
       narrow: leftExitFloor(2),
@@ -499,7 +501,8 @@ export const openerSizes = (
     tb: 0,
   };
   c.tb = (viewport.titleLines ?? 3) * TITLE_LINE_HEIGHT * sizeValue(layout.title, c);
-  for (const key of ["m", "bx", "by", "g"] as const) c[key] = sizeValue(layout[key], c);
+  // g before by: the narrow by reads g, and a size read before it is resolved counts as zero.
+  for (const key of ["m", "bx", "g", "by"] as const) c[key] = sizeValue(layout[key], c);
   const out = Object.fromEntries(
     (Object.keys(OPENER_PROPS) as (keyof OpenerLayout)[]).map((k) => [k, sizeValue(layout[k], c)]),
   ) as Record<keyof OpenerLayout, number>;

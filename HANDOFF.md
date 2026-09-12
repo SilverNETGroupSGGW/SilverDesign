@@ -137,7 +137,7 @@ obcięcie + 6 par na nachodzenie), Lighthouse mobile: `/pl/` 97 perf / 100 a11y 
 | `--bx` | `clamp(3rem, 48.42cqw - 135.7px, 60rem)` | `clamp(3rem, 41.5cqw - 117px, 40rem)` | 420 px |
 | `--by` | szeroki: `--above-y + 0.50583·--m` (wierzch słowa = wierzch tytułu); wąski: `max(--above-y + --title-band + --g + 0.50583·--m, prześwit nawigacji)` | to samo | `96px + 0.50583·--m` |
 | `--g` | `clamp(12px, 1.39cqw, 20px)` | `clamp(12px, 1.11cqw, 16px)` | 16 px |
-| `--h` | `max(48rem, 100svh, wyjście+2rem)` | `max(26rem, wyjście+2rem)` | `max(585px, wyjście+1rem)` |
+| `--h` | szeroki: `max(48rem, 100svh, wyjście+2rem)`; wąski: `wyjście+2rem` | `max(26rem, wyjście+2rem)` | `max(585px, wyjście+1rem)` |
 | `--above-x` | `min(max(--gutter, 50cqw - 36rem), 24rem)` | to samo | 96 px |
 | `--above-y` | `max(clamp(4.5rem, 8.9cqw, 7.5rem), --nav-top + 4rem)` | to samo | 96 px |
 | `--below-x` | `max(--above-x, --bx - 0.77·--m)` | to samo | `max(96px, …)` |
@@ -225,6 +225,33 @@ Renderer dostał dodatkowo **detektor nachodzenia** par bloków (`.page > *`) �
 | Arkusz: `hyphens: manual` + tytuł 44 px | 52 px z `hyphens: auto` łamało angielski tytuł dywizem („com-/puter"), a bez dywizu rozbijało go na pięć wierszy po jednym słowie |
 | Skrypt folii importowany w `Home.astro`, nie w openerze | moduł jechał na każdą stronę i oba arkusze, gdzie nic nie ma `data-foil`; zniknęła też reguła `.page > script` |
 | `markRibbon`, `lockupFrame`, `lockupRatio`, `lockupArmsPath` usunięte | bez wywołań po usunięciu `Header.astro`/`Lockup.astro`; oxlint nie widzi nieużywanych eksportów |
+
+### Runda Impeccable `polish` (sekcja Refine) po openerze (2026-09-12, noc)
+
+Raport i przegląd: scratchpad sesji (`refine/refine-report.md`, `refine/refine-review.md`).
+Commity `0d2c68a`, `22463e3`, `defd0b7` + runda poprawek po review.
+
+| Poprawka | Dlaczego |
+|---|---|
+| Twarde spacje „na SGGW", „at SGGW", „— i uczymy" | przy 768 i 2560 tytuł łamał się przed „SGGW", lead przed „i" — sierotki |
+| Ring fokusu linku lockupu: `box-shadow: 0 0 0 3px var(--bg)` | biały outline na folii mierzył 1,3:1; wypełnienie offsetu tłem daje 16:1 |
+| Przyciski hero bez `font-size: var(--step-0)` i `line-height: 2.6`; `margin-block: 0.35em` | krok skali liczony drugi raz (20,25 px zamiast 18) i przycisk 85 px zamiast 56; na telefonie rzędy się stykały |
+| `--h` home na wąskim = samo `wyjście+2rem` (`--h-wide`/`--h-narrow`, jak `--by`) | `100svh` trzymało 276–404 px pustki nad „Jak to działa" na telefonie i tablecie; na szerokim ekranie przekątna zajmuje dodaną wysokość, więc podłoga zostaje |
+| `hyphenate-limit-chars: 10 4 4` + `-webkit-hyphenate-limit-before: 4` | Chromium dzielił angielski tytuł „sci-/ence" przy 400 px; limit zostawia dywiz słowom ≥ 10 znaków (root 32 px); Firefox nie zna żadnego i wraca do `hyphens: auto` |
+| `openerSizes` liczy `g` przed `by` | wąskie `--by` czyta `--g`; wcześniej model był o `--g` niżej niż przeglądarka i niezmiennik 1 przechodził na 2–5 px zapasu zamiast 2rem |
+| Test przy 1140 i 1152 px | obie strony punktu 64rem, gdzie wąska podłoga `--h` jest najciaśniejsza |
+
+Rulingi (próby cofnięte, żeby nikt ich nie powtarzał):
+
+| Ruling | Dlaczego | Koszt, jeśli złe |
+|---|---|---|
+| Czapka `24rem` na `--above-x` zostaje, choć od ~2180 px kolumna openera i `.container` rozjeżdżają się o 200 px (2560) | bez czapki podstrona łamała tytuł w środku słowa („Projekt/y" przy 2560), bo `--bx` też ma czapkę; właściwa poprawka to zatrzymać centrowanie `.container` na tym samym 24rem w `base.css` — decyzja właściciela | jedna reguła w `base.css` |
+| Podłoga `--m` w `rem`, nie w `cqw` — przy 200 % zoomu na 400 px słowo jest obcięte („SILV") | podłoga w `cqw` zmniejsza znak, podnosi `--by` i przekątna wchodzi w kolumnę tytułu, który rozsypuje się na pojedyncze litery; obcięte słowo to skaza, rozsypany h1 to wada treści | jedna stała |
+| Lead bez miary na ultra-wide (93 znaki w jednej linii na Projektach przy 2560) | poprawka przez `padding-inline-end` liczone od kształtu (`--bx + 0,29·--m + 34·--lead`) dodaje składnik do konstrukcji; zamiast tego propozycja układu B (lead do prawego marginesu, miara 40ch) czeka na decyzję właściciela | jedna reguła |
+
+Propozycje tekstów (nic nie zmienione — §2): EN lead „than from classes" → „than from class";
+PL CTA „Wejdź na Discorda" (zgodne z krokiem „Wchodzisz na Discorda", rząd przestaje się łamać przy
+400 px). Warianty układu i tekstów: artefakt „Opener: warianty i teksty".
 
 ### Otwarte dla właściciela (opener)
 
