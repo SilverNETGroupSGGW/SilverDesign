@@ -93,6 +93,11 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   </header>
 </div>
 
+<script>
+  import { watchWedges } from "../lib/wedge";
+  watchWedges();
+</script>
+
 <style>
   /* The opener is its own query container's child, not the container: an element never answers its
      own container queries, so cqw in --h or the grid's rows would read the viewport (scrollbar
