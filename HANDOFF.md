@@ -83,7 +83,7 @@ waga 700, wysokość liter 0,56 korpusu S, trzon 49,7 j., reszta obrysu 0,3 j. (
 | Ruling | Dlaczego | Koszt, jeśli złe |
 |---|---|---|
 | Syncopate jest w google/fonts na **Apache 2.0**, nie OFL — plik licencji nazwany `LICENSE-Syncopate.txt` | kierunek zakładał OFL; nazwanie licencji Apache „OFL" byłoby błędem | nazwa pliku + zdanie w §8 |
-| `brand/fonts/Syncopate-Regular.ttf` zacommitowany, choć nieużywany w renderze | reguła „najcięższy krój, który się mieści" musi mieć nad czym pracować; z listą samego 700 pętla zatrzymuje się na 0,61 korpusu i trzon liter przekracza kreskę S o 4,2 j. | 60 KB w `brand/` |
+| `brand/fonts/Syncopate-Regular.ttf` zacommitowany, choć nieużywany w renderze | reguła „najcięższy krój, który się mieści" musi mieć nad czym pracować; z listą samego 700 pętla zatrzymuje się na 0,61 korpusu i trzon liter przekracza kreskę S o 4,2 j. | 174 KB w `brand/` |
 | Sylwetkę S mierzy **ostatnia podścieżka** ścieżki znaku, nie cała | cała ścieżka niesie też wstęgę, która biegnie tysiące jednostek za kadr | jedna linia |
 | Szerokości znaków mierzone przy 2048 px (em kroju), nie przy 200 px | Chromium zaokrągla je do pełnych pikseli — przy 200 px różnica z opentype wychodzi 0,0021 em i asercja pada | jedna stała |
 | `src/lib/ribbon.ts` — konstrukcja wielokątów ramion wyjęta z `mark.ts`, bo skrypt eksportu nie może użyć importu `?raw` | jedna kopia geometrii, bez dryfu między masterem SVG i stroną | scalenie z powrotem |

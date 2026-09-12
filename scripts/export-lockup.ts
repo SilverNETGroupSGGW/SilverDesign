@@ -50,14 +50,11 @@ interface Input {
 interface Layout {
   capRatio: number;
   weight: number;
-  cap: number;
   fs: number;
   stemU: number;
   strokeU: number;
   gapU: number;
   sGap: [number, number];
-  bottom: number;
-  excess: number;
   origin: [number, number];
   angleDeg: number;
   advEm: number[];
@@ -82,6 +79,7 @@ const viewBox = capture(/viewBox="([^"]+)"/, "viewBox")
   .map(Number);
 const markPath = capture(/\sd="([^"]+)"/, "mark path");
 const texture = capture(/href="(data:image\/jpeg;base64,[^"]+)"/, "foil texture");
+const pattern = capture(/(<pattern[\s\S]*?<\/pattern>)/, "foil pattern");
 // The gap measurement needs the S alone: the same path carries the band, which reaches thousands of
 // units past the frame and would answer "how far to the S" with a hit on the arm the word hangs from.
 const sBody = `M${markPath.split("M").at(-1)!}`;
@@ -164,6 +162,25 @@ const layout = await (async (): Promise<Layout> => {
       axis[1] + dir[1] * t + n[1] * u,
     ];
     const sBodyPath = document.querySelector<SVGPathElement>("#sbody")!;
+    // Everything the fit measures hangs off this box: the cap height, the bottom rule and the frame
+    // all quote it as a constant, so a re-exported mark that moved would place the word against a
+    // box that no longer exists — silently, since the expectations would move with it.
+    const drawn = sBodyPath.getBBox();
+    const measured = {
+      l: drawn.x,
+      r: drawn.x + drawn.width,
+      t: drawn.y,
+      b: drawn.y + drawn.height,
+    };
+    for (const side of ["l", "r", "t", "b"] as const) {
+      if (Math.abs(measured[side] - body[side]) > 0.1) {
+        throw new Error(
+          `the S body is at ${measured.l.toFixed(1)}-${measured.r.toFixed(1)} x ` +
+            `${measured.t.toFixed(1)}-${measured.b.toFixed(1)}, not ${body.l}-${body.r} x ` +
+            `${body.t}-${body.b}: re-measure the fit's constants against the new mark`,
+        );
+      }
+    }
 
     // <text>.getBBox() is font-metric based (ascent + descent); canvas measureText gives the ink box.
     const cv = document.createElement("canvas").getContext("2d")!;
@@ -291,6 +308,12 @@ const layout = await (async (): Promise<Layout> => {
       for (let i = 0; i < 8; i++) {
         off = W / 2 + gapU + cap;
         ds = sDist(off);
+        if (ds.length === 0) {
+          throw new Error(
+            `no row of the first letter reaches the S from ${(3 * W).toFixed(0)} u away at cap ` +
+              `ratio ${capRatio.toFixed(2)}: the word is not beside the S`,
+          );
+        }
         const g = Math.min(...ds);
         if (Math.abs(g - gapU) < 0.5) break;
         gapU = g;
@@ -361,14 +384,11 @@ const layout = await (async (): Promise<Layout> => {
     return {
       capRatio,
       weight: best.weight,
-      cap: best.cap,
       fs,
       stemU: k.stemEm * fs,
       strokeU,
       gapU,
       sGap: [ds.reduce((x, y) => x + y, 0) / ds.length, Math.min(...ds)],
-      bottom: best.bottom,
-      excess: best.excess,
       origin: q,
       angleDeg: -deg,
       advEm: sils.map((s) => s.adv),
@@ -444,19 +464,20 @@ const lockup = {
 };
 writeFileSync(join(out, "lockup.json"), JSON.stringify(lockup, null, 2) + "\n");
 
-const tile =
-  `<image id="foilTex" x="0" y="0" width="601.5" height="601.5" ` +
-  `preserveAspectRatio="none" href="${texture}"/>`;
 const box = frame.join(" ");
+// The mark master inlines the same 261 KB JPEG once per tile; one <symbol> behind four <use>es is
+// the same foil at a quarter of the bytes, and taking the tiles from the master instead of retyping
+// them keeps the lockup's texture identical to the page's if the configurator ever changes it.
+const tiles = pattern.replaceAll(/<image href="data:[^"]*"/g, '<use href="#foilTex"');
+if (!tiles.includes("#foilTex") || tiles.includes("data:")) {
+  throw new Error("brand/logo/mark-transparent.svg: the foil pattern is not four inline images");
+}
 const standalone = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}" width="${PLAQUE[0]}" height="${PLAQUE[1]}" role="img" aria-label="Silver">
   <defs>
-    ${tile}
-    <pattern id="foil" patternUnits="userSpaceOnUse" x="36" y="300" width="1200" height="1200">
-      <use href="#foilTex"/>
-      <use href="#foilTex" transform="translate(1200,0) scale(-1,1)"/>
-      <use href="#foilTex" transform="translate(0,1200) scale(1,-1)"/>
-      <use href="#foilTex" transform="translate(1200,1200) scale(-1,-1)"/>
-    </pattern>
+    <symbol id="foilTex" viewBox="0 0 1 1" preserveAspectRatio="none">
+      <image href="${texture}" x="0" y="0" width="1" height="1" preserveAspectRatio="none"/>
+    </symbol>
+    ${tiles}
   </defs>
   <rect x="${frame[0]}" y="${frame[1]}" width="${frame[2]}" height="${frame[3]}" fill="${BG}"/>
   <path d="${compactPath(ribbonArms(geometry.ribbon, centre))}" fill="url(#foil)"/>

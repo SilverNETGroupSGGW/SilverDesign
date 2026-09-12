@@ -6,14 +6,16 @@ interface Props {
   /** The plaque's height; the arms run to its edges. */
   size?: string;
   interactive?: boolean;
+  /** For whatever holds the plaque to place it; the component owns everything inside. */
+  class?: string;
 }
-const { size = "2.5rem", interactive = false } = Astro.props;
+const { size = "2.5rem", interactive = false, class: hook } = Astro.props;
 // Each render gets its own pattern id: two marks on one page would otherwise both
 // resolve url(#foil) to the first one's pattern.
 const uid = Math.random().toString(36).slice(2, 8);
 ---
 <span
-  class="lockup"
+  class:list={["lockup", hook]}
   style={`--size:${size};--ratio:${lockupRatio}`}
   data-foil={interactive ? "" : undefined}
   aria-hidden="true"
