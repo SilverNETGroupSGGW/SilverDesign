@@ -117,7 +117,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     overflow: hidden;
   }
   /* Under the breakpoint the title takes the whole width, so the lockup moves under it. */
-  @container (width < 64rem) {
+  @container (width < 56rem) {
     .opener {
       --by: var(--by-narrow);
       --h: var(--h-narrow);
@@ -219,10 +219,16 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .sheet .above h1 {
     hyphens: manual;
   }
+  /* The zone's box starts where the diagonal's foot is, so base.css's measure is taken from the
+     right margin instead: the block sits there and its line boxes shorten where the float reaches
+     in. Ranged right, the lead's ragged edge falls along the word and the foil and its straight edge
+     on the margin, mirroring the title on the other side of the ribbon. */
   .below .lead {
     font-size: var(--lead);
     line-height: 1.35;
-    max-width: none;
+    margin-inline-start: auto;
+    text-align: end;
+    text-wrap: pretty;
     color: var(--ink);
   }
   /* Over the ribbon, and under the buttons, which carry the same z-index one step up: the title and

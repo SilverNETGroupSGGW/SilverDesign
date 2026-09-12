@@ -19,8 +19,8 @@ import {
 } from "../src/lib/opener";
 
 /** The viewports the opener's sizes are checked at; the home opener's floor is the short case. */
-// 1140 and 1152 sit on both sides of the 64rem breakpoint, where the narrow floor is tightest.
-const WIDTHS = [400, 768, 1024, 1140, 1152, 1440, 1920, 2560];
+// 980 and 1000 sit on both sides of the 56rem breakpoint, where the narrow floor is tightest.
+const WIDTHS = [400, 768, 980, 1000, 1024, 1440, 1920, 2560];
 const SHORT = 400;
 
 const overlaps = (a: [number, number], b: [number, number]): boolean => a[0] < b[1] && b[0] < a[1];
@@ -115,8 +115,8 @@ describe("the ribbon never ends inside the opener", () => {
         expect(v.by).toBeGreaterThanOrEqual(v.navTop + v.navH + v.g);
       });
 
-      test(`${variant} at ${w}: the lead starts under the S`, () => {
-        expect(v.belowY).toBeGreaterThanOrEqual(v.by + body.h * v.m);
+      test(`${variant} at ${w}: the lead starts beside the lower half of the S`, () => {
+        expect(v.belowY).toBeGreaterThanOrEqual(v.by + (body.h / 2) * v.m);
         expect(v.belowX).toBeGreaterThanOrEqual(v.aboveX);
       });
     }

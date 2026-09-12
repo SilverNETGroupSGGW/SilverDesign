@@ -134,14 +134,14 @@ obcięcie + 6 par na nachodzenie), Lighthouse mobile: `/pl/` 97 perf / 100 a11y 
 | właściwość | home | page | sheet |
 |---|---|---|---|
 | `--m` | `clamp(7.8rem, 23.6cqw, 22rem)` | `clamp(6.5rem, 18cqw, 16rem)` | 200 px |
-| `--bx` | `clamp(3rem, 48.42cqw - 135.7px, 60rem)` | `clamp(3rem, 41.5cqw - 117px, 40rem)` | 420 px |
+| `--bx` | `clamp(3rem, 44.5cqw - 125px, 60rem)` | `clamp(3rem, 38cqw - 107px, 40rem)` | 420 px |
 | `--by` | szeroki: `--above-y + 0.50583·--m` (wierzch słowa = wierzch tytułu); wąski: `max(--above-y + --title-band + --g + 0.50583·--m, prześwit nawigacji)` | to samo | `96px + 0.50583·--m` |
 | `--g` | `clamp(12px, 1.39cqw, 20px)` | `clamp(12px, 1.11cqw, 16px)` | 16 px |
 | `--h` | szeroki: `max(48rem, 100svh, wyjście+2rem)`; wąski: `wyjście+2rem` | `max(26rem, wyjście+2rem)` | `max(585px, wyjście+1rem)` |
 | `--above-x` | `min(max(--gutter, 50cqw - 36rem), 24rem)` | to samo | 96 px |
 | `--above-y` | `max(clamp(4.5rem, 8.9cqw, 7.5rem), --nav-top + 4rem)` | to samo | 96 px |
 | `--below-x` | `max(--above-x, --bx - 0.77·--m)` | to samo | `max(96px, …)` |
-| `--below-y` | `--by + 0.538·--m + 2·--g` | to samo | to samo |
+| `--below-y` | `--by + 0.269·--m` (połowa wysokości S) | to samo | to samo |
 | `--title` | `clamp(min(2rem, 8cqw), 4.4cqw, 3.6rem)` | to samo | 44 px |
 | `--nav-top` / `--nav-w` / `--nav-h` | `clamp(1rem, 2.4cqw, 2rem)` / `min(80cqw, 21rem)` / `4rem` | to samo | 0 |
 
@@ -157,8 +157,8 @@ biegnie wzdłuż krawędzi ramienia do linii spodu S. Trzecia: pozycja logo od g
 dopasowanej liczby — na szerokim openerze wierzch słowa leży na wierzchu tytułu (`--by-wide`), na
 wąskim pod pasmem tytułu (`--title-band` = linie tytułu × 1,02 × `--title`, linie liczone z długości
 tytułu: ~14 znaków na linię przy 320 px), z dolnym ograniczeniem, przy którym górne ramię na prawej
-krawędzi mija pudełko nawigacji; wybór szeroki/wąski to `@container (width < 64rem)` na `.frame`,
-w teście `narrow: w < 64·rem`. Arkusz: znak 200 px (był 240), bo z wierzchem słowa na wierzchu tytułu
+krawędzi mija pudełko nawigacji; wybór szeroki/wąski to `@container (width < 56rem)` na `.frame`,
+w teście `narrow: w < 56·rem` (było 64rem — patrz „Układ B"). Arkusz: znak 200 px (był 240), bo z wierzchem słowa na wierzchu tytułu
 wyjście dolnego ramienia zjeżdżało o 68 px za budżet arkusza studentów.
 
 **Niezmienniki** (`tests/opener.test.ts`, 400/768/1024/1440/1920/2560, `--h` na podłodze):
@@ -239,7 +239,7 @@ Commity `0d2c68a`, `22463e3`, `defd0b7` + runda poprawek po review.
 | `--h` home na wąskim = samo `wyjście+2rem` (`--h-wide`/`--h-narrow`, jak `--by`) | `100svh` trzymało 276–404 px pustki nad „Jak to działa" na telefonie i tablecie; na szerokim ekranie przekątna zajmuje dodaną wysokość, więc podłoga zostaje |
 | `hyphenate-limit-chars: 10 4 4` + `-webkit-hyphenate-limit-before: 4` | Chromium dzielił angielski tytuł „sci-/ence" przy 400 px; limit zostawia dywiz słowom ≥ 10 znaków (root 32 px); Firefox nie zna żadnego i wraca do `hyphens: auto` |
 | `openerSizes` liczy `g` przed `by` | wąskie `--by` czyta `--g`; wcześniej model był o `--g` niżej niż przeglądarka i niezmiennik 1 przechodził na 2–5 px zapasu zamiast 2rem |
-| Test przy 1140 i 1152 px | obie strony punktu 64rem, gdzie wąska podłoga `--h` jest najciaśniejsza |
+| Test po obu stronach punktu przełączenia (dziś 980 i 1000 px) | tam wąska podłoga `--h` jest najciaśniejsza |
 
 Rulingi (próby cofnięte, żeby nikt ich nie powtarzał):
 
@@ -252,6 +252,24 @@ Rulingi (próby cofnięte, żeby nikt ich nie powtarzał):
 Propozycje tekstów (nic nie zmienione — §2): EN lead „than from classes" → „than from class";
 PL CTA „Wejdź na Discorda" (zgodne z krokiem „Wchodzisz na Discorda", rząd przestaje się łamać przy
 400 px). Warianty układu i tekstów: artefakt „Opener: warianty i teksty".
+
+### Układ B: lead do prawego marginesu, ciaśniej wokół znaku (2026-09-12, noc)
+
+Decyzje właściciela: układ B z makiety „Opener: warianty i teksty" (lead i CTA wyrównane do prawego
+marginesu), lead napisany od nowa, a odstępy tytuł–znak–lead mniejsze i zawijanie na większej
+liczbie ekranów.
+
+| Zmiana | Dlaczego |
+|---|---|
+| `.below .lead`: `text-align: end`, `margin-inline-start: auto`, miara z `base.css` (60ch) | prosty prawy brzeg leadu naprzeciw prostego lewego brzegu tytułu; poszarpana krawędź wypada wzdłuż słowa i folii. Miara 40ch z makiety cofnięta: blok nie dotykał przekątnej przy 1440 |
+| `--below-y = --by + 0.269·--m` (połowa S) zamiast spodu S + 2·--g | spód słowa biegnie od prawego dolnego rogu S w górę, więc wiersze obok dolnej połowy S siedzą **pod słowem** i schodzą po nim; światło daje `shape-margin`, nie `--below-y` |
+| `--bx` mniejsze o ~8 % (home `44.5cqw - 125px`, page `38cqw - 107px`) | znak bliżej tytułu; przy 1300 px kolumna tytułu obok S ma jeszcze ~4 px zapasu na „informatyków" — niżej nie schodzić bez zmniejszenia `--title` |
+| Punkt przełączenia 64rem → 56rem (~990 px) | laptop 1024 dostaje tytuł w trzech wierszach obok S i zawijanie leadu; 768 zostaje wąski (kolumna 184 px nie mieści „informatyków") |
+| CTA: `text-align: end`, margines z lewej strony przycisku | rząd przycisków pod prawym brzegiem leadu; na telefonie schodkują w prawo |
+| Test „lead startuje obok dolnej połowy S" (`belowY ≥ by + 0.269·m`), szerokości 980 i 1000 | niezmiennik dopasowany do nowej reguły; obie strony nowego punktu przełączenia |
+
+Uwaga: `text-wrap: pretty` na leadzie nie działa obok floata z kształtem (Chromium wyłącza łamanie
+wynikowe przy zmiennej szerokości wierszy), więc dwuwyrazowe wdowy w leadzie zostają.
 
 ### Otwarte dla właściciela (opener)
 

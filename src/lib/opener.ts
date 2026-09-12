@@ -260,8 +260,13 @@ export type Size =
   /** Two values, one per side of the opener's narrow breakpoint (a container query, not a calc). */
   | { wide: Size; narrow: Size };
 
-/** Below this container width the title takes the whole width and the lockup sits under it. */
-export const NARROW_REM = 64;
+/**
+ * Below this container width the title takes the whole width and the lockup sits under it. 56rem
+ * (~990px) rather than 64: a laptop at 1024 still has room for a three-line title beside the S, and
+ * the copy wrapping along the ribbon is the composition, so it should show on as many screens as can
+ * hold it.
+ */
+export const NARROW_REM = 56;
 
 /** What a length resolves against: the opener's box, the root font size, and the sizes above. */
 export interface SizeContext extends Record<SizeUnit, number> {
@@ -404,8 +409,12 @@ const CONTAINER_LEFT: Size = {
 };
 /** The S sits clear of the title's column, and the lead starts short of the S. */
 const BELOW_X: Size = { max: [CONTAINER_LEFT, { bx: 1, m: -0.77 }] };
-/** The lead starts under the S's bottom edge, two clearances down. */
-const BELOW_Y: Size = { by: 1, m: body.h, g: 2 };
+/**
+ * The lead starts halfway down the S, not under it: the word's bottom edge runs up from the S's
+ * bottom-right corner, so lines placed beside the lower half of the S sit under the word and step
+ * along it — the shape's margin keeps them --g off the foil, so no clearance is added here.
+ */
+const BELOW_Y: Size = { by: 1, m: body.h / 2 };
 /**
  * The opener is never shorter than the height at which the lower arm's lower edge still leaves
  * through the left edge: that exit is what makes the ribbon read as crossing the page, so it sets
@@ -419,7 +428,7 @@ const leftExitFloor = (slack: number): Size => {
 export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   home: {
     m: { clamp: [{ rem: 7.8 }, { cqw: 23.6 }, { rem: 22 }] },
-    bx: { clamp: [{ rem: 3 }, { cqw: 48.42, px: -135.7 }, { rem: 60 }] },
+    bx: { clamp: [{ rem: 3 }, { cqw: 44.5, px: -125 }, { rem: 60 }] },
     by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.39 }, { px: 20 }] },
     /**
@@ -443,7 +452,7 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   },
   page: {
     m: { clamp: [{ rem: 6.5 }, { cqw: 18 }, { rem: 16 }] },
-    bx: { clamp: [{ rem: 3 }, { cqw: 41.5, px: -117 }, { rem: 40 }] },
+    bx: { clamp: [{ rem: 3 }, { cqw: 38, px: -107 }, { rem: 40 }] },
     by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.11 }, { px: 16 }] },
     h: { max: [{ rem: 26 }, leftExitFloor(2)] },
