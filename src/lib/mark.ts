@@ -30,19 +30,5 @@ const geometry = JSON.parse(geometryJson) as {
 
 const [vbX, vbY, vbSize] = markViewBox.split(" ").map(Number) as [number, number, number];
 const centre = [vbX + vbSize / 2, vbY + vbSize / 2];
-const { axis, width } = geometry.ribbon;
-const angle = (geometry.angleDeg * Math.PI) / 180;
-const turn = (p: number[]): number[] => [2 * centre[0]! - p[0]!, 2 * centre[1]! - p[1]!];
 
 export const markRibbonPath = compactPath(ribbonArms(geometry.ribbon, centre));
-
-/** Where the ribbon sits in the mark's rendered box, as fractions of that box's size. */
-export const markRibbon = {
-  /** The centreline of the arm that leaves the box at the top right. */
-  upperAxis: [(axis[0]! - vbX) / vbSize, (axis[1]! - vbY) / vbSize],
-  /** Its rot180 twin, which leaves at the bottom left `offset` units across the axis. */
-  lowerAxis: [(turn(axis)[0]! - vbX) / vbSize, (turn(axis)[1]! - vbY) / vbSize],
-  /** Vertical distance from a centreline to the ribbon's own edge. */
-  halfRise: width / 2 / Math.cos(angle) / vbSize,
-  slope: Math.tan(angle),
-};

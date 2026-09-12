@@ -48,63 +48,79 @@ const style = [
 const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
 const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
-<header class:list={["opener", variant]} style={style} data-foil={variant === "home" ? "" : undefined}>
-  {route !== undefined && (
-    <nav aria-label={copy.nav.mainLabel}>
-      {links.map((l) => (
-        <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
-      ))}
-      <LocaleSwitch locale={locale} route={route} />
-    </nav>
-  )}
+<div class="frame">
+  <header class:list={["opener", variant]} style={style} data-foil={variant === "home" ? "" : undefined}>
+    {route !== undefined && (
+      <a class="lockup-link" href={pathFor("home", locale)} aria-label={site.name}></a>
+    )}
 
-  <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
-    <defs set:html={markPattern(uid)} />
-    <g fill={`url(#foil-${uid})`}>
-      <path d={markRibbonPath} />
-      <use href={`#${markPathId}`} />
-      <path d={lockupPath} />
-    </g>
-  </svg>
+    <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
+      <defs set:html={markPattern(uid)} />
+      <g fill={`url(#foil-${uid})`}>
+        <path d={markRibbonPath} />
+        <use href={`#${markPathId}`} />
+        <path d={lockupPath} />
+      </g>
+    </svg>
 
-  <div class="zone above" style={polyAbove}>
-    <div class="sh"></div>
-    <h1>
-      {route === undefined && <span class="visually-hidden">{site.name}</span>}
-      {title}
-    </h1>
-  </div>
+    <div class="zone above" style={polyAbove}>
+      <div class="sh"></div>
+      {route !== undefined && (
+        <nav aria-label={copy.nav.mainLabel}>
+          {links.map((l) => (
+            <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
+          ))}
+          <LocaleSwitch locale={locale} route={route} />
+        </nav>
+      )}
+      <h1
+        id={route === undefined ? undefined : "main"}
+        tabindex={route === undefined ? undefined : "-1"}
+      >
+        {route === undefined && <span class="visually-hidden">{site.name}</span>}
+        {title}
+      </h1>
+    </div>
 
-  <div class="zone below" style={polyBelow}>
-    <div class="sh"></div>
-    <p class="lead">{lead}</p>
-    <slot />
-  </div>
-
-  {route !== undefined && (
-    <a class="lockup-link" href={pathFor("home", locale)} aria-label={site.name}></a>
-  )}
-</header>
+    <div class="zone below" style={polyBelow}>
+      <div class="sh"></div>
+      <p class="lead">{lead}</p>
+      <slot />
+    </div>
+  </header>
+</div>
 
 <style>
+  /* The opener is its own query container's child, not the container: an element never answers its
+     own container queries, so cqw in --h or the grid's rows would read the viewport (scrollbar
+     included) instead of the opener's box. */
+  .frame {
+    container-type: inline-size;
+  }
   .opener {
     --w: 100cqw;
     position: relative;
-    container-type: inline-size;
     isolation: isolate;
+    display: grid;
+    /* Row one is the title's band. It is exactly --below-y while the title fits, so the lead starts
+       where the polygon says it does, and it grows — pushing the lead down — when the title needs
+       more room than the composition budgeted (a large root font size), rather than being cut. */
+    grid-template-rows: minmax(var(--below-y), auto) auto;
     min-block-size: var(--h);
     /* The ribbon runs thousands of user units past the mark's box on both ends; the opener is what
        cuts it to the page, so every end of it lands on a real edge of the document. */
     overflow: hidden;
   }
+  /* Inline-level and in flow: a block-level box would clear the float's whole margin box instead of
+     following its shape, and out of flow it could not push the title down when it wraps to a second
+     line (which it does at a 32 px root font size). --nav-h is what it reserves when it fits. */
   nav {
-    position: absolute;
-    inset-block-start: var(--nav-top);
-    inset-inline-start: var(--above-x);
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    vertical-align: top;
     max-inline-size: var(--nav-w);
     min-block-size: var(--nav-h);
-    z-index: 3;
-    display: flex;
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-4);
     align-items: start;
@@ -145,20 +161,17 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     shape-margin: var(--g);
   }
   .above {
-    position: absolute;
-    inset: 0 0 auto;
-    padding: var(--above-y) var(--above-x) 0;
+    padding: var(--nav-top) var(--above-x) 0;
     --zone-x: var(--above-x);
-    --zone-y: var(--above-y);
+    --zone-y: var(--nav-top);
   }
+  /* The title's own band, and no more: a grid item contains its float, so a taller float here would
+     push the lead down by that much instead of only when the title asks for it. */
   .above .sh {
-    block-size: calc(var(--h) - var(--above-y));
+    block-size: calc(var(--below-y) - var(--nav-top));
   }
-  /* The zone below the ribbon is the one in flow, so copy longer than the composition expects
-     lengthens the opener instead of being cut off by it. */
   .below {
-    display: flow-root;
-    padding: var(--below-y) var(--above-x) 0 var(--below-x);
+    padding: 0 var(--above-x) 0 var(--below-x);
     --zone-x: var(--below-x);
     --zone-y: var(--below-y);
   }
@@ -169,6 +182,10 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   /* base.css balances headings, which counts characters against a rectangle the shape has already
      taken apart; the diagonal is what should set the line lengths. */
   .above h1 {
+    /* --above-y is where the title sits when the navigation fits the box it reserves; the rest of
+       the distance is the navigation's own height, so a wrapped nav moves the title instead of
+       landing on it. */
+    margin-block-start: calc(var(--above-y) - var(--nav-top) - var(--nav-h));
     font-size: var(--title);
     line-height: 1.02;
     letter-spacing: -0.025em;
@@ -179,14 +196,19 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     hyphens: auto;
     overflow-wrap: break-word;
   }
+  /* A hyphen in a display line is a defect on a printed sheet, and the sheet's column is wide
+     enough for the longest word in either language. */
+  .sheet .above h1 {
+    hyphens: manual;
+  }
   .below .lead {
     font-size: var(--lead);
     line-height: 1.35;
     max-width: none;
     color: var(--ink);
   }
-  /* The variant is a class on the opener itself, so this one cannot be named after the page it
-     points at. */
+  /* Over the ribbon, and under the buttons, which carry the same z-index one step up: the title and
+     the lead are static, so they stay below it wherever their boxes reach across the diagonal. */
   .lockup-link {
     position: absolute;
     inset-block-start: var(--link-y);
@@ -196,7 +218,3 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     z-index: 1;
   }
 </style>
-
-<script>
-  import "../lib/foil";
-</script>

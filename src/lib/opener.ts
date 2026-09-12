@@ -287,8 +287,9 @@ export const sizeCss = (s: Size): string => {
     );
   }
   if (terms.length === 0) return "0px";
-  const one = terms.length === 1 && VAR[SIZE_UNITS.find((u) => (s[u] ?? 0) !== 0)!] === undefined;
-  return one ? terms[0]! : `calc(${terms.join("")})`;
+  const lone = SIZE_UNITS.find((u) => (s[u] ?? 0) !== 0)!;
+  const bare = terms.length === 1 && VAR[lone] === undefined && (s[lone] ?? 0) > 0;
+  return bare ? terms[0]! : `calc(${terms.join("")})`;
 };
 
 /** One opener's sizes. Everything after `g` may be written in terms of the four before it. */
@@ -334,8 +335,12 @@ const NAV_H: Size = { rem: 4 };
 const ABOVE_Y: Size = {
   max: [{ clamp: [{ rem: 4.5 }, { cqw: 8.9 }, { rem: 7.5 }] }, { sum: [NAV_TOP, NAV_H] }],
 };
-/** Capped where the longest Polish word in the title still fits the column beside the S. */
-const TITLE: Size = { clamp: [{ rem: 2 }, { cqw: 4.4 }, { rem: 3.6 }] };
+/**
+ * Capped where the longest Polish word in the title still fits the column beside the S. The floor
+ * is bounded by the opener's own width too: a display line has to stay inside its column on a phone
+ * whose root font size is 32 px, and the lead, the navigation and the buttons still scale in rem.
+ */
+const TITLE: Size = { clamp: [{ min: [{ rem: 2 }, { cqw: 8 }] }, { cqw: 4.4 }, { rem: 3.6 }] };
 const LEAD: Size = { clamp: [{ rem: 1.05 }, { cqw: 1.67 }, { rem: 1.35 }] };
 
 /** The left edge of the page's own container, so the title starts where the body copy does. */
@@ -365,7 +370,7 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   home: {
     m: { clamp: [{ rem: 7.8 }, { cqw: 23.6 }, { rem: 22 }] },
     bx: { clamp: [{ rem: 3 }, { cqw: 48.42, px: -135.7 }, { rem: 60 }] },
-    by: { max: [{ rem: 11 }, { px: 360.8, cqw: -7.69 }] },
+    by: { max: [{ rem: 12.5 }, { px: 360.8, cqw: -7.69 }] },
     g: { clamp: [{ px: 12 }, { cqw: 1.39 }, { px: 20 }] },
     h: { max: [{ rem: 48 }, { svh: 100 }, leftExitFloor(2)] },
     aboveX: CONTAINER_LEFT,
@@ -381,7 +386,7 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   page: {
     m: { clamp: [{ rem: 6.5 }, { cqw: 20.8 }, { rem: 19 }] },
     bx: { clamp: [{ rem: 3 }, { cqw: 41.5, px: -117 }, { rem: 40 }] },
-    by: { max: [{ rem: 8.5 }, { px: 270, cqw: -8.65 }] },
+    by: { max: [{ rem: 11 }, { px: 270, cqw: -8.65 }] },
     g: { clamp: [{ px: 12 }, { cqw: 1.11 }, { px: 16 }] },
     h: { max: [{ rem: 26 }, leftExitFloor(2)] },
     aboveX: CONTAINER_LEFT,
@@ -396,8 +401,8 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   },
   sheet: {
     m: { px: 240 },
-    bx: { px: 500 },
-    by: { px: 130 },
+    bx: { px: 490 },
+    by: { px: 140 },
     g: { px: 16 },
     h: { px: 585 },
     aboveX: { px: 96 },
@@ -407,9 +412,9 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     navTop: { px: 0 },
     navW: { px: 0 },
     navH: { px: 0 },
-    // The column beside the S is 372 px wide on the sheet; at 60 px the longest word in the Polish
-    // title is wider than that, and a broken word lands under the ribbon.
-    title: { px: 52 },
+    // The column beside the S is 378 px wide on the sheet, and the title may not be hyphenated
+    // there: 44 px is the step at which two words of either language's title still share a line.
+    title: { px: 44 },
     lead: { px: 26 },
   },
 };

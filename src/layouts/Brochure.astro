@@ -72,14 +72,9 @@ const { locale, title } = Astro.props;
   .page > * {
     flex: 0 0 auto;
   }
-  /* Astro leaves the opener's module script in place, and a flex container would give it a row of
-     its own. */
-  .page > script {
-    display: none;
-  }
   /* The opener is the only block that reaches the sheet's edges: the ribbon has to leave through
      them. */
-  .page > :not(.opener) {
+  .page > :not(.frame) {
     margin-inline: var(--pad);
   }
   .page > .plate {

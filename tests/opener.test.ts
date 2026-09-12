@@ -3,11 +3,14 @@ import {
   aboveBoundary,
   belowBoundary,
   body,
+  evalForm,
   exits,
+  lockupBox,
   openerLayouts,
   openerSizes,
   openerStyle,
   polygonCss,
+  rootFontSize,
   shapeAbove,
   shapeBelow,
   sizeCss,
@@ -67,7 +70,7 @@ describe("the ribbon never ends inside the opener", () => {
     for (const w of WIDTHS) {
       // The floor of --h is the tight case: a taller window only moves the exit further from it.
       const v = openerSizes(layout, { w, h: SHORT });
-      const rem = v.navH / 4;
+      const rem = rootFontSize(w);
       const e = exits(v);
 
       test(`${variant} at ${w}: the lower arm leaves through the left edge`, () => {
@@ -86,6 +89,9 @@ describe("the ribbon never ends inside the opener", () => {
 
       test(`${variant} at ${w}: the word stays on screen`, () => {
         expect(wordEndPoint(v)[0]).toBeLessThanOrEqual(0.95 * w);
+        // In y as well as in x: the word is the one part of the composition that may not leave
+        // through an edge, and the opener clips it.
+        expect(evalForm(lockupBox.origin[1], v)).toBeGreaterThanOrEqual(v.g);
       });
 
       test(`${variant} at ${w}: the navigation's box is clear of the foil`, () => {
@@ -122,6 +128,6 @@ describe("the ribbon never ends inside the opener", () => {
     expect(e.topEnd).toBeLessThanOrEqual(1240);
     expect(wordEndPoint(v)[0]).toBeLessThanOrEqual(0.95 * 1240);
     // A sheet is printed: the word may not be cut by the sheet's top edge.
-    expect(v.by - 0.50583 * v.m).toBeGreaterThan(0);
+    expect(evalForm(lockupBox.origin[1], v)).toBeGreaterThanOrEqual(v.g);
   });
 });

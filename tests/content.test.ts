@@ -92,9 +92,10 @@ describe("copy", () => {
     }
   });
   test("hero title stays inside three h1 lines at 1024 CSS px", () => {
-    // At 1024 the h1 is 66.5px (--step-4) in an 18ch column, ~719px wide, and Geist renders it at
-    // ~36.7px per character: three lines hold ~58. A fourth pushes the CTAs down the hero, and the
-    // ribbon's clearance under them is measured, not reserved.
+    // At 1024 the opener's h1 is 45px on a 46px line and its lines end on the ribbon's upper edge,
+    // so three of them reach y = 239 — still clear of the S's band, which starts at --by - --g =
+    // 268. A fourth line has to fit the column beside the S instead (--above-x to --bx - --g, 305
+    // px), where "informatyków" alone already measures 281 px.
     for (const locale of ["pl", "en"]) {
       const copy = CopySchema.parse(readJson(join(root, "copy", `${locale}.json`)));
       expect(copy.hero.title.length, locale).toBeLessThanOrEqual(38);

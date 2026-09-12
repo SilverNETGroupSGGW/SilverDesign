@@ -60,7 +60,7 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     <Opener locale={locale} route={route} variant={variant} title={heading} lead={lead}>
       <slot name="cta" />
     </Opener>
-    <main id="main" tabindex="-1">
+    <main>
       <slot />
     </main>
     <Footer locale={locale} route={route} />

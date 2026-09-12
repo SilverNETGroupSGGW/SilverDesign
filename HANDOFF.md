@@ -134,15 +134,16 @@ obcięcie + 6 par na nachodzenie), Lighthouse mobile: `/pl/` 97 perf / 100 a11y 
 | właściwość | home | page | sheet |
 |---|---|---|---|
 | `--m` | `clamp(7.8rem, 23.6cqw, 22rem)` | `clamp(6.5rem, 20.8cqw, 19rem)` | 240 px |
-| `--bx` | `clamp(3rem, 48.42cqw - 135.7px, 60rem)` | `clamp(3rem, 41.5cqw - 117px, 40rem)` | 500 px |
-| `--by` | `max(11rem, 360.8px - 7.69cqw)` | `max(8.5rem, 270px - 8.65cqw)` | 130 px |
+| `--bx` | `clamp(3rem, 48.42cqw - 135.7px, 60rem)` | `clamp(3rem, 41.5cqw - 117px, 40rem)` | 490 px |
+| `--by` | `max(12.5rem, 360.8px - 7.69cqw)` | `max(11rem, 270px - 8.65cqw)` | 140 px |
 | `--g` | `clamp(12px, 1.39cqw, 20px)` | `clamp(12px, 1.11cqw, 16px)` | 16 px |
 | `--h` | `max(48rem, 100svh, wyjście+2rem)` | `max(26rem, wyjście+2rem)` | 585 px |
 | `--above-x` | `min(max(--gutter, 50cqw - 36rem), 24rem)` | to samo | 96 px |
 | `--above-y` | `max(clamp(4.5rem, 8.9cqw, 7.5rem), --nav-top + 4rem)` | to samo | 96 px |
 | `--below-x` | `max(--above-x, --bx - 0.77·--m)` | to samo | `max(96px, …)` |
 | `--below-y` | `--by + 0.538·--m + 2·--g` | to samo | to samo |
-| `--title` | `clamp(2rem, 4.4cqw, 3.6rem)` | to samo | 52 px |
+| `--title` | `clamp(min(2rem, 8cqw), 4.4cqw, 3.6rem)` | to samo | 44 px |
+| `--nav-top` / `--nav-w` / `--nav-h` | `clamp(1rem, 2.4cqw, 2rem)` / `min(80cqw, 21rem)` / `4rem` | to samo | 0 |
 
 Przy 1440×900 wychodzi z tego dokładnie mock: `--m` 340, `--bx` 562, `--by` 250, lead na 473 px,
 tytuł na 128 px, wstęga na lewej krawędzi 688–774 px, wyjście górą 1109–1284 px.
@@ -154,7 +155,26 @@ tytuł na 128 px, wstęga na lewej krawędzi 688–774 px, wyjście górą 1109�
 3. koniec słowa ≤ 0,95 × szerokość;
 4. pudełko nawigacji (`--above-x`, `--nav-top`, `--nav-w` × `--nav-h`) nie przecina żadnego z dwóch
    pasm — liczone na jego prawej krawędzi, gdzie pasmo jest najwyżej;
-5. `--by ≥ --nav-top + --nav-h + --g`; lead startuje pod spodem S i nie bliżej lewej niż tytuł.
+5. `--by ≥ --nav-top + --nav-h + --g`; lead startuje pod spodem S i nie bliżej lewej niż tytuł;
+6. **góra lockupu** (`evalForm(lockupBox.origin[1], v)`) `≥ --g` — słowo jest tą częścią kompozycji,
+   która *nie* ma wychodzić krawędzią, a opener obcina; niezmiennik 3 pilnował tego tylko w x.
+
+Uwaga o pomiarze: `openerSizes()` liczy `cqw` od szerokości viewportu, a przeglądarka od kadru
+openera. Opener jest na pełną szerokość, więc różnica to pasek przewijania (~15 px na desktopie):
+zapas niezmiennika 3 przy 1440 px spada wtedy z 22 px do ~8 px. Gdyby opener kiedyś przestał być
+pełnej szerokości, trzeba podać jego szerokość do `openerSizes()`.
+
+**Kadr, strefy, nawigacja.** Opener siedzi w `div.frame` z `container-type: inline-size` — element
+nie odpowiada na własne container queries, więc gdyby `container-type` był na openerze, `cqw` w
+`--h` i w wierszach grida liczyłoby się od viewportu (razem z paskiem przewijania), a nie od jego
+kadru. Sam opener to grid o wierszach `minmax(var(--below-y), auto) auto`: strefa nad wstęgą jest w
+wierszu 1 (jej float ma dokładnie wysokość `--below-y - --nav-top`, więc wiersz 1 normalnie równa się
+`--below-y`), strefa pod wstęgą w wierszu 2. Kiedy tytuł potrzebuje więcej (root font 32 px), wiersz
+1 rośnie i **przesuwa lead** zamiast dać się obciąć. Nawigacja jest w strefie nad wstęgą, **w flow i
+inline-level** (`display: inline-flex`): blok omijałby cały margin-box floata, a pozycjonowana
+absolutnie nie mogłaby przesunąć tytułu, kiedy zawinie się na drugi wiersz; `--nav-h` to tylko
+rezerwa, a `h1` dostaje `margin-block-start: --above-y - --nav-top - --nav-h`. Cel skip-linku
+(`id="main"`) siedzi na `h1`, więc „przejdź do treści" ląduje na tytule strony, nie za nim.
 
 **Arkusze.** `Brochure.astro` nie pozycjonuje już bloków (`--left/--top/--w`, `.over`, `.under`,
 `markTop`, `.markwrap` — wszystko usunięte): sheet to kolumna flex (`gap: 24px`, `flex: 0 0 auto`,
@@ -179,11 +199,26 @@ Renderer dostał dodatkowo **detektor nachodzenia** par bloków (`.page > *`) �
 | Płyta z QR na całą szerokość treści arkusza, na dole | dolny lewy róg jest już wolny (wstęga jest u góry), a kod dostaje strefę ciszy z paddingu płyty | jedna reguła |
 | Tekstura folii preloadowana na każdej stronie (nie tylko home) | wstęga jest teraz na każdej stronie i jest elementem LCP | jedna linia w `Base.astro` |
 
+### Runda poprawek po review (2026-09-12, wieczór)
+
+| Poprawka | Dlaczego |
+|---|---|
+| `--by` w górę (home `12.5rem`, page `11rem`, arkusz 140 px), arkusz `--bx` 490 px | góra słowa (`--by - 0.50583·--m`) schodziła pod zero: przy `page` od ~1460 px i `home` od ~2090 px opener ścinał „r" w „Silver". Nowy niezmiennik 6 pilnuje tego liczbowo |
+| Grid `minmax(var(--below-y), auto) auto` + strefa nad wstęgą w flow | przy root font 32 px tytuł tracił 262 px pod `overflow: hidden`; teraz wiersz 1 rośnie i przesuwa lead |
+| `--title` z podłogą `min(2rem, 8cqw)` | 2rem przy root 32 px to 64 px w kolumnie 368 px — tytuł rozsypywał się na 13 wierszy z łamaniem słów; `cqw` trzyma linię displayową w jej kolumnie, a lead, nawigacja i przyciski dalej skalują się w `rem` |
+| Nawigacja w flow, `display: inline-flex` | zawinięta na dwa wiersze (root 32 px) wchodziła na tytuł; blokowy flex omijałby cały margin-box floata zamiast jego kształtu |
+| `container-type` na `div.frame` | element nie odpowiada na własne container queries — `cqw` na openerze liczyło viewport |
+| `id="main"` na `h1`, link lockupu przed strefami | „przejdź do treści" przeskakiwało tytuł i lead; link do strony głównej był ostatni w kolejności fokusa, choć czyta się jako pierwszy |
+| Arkusz: `hyphens: manual` + tytuł 44 px | 52 px z `hyphens: auto` łamało angielski tytuł dywizem („com-/puter"), a bez dywizu rozbijało go na pięć wierszy po jednym słowie |
+| Skrypt folii importowany w `Home.astro`, nie w openerze | moduł jechał na każdą stronę i oba arkusze, gdzie nic nie ma `data-foil`; zniknęła też reguła `.page > script` |
+| `markRibbon`, `lockupFrame`, `lockupRatio`, `lockupArmsPath` usunięte | bez wywołań po usunięciu `Header.astro`/`Lockup.astro`; oxlint nie widzi nieużywanych eksportów |
+
 ### Otwarte dla właściciela (opener)
 
-- **Puste pole pod wstęgą.** Na `page` przy 1920–2560 px opener rośnie do 773–793 px (geometria: im
-  dalej w prawo siedzi S, tym niżej wstęga wychodzi lewą krawędzią). Negatyw diagonali przyjęty jak
-  w mocku; alternatywa to niższe `--bx` (S bliżej lewej) albo mniejszy `--m`.
+- **Puste pole pod wstęgą.** Na `page` przy 1920–2560 px opener rośnie do 818–838 px (geometria: im
+  dalej w prawo i niżej siedzi S, tym niżej wstęga wychodzi lewą krawędzią; podniesienie `--by` z
+  rundy poprawek dodało ~45 px). Negatyw diagonali przyjęty jak w mocku; alternatywa to niższe
+  `--bx` (S bliżej lewej) albo mniejszy `--m`.
 - **Długie słowo w tytule.** Kolumna obok S jest węższa niż cały kadr, więc podłoga to najdłuższe
   słowo tytułu przy `--title`. Sprawdzone na zrzutach dla PL i EN; testem nie da się tego złapać bez
   metryk fontu.
