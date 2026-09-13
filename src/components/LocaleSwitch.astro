@@ -13,12 +13,13 @@ const target = otherLocale(locale);
 <a class="switch mono" href={pathFor(route, target)} hreflang={target} lang={target}>{copy.nav.switchTo}</a>
 
 <style>
+  /* The opener sets --nav-rest/--nav-hover where its navigation stands on the foil. */
   .switch {
     text-decoration: none;
-    color: var(--muted);
+    color: var(--nav-rest, var(--muted));
     padding-block: 0.55rem;
   }
   .switch:hover {
-    color: var(--ink);
+    color: var(--nav-hover, var(--ink));
   }
 </style>

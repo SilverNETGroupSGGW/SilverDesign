@@ -305,14 +305,17 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   }
   /* The band passes behind this row, and --muted over its brightest pixels measures 3.5:1. Ink
      clears 4.5:1 everywhere on it, so the resting colour steps up and hover keeps its distance.
-     The language switch is a component of its own, so its colour is out of this scope's reach. */
-  .backdrop nav a,
-  .backdrop nav :global(.switch) {
+     The language switch reads the same two properties, so it follows without a cross-component
+     selector that a renamed class would silently undo. */
+  .backdrop nav {
+    --nav-rest: var(--ink);
+    --nav-hover: var(--bright);
+  }
+  .backdrop nav a {
     color: var(--ink);
   }
   .backdrop nav a:hover,
-  .backdrop nav a[aria-current="page"],
-  .backdrop nav :global(.switch):hover {
+  .backdrop nav a[aria-current="page"] {
     color: var(--bright);
   }
   /* The page's header is only as tall as its copy; the dimmed ribbon keeps going under the content
@@ -354,7 +357,9 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     }
     .backdrop .logo {
       --logo-h: 2.5rem;
-      margin-inline-end: var(--space-1);
+      /* No margin of its own: the row's gap is the space, and four more pixels cost a third row
+         between 399 and 402 px. */
+      margin-inline-end: 0;
     }
   }
   .backdrop .logo svg {
