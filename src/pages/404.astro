@@ -1,5 +1,6 @@
 ---
 import { getEntry } from "astro:content";
+import Footer from "../components/Footer.astro";
 import Mark from "../components/Mark.astro";
 import MarkDefs from "../components/MarkDefs.astro";
 import { locales, pathFor } from "../lib/i18n";
@@ -8,11 +9,20 @@ import "../styles/base.css";
 
 const site = (await getEntry("site", "site"))!.data;
 const sides = await Promise.all(
-  locales.map(async (locale) => ({
-    locale,
-    copy: (await getEntry("copy", locale))!.data.notFound,
-    home: pathFor("home", locale),
-  })),
+  locales.map(async (locale) => {
+    const copy = (await getEntry("copy", locale))!.data;
+    return {
+      locale,
+      copy: copy.notFound,
+      navLabel: copy.nav.mainLabel,
+      home: pathFor("home", locale),
+      links: [
+        { href: pathFor("projects", locale), label: copy.nav.projects },
+        { href: pathFor("history", locale), label: copy.nav.history },
+        { href: `${pathFor("home", locale)}#join`, label: copy.nav.join },
+      ],
+    };
+  }),
 );
 const title = sides.map((s) => s.copy.title).join(" · ");
 ---
@@ -38,16 +48,25 @@ const title = sides.map((s) => s.copy.title).join(" · ");
           {i === 0 ? <h1>{s.copy.title}</h1> : <h2>{s.copy.title}</h2>}
           <p>{s.copy.body}</p>
           <p><a href={s.home}>{s.copy.home}</a></p>
+          <nav class="ways" aria-label={s.navLabel}>
+            {s.links.map((l) => <a href={l.href}>{l.label}</a>)}
+          </nav>
         </section>
       ))}
     </main>
+    {/* A 404 has no locale of its own, and the footer's contact details and its link to the club's
+        year are the same in both: it renders in Polish, the site's default, with the switch
+        pointing at the English home page. */}
+    <Footer locale="pl" route="home" />
   </body>
 </html>
 
 <style>
+  /* The two sides stay centred in what is left of the first screen once the footer has its room,
+     so nothing has to be scrolled to for the way onward. */
   .page {
-    min-height: 100vh;
-    padding-block: var(--space-7);
+    min-height: max(60vh, 100vh - 30rem);
+    padding-block: var(--space-6);
     display: grid;
     align-content: center;
     justify-items: start;
@@ -71,5 +90,17 @@ const title = sides.map((s) => s.copy.title).join(" · ");
   }
   section a {
     padding-block: 0.45rem;
+  }
+  .ways {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+  }
+  .ways a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .ways a:hover {
+    color: var(--ink);
   }
 </style>
