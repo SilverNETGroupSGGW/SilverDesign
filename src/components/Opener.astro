@@ -2,7 +2,15 @@
 import { getEntry } from "astro:content";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import { lockupPath, lockupTightViewBox } from "../lib/lockup";
-import { markBandPath, markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
+import {
+  markBandPath,
+  markPathId,
+  markPattern,
+  markRibbonPath,
+  markTopBarKeep,
+  markTopBarPath,
+  markViewBox,
+} from "../lib/mark";
 import {
   backdropVariants,
   formCss,
@@ -79,9 +87,15 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
         {route !== undefined && (
           <nav aria-label={copy.nav.mainLabel}>
             <a class="logo" href={pathFor("home", locale)} aria-label={site.name}>
-              <svg viewBox={lockupTightViewBox} aria-hidden="true">
+              <svg viewBox={markViewBox} aria-hidden="true">
+                <defs>
+                  <clipPath id={`bar-${uid}`}>
+                    <rect {...markTopBarKeep} />
+                  </clipPath>
+                </defs>
                 <g fill={`url(#foil-${uid})`}>
-                  <use href={`#${markPathId}`} />
+                  <path d={markTopBarPath} />
+                  <use href={`#${markPathId}`} clip-path={`url(#bar-${uid})`} />
                   <path d={lockupPath} />
                 </g>
               </svg>
@@ -300,16 +314,43 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     max-inline-size: none;
   }
   /* The lockup heads the navigation on a page, tall enough for the S to read as the S and the
-     word as the word. */
+     word as the word. The link is the lockup's own box; the svg is the whole mark box placed so
+     the lockup fills the link, and its ribbon runs out of it: up to the top edge, and left along
+     the bar's bottom edge to the left edge, where the opener's clip ends both. */
   .backdrop .logo {
+    position: relative;
     display: block;
     block-size: 2.75rem;
+    /* The lockup's tight box is 1188 × 650 mark units. */
+    inline-size: calc(2.75rem * 1188 / 650);
     margin-inline-end: var(--space-2);
   }
+  /* Five items and the lockup do not fit a phone's row at the site's gaps; tighter, they just do. */
+  @container (width < 40rem) {
+    .backdrop nav {
+      gap: var(--space-2) var(--space-3);
+    }
+    .backdrop .logo {
+      block-size: 2.25rem;
+      inline-size: calc(2.25rem * 1188 / 650);
+      margin-inline-end: var(--space-1);
+    }
+    .backdrop .logo svg {
+      inline-size: calc(2.25rem * 600 / 650);
+      block-size: calc(2.25rem * 600 / 650);
+      inset-inline-start: calc(-2.25rem * 136.4 / 650);
+      inset-block-start: calc(2.25rem * 176.9 / 650);
+    }
+  }
   .backdrop .logo svg {
-    display: block;
-    block-size: 100%;
-    inline-size: auto;
+    position: absolute;
+    /* The mark box is 600 units; the tight box starts 136.4 units in and 176.9 units below its top. */
+    inline-size: calc(2.75rem * 600 / 650);
+    block-size: calc(2.75rem * 600 / 650);
+    inset-inline-start: calc(-2.75rem * 136.4 / 650);
+    inset-block-start: calc(2.75rem * 176.9 / 650);
+    overflow: visible;
+    pointer-events: none;
   }
   .backdrop h1 {
     margin-block-start: var(--space-4);

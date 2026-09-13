@@ -1,6 +1,6 @@
 import geometryJson from "../../brand/logo/geometry.json?raw";
 import markSvg from "../../brand/logo/mark-transparent.svg?raw";
-import { ribbonArms, ribbonBand } from "./ribbon";
+import { ribbonArms, ribbonBand, ribbonLowerStart, ribbonTopBar } from "./ribbon";
 import { compactPath } from "./svg-path";
 
 export const markPathId = "silver-mark-path";
@@ -33,3 +33,9 @@ const centre = [vbX + vbSize / 2, vbY + vbSize / 2];
 
 export const markRibbonPath = compactPath(ribbonArms(geometry.ribbon, centre));
 export const markBandPath = compactPath(ribbonBand(geometry.ribbon));
+export const markTopBarPath = compactPath(ribbonTopBar(geometry.ribbon, centre));
+/** The part of the mark box above the lower arm's full-width point: the top bar keeps only this of the mark. */
+export const markTopBarKeep = ((): { x: number; y: number; width: number; height: number } => {
+  const y = ribbonLowerStart(geometry.ribbon, centre)[1]!;
+  return { x: vbX, y: vbY, width: vbSize, height: Math.round((y - vbY) * 10) / 10 };
+})();

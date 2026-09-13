@@ -289,7 +289,14 @@ obcięte pudełkiem, 2,75rem wysokości), a w tle zostaje **sama wstęga**: pros
 biegło górne ramię lockupu z poprzedniej wersji (`--m/--bx/--by` bez zmian), `--h = 0`
 i `overflow: visible` + `clip-path: inset(0 0 -200vh 0)`, więc pas biegnie pod treścią aż do lewej
 krawędzi. Pas może przechodzić za linkami nawigacji (ruling), nawigacja na podstronie ma
-`max-inline-size: none`, więc na telefonie przełącznik języka schodzi do drugiego wiersza. Testy dla
+`max-inline-size: none`; poniżej 40rem odstępy i logo są mniejsze, żeby pięć elementów weszło
+w jeden wiersz. **Wstęga logo w topbarze** (`ribbonTopBar`, `markTopBarPath`): górne ramię biegnie
+w nieskończoność (wychodzi górą strony), dolne po 20 j. skręca łukiem o promieniu 300 j. w poziom
+i biegnie w lewo do krawędzi strony jako dolna krawędź topbaru; górna krawędź poziomego pasa
+zrównuje się ze spodem S. Własne ramię znaku jest obcięte `clipPath` w punkcie pełnej szerokości
+(`markTopBarKeep`), bo plik znaku rysuje je do krawędzi pudełka i wystawałoby pod pasem. Svg logo
+jest absolutny w linku o rozmiarze ciasnego pudełka lockupu (1188 × 650 j.), `overflow: visible`,
+a `clip-path` openera tnie ramiona na krawędziach strony. Testy dla
 `backdropVariants`: `exits(v, true)` (krawędzie pasa), bez niezmienników o słowie i S. Sekcja niżej
 opisuje wersję pośrednią z całym lockupem w tle — zostawiona dla historii decyzji.
 
