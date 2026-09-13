@@ -1,6 +1,25 @@
 import lockupJson from "../../brand/logo/lockup.json?raw";
 
-const lockup = JSON.parse(lockupJson) as { path: string };
+const lockup = JSON.parse(lockupJson) as {
+  path: string;
+  bodyBox: [number, number, number, number];
+  wordBox: [number, number, number, number];
+};
 
 /** The word "ilver", as outlines in the mark's own user units. */
 export const lockupPath = lockup.path;
+/**
+ * The S and the word, tight, as a viewBox for the small lockup in a page's navigation: the arms are
+ * cut where the box ends, so the ribbon reads as leaving it. A hair of room keeps the strokes off
+ * the edges.
+ */
+export const lockupTightViewBox = ((): string => {
+  const [bx, by, bw, bh] = lockup.bodyBox;
+  const [wx, wy, ww, wh] = lockup.wordBox;
+  const pad = 12;
+  const x0 = Math.min(bx, wx) - pad;
+  const y0 = Math.min(by, wy) - pad;
+  const x1 = Math.max(bx + bw, wx + ww) + pad;
+  const y1 = Math.max(by + bh, wy + wh) + pad;
+  return [x0, y0, x1 - x0, y1 - y0].map((n) => Math.round(n * 10) / 10).join(" ");
+})();

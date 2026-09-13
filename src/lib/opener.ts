@@ -216,6 +216,7 @@ export const resolve = (points: Point[], v: OpenerVars): [number, number][] =>
 /** Where the ribbon leaves the opener's box: the left edge low, the top edge (or right edge) high. */
 export const exits = (
   v: OpenerVars,
+  band = false,
 ): {
   leftTop: number;
   leftBottom: number;
@@ -229,8 +230,8 @@ export const exits = (
   const atW = (line: Point): number => evalForm(lineY(line, W), v);
   const xAt0 = (line: Point): number => evalForm(lineX(line, ZERO_F), v);
   return {
-    leftTop: at0(edges.lowerTop),
-    leftBottom: at0(edges.lowerBottom),
+    leftTop: at0(band ? edges.upperTop : edges.lowerTop),
+    leftBottom: at0(band ? edges.upperBottom : edges.lowerBottom),
     topStart: xAt0(edges.upperTop),
     topEnd: xAt0(edges.upperBottom),
     rightTop: atW(edges.upperTop),
@@ -426,7 +427,10 @@ const leftExitFloor = (slack: number): Size => {
   return { by: y.by, bx: y.bx, m: y.m, rem: slack };
 };
 
-/** The variants whose lockup is a dimmed background the copy stands on, not a shape it wraps. */
+/**
+ * The variants whose ribbon is a dimmed background the copy stands on, not a shape it wraps: one
+ * straight band along the upper arm's line, with the lockup itself small in the navigation.
+ */
 export const backdropVariants: ReadonlySet<string> = new Set(["page"]);
 
 export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
@@ -455,11 +459,11 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     lead: LEAD,
   },
   /**
-   * A page carries the whole lockup, but as a dimmed background: the navigation, the title and the
-   * lead stand in one column over it and nothing wraps. The S sits to the right of the title's
-   * column, the word's top one clearance under the navigation's line (2.4rem) so only the ribbon
-   * ever passes behind the links. The header is as tall as its copy: the ribbon runs on under the
-   * page's content and leaves through the page's left edge further down.
+   * A page carries the ribbon alone as a dimmed background, a straight band along the line the
+   * upper arm would take with the S to the right of the title's column and under the navigation's
+   * line; the navigation, the title and the lead stand in one column over it, nothing wraps, and
+   * the lockup itself heads the navigation. The header is as tall as its copy: the band runs on
+   * under the page's content and leaves through the page's left edge further down.
    */
   page: {
     m: { clamp: [{ rem: 5.5 }, { cqw: 12.5 }, { rem: 11 }] },

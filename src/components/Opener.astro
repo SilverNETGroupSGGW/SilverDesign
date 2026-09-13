@@ -1,8 +1,8 @@
 ---
 import { getEntry } from "astro:content";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
-import { lockupPath } from "../lib/lockup";
-import { markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
+import { lockupPath, lockupTightViewBox } from "../lib/lockup";
+import { markBandPath, markPathId, markPattern, markRibbonPath, markViewBox } from "../lib/mark";
 import {
   backdropVariants,
   formCss,
@@ -55,16 +55,22 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
 <div class="frame">
   <header class:list={["opener", variant, backdrop && "backdrop"]} style={style} data-foil={variant === "home" ? "" : undefined}>
-    {route !== undefined && (
+    {route !== undefined && !backdrop && (
       <a class="lockup-link" href={pathFor("home", locale)} aria-label={site.name}></a>
     )}
 
     <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
       <defs set:html={markPattern(uid)} />
       <g fill={`url(#foil-${uid})`}>
-        <path d={markRibbonPath} />
-        <use href={`#${markPathId}`} />
-        <path d={lockupPath} />
+        {backdrop ? (
+          <path d={markBandPath} />
+        ) : (
+          <>
+            <path d={markRibbonPath} />
+            <use href={`#${markPathId}`} />
+            <path d={lockupPath} />
+          </>
+        )}
       </g>
     </svg>
 
@@ -72,6 +78,14 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       <div class="zone below">
         {route !== undefined && (
           <nav aria-label={copy.nav.mainLabel}>
+            <a class="logo" href={pathFor("home", locale)} aria-label={site.name}>
+              <svg viewBox={lockupTightViewBox} aria-hidden="true">
+                <g fill={`url(#foil-${uid})`}>
+                  <use href={`#${markPathId}`} />
+                  <path d={lockupPath} />
+                </g>
+              </svg>
+            </a>
             {links.map((l) => (
               <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
             ))}
@@ -279,8 +293,23 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     display: block;
     padding-block: var(--nav-top) var(--space-5);
   }
+  /* The band may pass behind the links on a page, so the navigation takes the row it needs. */
   .backdrop nav {
     display: flex;
+    align-items: center;
+    max-inline-size: none;
+  }
+  /* The lockup heads the navigation on a page, tall enough for the S to read as the S and the
+     word as the word. */
+  .backdrop .logo {
+    display: block;
+    block-size: 2.75rem;
+    margin-inline-end: var(--space-2);
+  }
+  .backdrop .logo svg {
+    display: block;
+    block-size: 100%;
+    inline-size: auto;
   }
   .backdrop h1 {
     margin-block-start: var(--space-4);

@@ -280,7 +280,20 @@ Twarde spacje w leadach: po jednoliterowych, wokół myślnika („semestr — i
 Uwaga: `text-wrap: pretty` na leadzie nie działa obok floata z kształtem (Chromium wyłącza łamanie
 wynikowe przy zmiennej szerokości wierszy), więc dwuwyrazowe wdowy w leadzie zostają.
 
-### Podstrony: logo jako przyciemnione tło (2026-09-13)
+### Podstrony: logo w nawigacji, sama wstęga w tle (2026-09-13, rano)
+
+Ostatnia decyzja właściciela: logo (S + „ilver") wraca **do topbaru jako pierwszy element** i link
+do strony głównej (`nav .logo`, `lockupTightViewBox` = korpus S ∪ słowo z 12 j. zapasu, ramiona
+obcięte pudełkiem, 2,75rem wysokości), a w tle zostaje **sama wstęga**: prosty pas
+(`markBandPath`, oś górnego ramienia bez uskoku) z `opacity: 0.25`, w tym samym miejscu, w którym
+biegło górne ramię lockupu z poprzedniej wersji (`--m/--bx/--by` bez zmian), `--h = 0`
+i `overflow: visible` + `clip-path: inset(0 0 -200vh 0)`, więc pas biegnie pod treścią aż do lewej
+krawędzi. Pas może przechodzić za linkami nawigacji (ruling), nawigacja na podstronie ma
+`max-inline-size: none`, więc na telefonie przełącznik języka schodzi do drugiego wiersza. Testy dla
+`backdropVariants`: `exits(v, true)` (krawędzie pasa), bez niezmienników o słowie i S. Sekcja niżej
+opisuje wersję pośrednią z całym lockupem w tle — zostawiona dla historii decyzji.
+
+### Podstrony: logo jako przyciemnione tło (2026-09-13, noc — zastąpione)
 
 Decyzja właściciela: „Silver" ma wybrzmieć na stronie głównej, a na podstronach nie przeszkadzać —
 ale każdy Silver, także ten mały w hero podstron, ma być prawdziwym logiem z nieskończoną wstęgą.

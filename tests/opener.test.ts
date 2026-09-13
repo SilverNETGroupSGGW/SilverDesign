@@ -75,7 +75,7 @@ describe("the ribbon never ends inside the opener", () => {
       const v = openerSizes(layout, { w, h: SHORT, titleLines: variant === "page" ? 1 : 3 });
       const rem = rootFontSize(w);
       const backdrop = backdropVariants.has(variant);
-      const e = exits(v);
+      const e = exits(v, backdrop);
 
       test(`${variant} at ${w}: the lower arm leaves through the left edge`, () => {
         // A backdrop's ribbon runs on under the page's content, so it only has to reach the left
@@ -95,6 +95,7 @@ describe("the ribbon never ends inside the opener", () => {
       });
 
       test(`${variant} at ${w}: the word stays on screen`, () => {
+        if (backdrop) return;
         expect(wordEndPoint(v)[0]).toBeLessThanOrEqual(0.95 * w);
         // In y as well as in x: the word is the one part of the composition that may not leave
         // through an edge, and the opener clips it.
@@ -120,9 +121,9 @@ describe("the ribbon never ends inside the opener", () => {
       });
 
       test(`${variant} at ${w}: the S sits below the navigation's box`, () => {
-        // The backdrop's word sits level with the navigation's line, so the S starts under that
-        // line (about 2.4rem tall) rather than under the 4rem box the wrapping variants reserve.
-        expect(v.by).toBeGreaterThanOrEqual(v.navTop + (backdrop ? 2.4 * rem : v.navH + v.g));
+        // A backdrop has no S, and its dimmed band may pass behind the links (an owner ruling).
+        if (backdrop) return;
+        expect(v.by).toBeGreaterThanOrEqual(v.navTop + v.navH + v.g);
       });
 
       test(`${variant} at ${w}: the lead starts beside the S, below its top third`, () => {
