@@ -499,7 +499,7 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     // The column beside the S is 378 px wide on the sheet, and the title may not be hyphenated
     // there: 44 px is the step at which two words of either language's title still share a line.
     title: { px: 44 },
-    lead: { px: 26 },
+    lead: { px: 33 },
   },
 };
 
