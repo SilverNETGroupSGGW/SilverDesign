@@ -18,7 +18,7 @@
     "ctaProjects": "Zobacz projekty"
   },
   "steps": {
-    "heading": "Jak to działa",
+    "heading": "Start w trzech krokach",
     "items": [
       {
         "title": "Wchodzisz na Discorda",
@@ -88,7 +88,7 @@
     "students": {
       "title": "Koło naukowe informatyków na SGGW",
       "lead": "Nasze aplikacje docierają na cały kampus. Ty możesz napisać następną, niezależnie od wydziału!",
-      "stepsHeading": "Jak to działa",
+      "stepsHeading": "Start w trzech krokach",
       "appsHeading": "Nasze aplikacje",
       "threshold": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole!",
       "qrLabel": "Wpadnij na Discorda, gdzie zaczyna się każdy projekt."

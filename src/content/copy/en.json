@@ -18,7 +18,7 @@
     "ctaProjects": "See the projects"
   },
   "steps": {
-    "heading": "How it works",
+    "heading": "Three steps to start",
     "items": [
       {
         "title": "Join the Discord",
@@ -88,7 +88,7 @@
     "students": {
       "title": "The computer science club at SGGW",
       "lead": "Our apps reach the whole campus. You could write the next one, whatever your faculty!",
-      "stepsHeading": "How it works",
+      "stepsHeading": "Three steps to start",
       "appsHeading": "Our apps",
       "threshold": "Ever got a script for class, a website or a bot to work? Then you have the basics, and you'll learn the rest in a team!",
       "qrLabel": "Come say hi on Discord, where every project starts."

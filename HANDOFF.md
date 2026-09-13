@@ -137,7 +137,7 @@ obcięcie + 6 par na nachodzenie), Lighthouse mobile: `/pl/` 97 perf / 100 a11y 
 | `--bx` | `clamp(3rem, 44.5cqw - 125px, 60rem)` | `clamp(3rem, 38cqw - 107px, 40rem)` | 420 px |
 | `--by` | szeroki: `--above-y + 0.50583·--m` (wierzch słowa = wierzch tytułu); wąski: `max(--above-y + --title-band + --g + 0.50583·--m, prześwit nawigacji)` | to samo | `96px + 0.50583·--m` |
 | `--g` | `clamp(12px, 1.39cqw, 20px)` | `clamp(12px, 1.11cqw, 16px)` | 16 px |
-| `--h` | szeroki: `max(48rem, wyjście+2rem)`; wąski: `wyjście+2rem` | `max(26rem, wyjście+2rem)` | `max(585px, wyjście+1rem)` |
+| `--h` | szeroki: `max(48rem, wyjście+2rem)`; wąski: `wyjście+2rem` | `max(26rem, wyjście+2rem)` | `max(480px, wyjście+1,5rem)` |
 | `--above-x` | `min(max(--gutter, 50cqw - 36rem), 24rem)` | to samo | 96 px |
 | `--above-y` | `max(clamp(4.5rem, 8.9cqw, 7.5rem), --nav-top + 4rem)` | to samo | 96 px |
 | `--below-x` | `max(--above-x, --bx - 0.77·--m)` | to samo | `max(96px, …)` |

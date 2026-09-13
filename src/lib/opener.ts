@@ -488,7 +488,7 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     // The word's top is level with the title's, as on the pages.
     by: { px: 96, m: lockupTop },
     g: { px: 16 },
-    h: { max: [{ px: 585 }, leftExitFloor(1)] },
+    h: { max: [{ px: 480 }, leftExitFloor(1.5)] },
     aboveX: { px: 96 },
     aboveY: { px: 96 },
     belowX: { max: [{ px: 96 }, { bx: 1, m: -0.77 }] },

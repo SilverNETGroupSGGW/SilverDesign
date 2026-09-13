@@ -64,7 +64,8 @@ const { locale, title } = Astro.props;
     font-size: var(--print-step-0);
     display: flex;
     flex-direction: column;
-    /* Three rows and a plate on one A4: the space-2 gap is what leaves the third app card room. */
+    /* The gap after the opener: its box already reserves the band's exit under the composition, so
+       the first section does not need a second one. Section to section is wider, below. */
     gap: var(--print-space-2);
     padding-block-end: var(--pad);
   }
@@ -80,6 +81,11 @@ const { locale, title } = Astro.props;
   }
   .page > .plate {
     margin-block-start: auto;
+  }
+  /* Two sections of content stand apart; against the opener the small gap holds. */
+  .page > .row + .row,
+  .page > .pair + .row {
+    margin-block-start: var(--print-space-3);
   }
   .page .row {
     display: grid;
