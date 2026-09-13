@@ -133,12 +133,13 @@ const { locale, title } = Astro.props;
     gap: var(--print-space-4);
     align-items: center;
   }
-  /* The code sits on the plate's right edge and its caption hangs under it at exactly the code's
-     width: a zero inline size with a full minimum lets the text wrap to the code instead of
-     widening the column, so the caption reads as the code's label in short lines. */
+  /* The code sits on the plate's right edge and its caption hangs under it, ranged to the same
+     right edge: a column wider than the code takes the caption in two lines rather than three,
+     and the pair still reads as one block. */
   .page .code {
     display: grid;
     grid-template-columns: max-content;
+    justify-items: end;
     justify-self: end;
     align-self: start;
   }
@@ -156,8 +157,8 @@ const { locale, title } = Astro.props;
   .page .code p {
     margin-top: var(--print-space-2);
     font-size: var(--print-step--1);
-    inline-size: 0;
-    min-inline-size: 100%;
+    inline-size: 250px;
     max-width: none;
+    text-align: end;
   }
 </style>

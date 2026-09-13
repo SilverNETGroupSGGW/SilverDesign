@@ -69,9 +69,14 @@ const apps = (await getCollection("projects"))
     color: var(--muted);
     font-variant-numeric: tabular-nums;
   }
+  /* Justified so the block squares off against the plate's edges; hyphens keep the word spaces
+     even, since Polish words are long enough to open rivers in a column this narrow. */
   .threshold {
     font-size: var(--print-step-2);
     font-weight: 500;
     max-width: 36ch;
+    text-align: justify;
+    hyphens: auto;
+    hyphenate-limit-chars: 8 4 4;
   }
 </style>
