@@ -6,6 +6,12 @@
  */
 const STEPS = 24;
 /**
+ * Every probe is a style write read back through the line boxes, i.e. a forced layout, so the
+ * indents are searched coarse first — every COARSE-th, then the bracket around the best one.
+ * COARSE divides STEPS, so the widest indent is always among the coarse probes.
+ */
+const COARSE = 3;
+/**
  * Where the lead may start, in line heights below its own top: lower in the wedge every line is
  * wider, which is what a text too long for the room at the top needs before any indent can help.
  */
@@ -13,9 +19,7 @@ const DROPS = [0, 0.5, 1, 1.5, 2];
 /** The block's widths to try, as fractions of the zone: on a wide screen the width, not the foil, may set the line. */
 const WIDTHS = [1, 0.8, 0.6];
 
-const lineStarts = (el: HTMLElement): number[] => {
-  const range = document.createRange();
-  range.selectNodeContents(el);
+const lineStarts = (range: Range): number[] => {
   const rows = new Map<number, number>();
   for (const r of range.getClientRects()) {
     if (r.width === 0) continue;
@@ -24,6 +28,9 @@ const lineStarts = (el: HTMLElement): number[] => {
   }
   return [...rows.entries()].toSorted((a, b) => a[0] - b[0]).map(([, left]) => left);
 };
+
+const same = (a: number[], b: number[]): boolean =>
+  a.length === b.length && a.every((x, i) => x === b[i]);
 
 /**
  * How far the lines fall short of each starting one step left of the one above. A step of one line
@@ -45,29 +52,66 @@ export const fillWedge = (lead: HTMLElement): void => {
   lead.style.textIndent = "";
   lead.style.maxWidth = "";
   lead.style.marginBlockStart = "";
-  const starts = lineStarts(lead);
+  // One range for the whole search: the text does not change, only the boxes it is laid out in.
+  const range = document.createRange();
+  range.selectNodeContents(lead);
+  const starts = lineStarts(range);
   if (starts.length < 2) return;
   const step = parseFloat(getComputedStyle(lead).lineHeight) || 0;
   const right = lead.getBoundingClientRect().right;
   let best = { drop: 0, width: 1, indent: 0 };
   let bestScore = shortfall(starts, right, step);
+  // Only a strict improvement is taken, and no score is below zero: there is nothing left to find.
+  if (bestScore === 0) return;
   search: for (const drop of DROPS) {
     lead.style.marginBlockStart = `${drop * step}px`;
+    let widest: number[] | undefined;
     for (const width of WIDTHS) {
       lead.style.maxWidth = `${width * 100}%`;
       lead.style.textIndent = "";
+      const flush = lineStarts(range);
+      // A narrower block that leaves every line where it was scores the same all the way through:
+      // a line's start is the float's edge at that line's own height, and the count is unchanged.
+      if (widest && same(flush, widest)) continue;
+      widest ??= flush;
       // The first line's own length: an indent past most of it only pushes its words down.
-      const span = right - lineStarts(lead)[0]!;
-      for (let i = 0; i <= STEPS; i++) {
-        const indent = (i / STEPS) * span * 0.8;
-        lead.style.textIndent = `${indent}px`;
-        const score = shortfall(lineStarts(lead), right, step);
-        if (score < bestScore) {
-          bestScore = score;
-          best = { drop, width, indent };
+      const span = right - flush[0]!;
+      const scores = new Map<number, number>([[0, shortfall(flush, right, step)]]);
+      const at = (i: number): number => {
+        const seen = scores.get(i);
+        if (seen !== undefined) return seen;
+        lead.style.textIndent = `${(i / STEPS) * span * 0.8}px`;
+        const score = shortfall(lineStarts(range), right, step);
+        scores.set(i, score);
+        return score;
+      };
+      let bestIndent = 0;
+      let indentScore = at(0);
+      const take = (i: number): void => {
+        const score = at(i);
+        if (score < indentScore) {
+          indentScore = score;
+          bestIndent = i;
         }
-        if (score === 0) break search;
+      };
+      for (let i = COARSE; i <= STEPS; i += COARSE) take(i);
+      for (
+        let i = Math.max(0, bestIndent - COARSE + 1);
+        i <= Math.min(STEPS, bestIndent + COARSE - 1);
+        i++
+      )
+        take(i);
+      // A run of equal scores is one answer with several indents; the narrowest of them is the one
+      // a scan from zero would have stopped on.
+      while (bestIndent > 0 && at(bestIndent - 1) <= indentScore) {
+        bestIndent -= 1;
+        indentScore = at(bestIndent);
       }
+      if (indentScore < bestScore) {
+        bestScore = indentScore;
+        best = { drop, width, indent: (bestIndent / STEPS) * span * 0.8 };
+      }
+      if (indentScore === 0) break search;
     }
   }
   lead.style.marginBlockStart = best.drop ? `${best.drop * step}px` : "";
