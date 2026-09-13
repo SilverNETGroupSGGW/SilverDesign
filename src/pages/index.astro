@@ -9,6 +9,23 @@ const target = "/pl/";
     <meta http-equiv="refresh" content={`0; url=${target}`} />
     <link rel="canonical" href={target} />
     <title>Silver</title>
+    {/* The redirect is immediate, but a slow connection still paints this frame, and the site it
+        leads to is dark throughout. Nothing else on this page loads tokens.css, so --bg and --ink
+        are repeated here as literals. */}
+    <style is:inline>
+      :root {
+        color-scheme: dark;
+        background: #16161b;
+        color: #d8dbde;
+        font-family: system-ui, sans-serif;
+      }
+      body {
+        margin: 2rem;
+      }
+      a {
+        color: #d8dbde;
+      }
+    </style>
   </head>
   <body>
     <a href={target}>Silver — strona koła</a>

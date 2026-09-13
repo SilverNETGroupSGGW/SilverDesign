@@ -76,7 +76,12 @@ export const fillWedge = (lead: HTMLElement): void => {
 };
 
 export const fillWedges = (root: ParentNode = document): void => {
-  for (const lead of root.querySelectorAll<HTMLElement>(".opener .below .lead")) fillWedge(lead);
+  // Only the openers whose zone carries a shaped float: on a backdrop page the lead is a plain
+  // left-aligned block, where the score still charges a step per line and buys a stray first-line
+  // indent — and the measuring pass costs a long task for a layout it must not change.
+  for (const lead of root.querySelectorAll<HTMLElement>(".opener:not(.backdrop) .below .lead")) {
+    fillWedge(lead);
+  }
 };
 
 let raf = 0;

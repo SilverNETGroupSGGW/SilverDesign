@@ -60,7 +60,7 @@ const shotQuality = 65;
       alt={fill(copy.projects.shotAlt, { name: p.name })}
       width={420}
       widths={[420, 840]}
-      sizes="(min-width: 60rem) 420px, (min-width: 34rem) 50vw, 100vw"
+      sizes="(min-width: 40rem) min(50vw - 3rem, 36rem), 100vw"
       class="shot"
       quality={shotQuality}
       loading={eagerScreenshot ? "eager" : "lazy"}
@@ -79,7 +79,10 @@ const shotQuality = 65;
     )}
     <p class="tech mono">{p.tech.join(" · ")}</p>
     <p class="links">
-      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+      {/* Three "GitHub" links on a listing are three identical accessible names in a links list. */}
+      {links.map((l) => (
+        <a href={l.href}>{l.label}<span class="visually-hidden">{` — ${p.name}`}</span></a>
+      ))}
     </p>
   </div>
 </article>

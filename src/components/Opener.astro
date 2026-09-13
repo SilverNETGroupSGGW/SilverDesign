@@ -129,7 +129,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
             id={route === undefined ? undefined : "main"}
             tabindex={route === undefined ? undefined : "-1"}
           >
-            {route === undefined && <span class="visually-hidden">{site.name}</span>}
+            {route === undefined && <span class="visually-hidden">{`${site.name} — `}</span>}
             {title}
           </h1>
         </div>
@@ -155,6 +155,11 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
      included) instead of the opener's box. */
   .frame {
     container-type: inline-size;
+    /* The backdrop opener trades overflow for a clip path, and a clip path hides the band's paint
+       without taking its box out of the scrollable overflow region: at 200% text zoom the svg's
+       right edge scrolled a phone sideways. Clipping here contains the box, and block-direction
+       overflow stays visible, so the band still runs on under the content. */
+    overflow-x: clip;
   }
   .opener {
     --w: 100cqw;
@@ -297,6 +302,18 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
      header's would and nothing wraps. The mark still links home. */
   .backdrop .ribbon {
     opacity: 0.25;
+  }
+  /* The band passes behind this row, and --muted over its brightest pixels measures 3.5:1. Ink
+     clears 4.5:1 everywhere on it, so the resting colour steps up and hover keeps its distance.
+     The language switch is a component of its own, so its colour is out of this scope's reach. */
+  .backdrop nav a,
+  .backdrop nav :global(.switch) {
+    color: var(--ink);
+  }
+  .backdrop nav a:hover,
+  .backdrop nav a[aria-current="page"],
+  .backdrop nav :global(.switch):hover {
+    color: var(--bright);
   }
   /* The page's header is only as tall as its copy; the dimmed ribbon keeps going under the content
      that follows until it leaves through the page's left edge on its own. The clip still cuts it at

@@ -19,7 +19,9 @@ const options = [
   { value: "github", label: copy.filterGithub, slug: slugs.github },
 ];
 ---
-<div class="filter" role="group" aria-label={copy.filterLabel} data-project-filter data-param={param}>
+{/* Hidden until the script upgrades it: without JavaScript the pills answer nothing, and a
+    pressed state no click can change is a claim the page cannot keep. */}
+<div class="filter" role="group" aria-label={copy.filterLabel} data-project-filter data-param={param} hidden>
   {options.map((o, i) => (
     <button type="button" class="cut-fill" data-value={o.value} data-slug={o.slug} aria-pressed={i === 0 ? "true" : "false"}>
       {o.label}
@@ -30,11 +32,12 @@ const options = [
 
 <script>
   const root = document.querySelector<HTMLElement>("[data-project-filter]");
+  root?.removeAttribute("hidden");
   const status = root?.querySelector<HTMLElement>("[data-filter-status]");
   const cards = document.querySelectorAll<HTMLElement>("[data-status]");
   const param = root?.dataset.param ?? "filter";
 
-  const apply = (value: string, slug: string | undefined) => {
+  const apply = (value: string) => {
     if (!root) return;
     let shown = 0;
     for (const card of cards) {
@@ -49,22 +52,31 @@ const options = [
         .replace("{count}", String(shown))
         .replace("{total}", String(cards.length));
     }
-    const url = new URL(location.href);
-    if (slug) url.searchParams.set(param, slug);
-    else url.searchParams.delete(param);
-    history.replaceState(null, "", url);
+  };
+
+  // The filter is the only state this page has, and it is all in the query string: a new entry per
+  // change makes Back undo one, and every entry is read back from its own URL.
+  const sync = (): void => {
+    const wanted = new URL(location.href).searchParams.get(param);
+    const button = wanted
+      ? root?.querySelector<HTMLButtonElement>(`button[data-slug="${CSS.escape(wanted)}"]`)
+      : null;
+    apply(button?.dataset.value ?? "all");
   };
 
   root?.addEventListener("click", (e) => {
     const button = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-value]");
-    if (button?.dataset.value) apply(button.dataset.value, button.dataset.slug);
+    if (!button?.dataset.value) return;
+    apply(button.dataset.value);
+    const url = new URL(location.href);
+    if (button.dataset.slug) url.searchParams.set(param, button.dataset.slug);
+    else url.searchParams.delete(param);
+    if (url.href !== location.href) history.pushState(null, "", url);
   });
 
-  const wanted = new URL(location.href).searchParams.get(param);
-  const restore = wanted
-    ? root?.querySelector<HTMLButtonElement>(`button[data-slug="${CSS.escape(wanted)}"]`)
-    : null;
-  if (restore?.dataset.value) apply(restore.dataset.value, restore.dataset.slug);
+  addEventListener("popstate", sync);
+
+  if (new URL(location.href).searchParams.get(param)) sync();
 </script>
 
 <style>
