@@ -8,7 +8,10 @@ const STEPS = 24;
 /**
  * Every probe is a style write read back through the line boxes, i.e. a forced layout, so the
  * indents are searched coarse first — every COARSE-th, then the bracket around the best one.
- * COARSE divides STEPS, so the widest indent is always among the coarse probes.
+ * COARSE divides STEPS, so the widest indent is always among the coarse probes. The ceiling is
+ * still the exhaustive count (a bracket can walk back to the first indent); what it buys is the
+ * average, about a third of the probes, and the same answer as the exhaustive scan on every
+ * width measured.
  */
 const COARSE = 3;
 /**
@@ -70,8 +73,10 @@ export const fillWedge = (lead: HTMLElement): void => {
       lead.style.maxWidth = `${width * 100}%`;
       lead.style.textIndent = "";
       const flush = lineStarts(range);
-      // A narrower block that leaves every line where it was scores the same all the way through:
-      // a line's start is the float's edge at that line's own height, and the count is unchanged.
+      // A narrower block that leaves every line where it was is taken to score the same all the way
+      // through: a line's start is the float's edge at that line's own height, so only the line
+      // count matters, and the count is observed unchanged at every indent — an assumption the
+      // exhaustive scan agreed with on every width measured, not a proof.
       if (widest && same(flush, widest)) continue;
       widest ??= flush;
       // The first line's own length: an indent past most of it only pushes its words down.

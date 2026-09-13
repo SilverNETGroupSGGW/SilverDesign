@@ -210,7 +210,7 @@ Renderer dostał dodatkowo **detektor nachodzenia** par bloków (`.page > *`) �
 | `--nav-w` = `min(80cqw, 21rem)` | pudełko nawigacji jest asercją: przy 30rem pasmo górnego ramienia realnie wchodziło pod „English" na podstronie przy 400 px | jedna wartość |
 | Arkusz firm: „co zbudowaliśmy" w 4 kolumnach | 2 kolumny × 2 rzędy nie wchodziły w 1754 px po dodaniu openera | jedna wartość `--cols` |
 | Płyta z QR na całą szerokość treści arkusza, na dole | dolny lewy róg jest już wolny (wstęga jest u góry), a kod dostaje strefę ciszy z paddingu płyty | jedna reguła |
-| Tekstura folii preloadowana na każdej stronie (nie tylko home) | wstęga jest teraz na każdej stronie i jest elementem LCP | jedna linia w `Base.astro` |
+| Tekstura folii preloadowana na każdej stronie (nie tylko home), **bez** `fetchpriority="high"` | wstęga jest na każdej stronie, ale elementem LCP jest lead (home) albo pierwszy zrzut karty (listy) — patrz „Runda po audycie", partia 2. Preload zostaje, bo tekstura to `<image href>` w inline SVG: wykrywalna, ale późno; preload o domyślnym (niskim) priorytecie ogrzewa ją bez wypychania tekstu i obrazka LCP | jedna linia w `Base.astro` |
 
 ### Runda poprawek po review (2026-09-12, wieczór)
 

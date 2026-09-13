@@ -6,11 +6,13 @@ export default defineConfig({
   output: "static",
   integrations: [
     sitemap({
-      // The brochures are handed out and carry noindex (spec §4), the 404 is not a page of the
-      // site, and / only redirects to /pl/: what is left is the six pages a reader can land on.
+      // The brochures are handed out and carry noindex (spec §4), and the site's root only
+      // redirects to /pl/: what is left is the six pages a reader can land on. The root is compared
+      // against the base, so a Pages base path does not put the redirect back in; the 404 the
+      // integration drops on its own.
       filter: (page) => {
         const path = new URL(page).pathname;
-        return path !== "/" && !path.startsWith("/404") && !/\/(broszura|brochure)\//.test(path);
+        return path !== import.meta.env.BASE_URL && !/\/(broszura|brochure)\//.test(path);
       },
       // No i18n option: it pairs locales by an identical path after the prefix, and the routes are
       // localised (/pl/historia/ against /en/history/), so it would emit alternates for the two
