@@ -78,15 +78,18 @@ describe("the ribbon never ends inside the opener", () => {
       const e = exits(v);
 
       test(`${variant} at ${w}: the lower arm leaves through the left edge`, () => {
-        expect(e.leftBottom).toBeLessThan(v.h - rem);
+        // A backdrop's ribbon runs on under the page's content, so it only has to reach the left
+        // edge below the top; the wrapping variants clip it, so it has to get there inside the box.
+        if (!backdrop) expect(e.leftBottom).toBeLessThan(v.h - rem);
         expect(e.leftTop).toBeGreaterThan(0);
       });
 
       test(`${variant} at ${w}: the upper arm leaves through the top or the right edge`, () => {
         // One edge of the band may cross the top past the right corner, as long as it then leaves
         // through the right edge above the opener's bottom.
+        // A backdrop's box ends with its copy, so a right exit only has to be below the top.
         const leaves = (topX: number, rightY: number): boolean =>
-          topX <= w ? topX > 0 : rightY > 0 && rightY < v.h - rem;
+          topX <= w ? topX > 0 : rightY > 0 && (backdrop || rightY < v.h - rem);
         expect(leaves(e.topStart, e.rightTop)).toBe(true);
         expect(leaves(e.topEnd, e.rightBottom)).toBe(true);
       });

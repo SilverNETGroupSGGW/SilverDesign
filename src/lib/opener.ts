@@ -458,15 +458,15 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
    * A page carries the whole lockup, but as a dimmed background: the navigation, the title and the
    * lead stand in one column over it and nothing wraps. The S sits to the right of the title's
    * column, the word's top one clearance under the navigation's line (2.4rem) so only the ribbon
-   * ever passes behind the links, and the opener is only as tall as the ribbon needs to leave
-   * through the left edge.
+   * ever passes behind the links. The header is as tall as its copy: the ribbon runs on under the
+   * page's content and leaves through the page's left edge further down.
    */
   page: {
     m: { clamp: [{ rem: 5.5 }, { cqw: 12.5 }, { rem: 11 }] },
     bx: { sum: [CONTAINER_LEFT, { clamp: [{ rem: 11 }, { cqw: 25 }, { rem: 16 }] }] },
     by: { sum: [NAV_TOP, { rem: 2.4, g: 1, m: lockupTop }] },
     g: { clamp: [{ px: 12 }, { cqw: 1.11 }, { px: 16 }] },
-    h: leftExitFloor(2),
+    h: { px: 0 },
     aboveX: CONTAINER_LEFT,
     aboveY: ABOVE_Y,
     belowX: CONTAINER_LEFT,

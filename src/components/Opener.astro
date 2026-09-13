@@ -267,6 +267,13 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .backdrop .ribbon {
     opacity: 0.25;
   }
+  /* The page's header is only as tall as its copy; the dimmed ribbon keeps going under the content
+     that follows until it leaves through the page's left edge on its own. The clip still cuts it at
+     the top and the sides, so nothing widens the document. */
+  .backdrop {
+    overflow: visible;
+    clip-path: inset(0 0 -200vh 0);
+  }
   .backdrop .below {
     grid-row: 1;
     display: block;

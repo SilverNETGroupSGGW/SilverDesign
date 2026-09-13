@@ -288,8 +288,13 @@ Wariant `page` rysuje więc cały lockup (ramiona, S, słowo) jako **tło z `opa
 nawigacja, tytuł i lead stoją na nim w jednej kolumnie do lewej, bez zawijania i bez floatów
 (`backdropVariants`). S siedzi na prawo od kolumny tytułu (`--bx = --above-x + clamp(10rem, 25cqw,
 16rem)`), wierzch słowa na wysokości nawigacji (`--by = --nav-top + 0,506·--m`), znak
-`clamp(6rem, 12.5cqw, 11rem)`, `--h = wyjście + 2rem` (treść i tak jest niższa, więc opener jest
-tak wysoki, jak potrzebuje wstęga, ~470 px przy 1440 zamiast ~720). S ze słowem dalej jest linkiem
+`clamp(5.5rem, 12.5cqw, 11rem)`, wierzch słowa jedną odległość pod linią nawigacji (za linkami
+przechodzi tylko wstęga). **`--h = 0`:** nagłówek jest tak wysoki jak jego treść (~330 px przy
+1440), a przyciemniona wstęga nie jest obcinana dołem — `overflow: visible` z `clip-path:
+inset(0 0 -200vh 0)` tnie ją górą i bokami, więc biegnie dalej pod treścią strony, aż sama wyjdzie
+lewą krawędzią (reguła „nigdy nie kończy się w kadrze" zachowana, bez pustki między leadem
+a treścią). Test wyjść dla `backdropVariants` sprawdza tylko, że ramiona sięgają krawędzi poniżej
+góry. S ze słowem dalej jest linkiem
 do strony głównej. Testy dla `backdropVariants`: pudełko nawigacji może leżeć na folii (tło),
 S startuje pod realną linią nawigacji (2,4rem), niezmiennik o leadzie obok S pominięty. Próba
 z samym pasem przez róg (`c18ced5`) cofnięta tą decyzją.
