@@ -19,10 +19,11 @@ import {
   wordEndPoint,
 } from "../src/lib/opener";
 
-/** The viewports the opener's sizes are checked at; the home opener's floor is the short case. */
+/** The viewports the opener's sizes are checked at. */
 // 980 and 1000 sit on both sides of the 56rem breakpoint, where the narrow floor is tightest.
 const WIDTHS = [400, 768, 980, 1000, 1024, 1440, 1920, 2560];
-const SHORT = 400;
+/** A stand-in window height: no size reads one any more. */
+const WINDOW_H = 400;
 
 const overlaps = (a: [number, number], b: [number, number]): boolean => a[0] < b[1] && b[0] < a[1];
 
@@ -70,9 +71,8 @@ describe("the ribbon never ends inside the opener", () => {
   for (const variant of ["home", "page"] as const) {
     const layout = openerLayouts[variant];
     for (const w of WIDTHS) {
-      // The floor of --h is the tight case: a taller window only moves the exit further from it.
       // A subpage title is one line; the home title is three on the narrowest phone.
-      const v = openerSizes(layout, { w, h: SHORT, titleLines: variant === "page" ? 1 : 3 });
+      const v = openerSizes(layout, { w, h: WINDOW_H, titleLines: variant === "page" ? 1 : 3 });
       const rem = rootFontSize(w);
       const backdrop = backdropVariants.has(variant);
       const e = exits(v, backdrop);

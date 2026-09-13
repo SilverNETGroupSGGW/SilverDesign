@@ -440,12 +440,13 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.39 }, { px: 20 }] },
     /**
-     * Filling the window is what makes the ribbon read as crossing the page on a wide opener, where
-     * the diagonal occupies the space it adds. Under the breakpoint the ribbon has already left the
-     * left edge above the lead, so the same floor would only add empty canvas under the composition.
+     * The exit is the only floor the composition needs: the ribbon leaves through the left edge
+     * inside the box at every width, and what a window's own height added past that was empty
+     * canvas under the diagonal — 276 to 400px of it on a wide screen, with the next section pushed
+     * off the first screen to make room for nothing.
      */
     h: {
-      wide: { max: [{ rem: 48 }, { svh: 100 }, leftExitFloor(2)] },
+      wide: { max: [{ rem: 48 }, leftExitFloor(2)] },
       narrow: leftExitFloor(2),
     },
     aboveX: CONTAINER_LEFT,
