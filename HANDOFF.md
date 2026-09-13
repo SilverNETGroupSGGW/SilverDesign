@@ -329,6 +329,41 @@ na podstronach i tam, gdzie nie ma floata, nic nie zmienia. Lead openera nie ma 
 wyznacza początki wierszy. Renderer arkuszy czeka dwie klatki po `fonts.ready`, bo skrypt układa
 lead w klatce.
 
+### Runda po audycie Impeccable (2026-09-13)
+
+`impeccable critique` + `audit` na `94f9229`: 26/32 i 16/20, 3× P1, 5× P2. Właściciel: „napraw
+wszystko". Dwie partie, każda z review.
+
+**Partia 1** (`c756e6a`, `b98b6a4`): kontrast linków topbaru nad pasem (`--nav-rest`/`--nav-hover`
+zamiast selektora przez granicę komponentu), `overflow-x: clip` na `.frame` (200 % zoom przewijał
+podstrony o 116 px w bok), filtr projektów uczciwy bez JS (`hidden` do czasu upgrade'u) i `pushState`,
+`sizes` kart opisuje realny grid, `--space-1` zdefiniowane, separator w `h1` arkusza, stylowany
+redirect `/`, unikalne nazwy linków „GitHub", `wedge.ts` tylko tam, gdzie stoi float
+(`.below:has(.sh)`).
+
+**Partia 2** (ta sesja, 7 poprawek):
+
+| Poprawka | Co i dlaczego |
+|---|---|
+| Preload folii bez `fetchpriority="high"` (`Base.astro`) | elementem LCP jest lead (home) albo pierwszy zrzut karty (listy), nie pas — hint wpychał 108 KB przed nie |
+| `wedge.ts`: ograniczone szukanie | było 5 × 3 × 25 = 375 wymuszonych layoutów; teraz wyjście przy zerowym wyniku, pominięcie węższego bloku, który nie rusza początków wierszy, i szukanie zgrubne co 3 z douczeniem w widełkach. Wynik identyczny na 114 szerokościach (320–2560 co 40 px, PL i EN); long task przy 4× CPU i 400 px: 106 → 55 ms (`/pl/`), 410 → 178 ms (`/en/`) |
+| Nawigacja home w jednym wierszu przy 320 px | `column-gap` bierze to, co zostaje w pudełku `--nav-w` po etykietach (do `--space-2`); przełącznik języka nie ląduje już wiersz nad tytułem. Od 400 px bez zmian |
+| 404 z drogą dalej | trzy linki nawigacji każdej wersji językowej pod linkiem do strony głównej + stopka (po polsku — 404 nie ma własnego języka, a stopka potrzebuje go dla przełącznika) |
+| `@astrojs/sitemap` | sześć stron lokalizowanych; broszury, 404 i `/` odfiltrowane (spec §4). Bez opcji `i18n`: trasy są tłumaczone, więc sparowałaby tylko strony główne |
+| `.container` zatrzymany na 24rem od lewej | powyżej ~2160 px tytuł hero startował 200–420 px na lewo od nagłówków pod nim; teraz jedna lewa krawędź na całej stronie. Poniżej bez zmian |
+| `--h` home bez `100svh` | trzymało 276–400 px pustki pod przekątną na szerokim ekranie; podłoga wyjścia wystarcza (zapas 36–62 px). 2560×1440: 1440 → 1159 px, „Jak to działa" wraca na pierwszy ekran |
+
+**Lighthouse mobile** (LH 13.4.1, build z `dist/`, Chromium Playwrighta), przed → po partii 2:
+
+| strona | perf | LCP | TBT |
+|---|---|---|---|
+| `/pl/projekty/` | 94 → **97 · 97 · 97** | 3,1 → 2,6 s | 0–60 ms |
+| `/pl/` | 96 → **99 · 99 · 99** | 2,9 → 2,0 s | 0 ms |
+| `/en/` | 95 → **99** | 2,0 s | 240 → 90 ms |
+| `/pl/historia/` | 97 → **100** | 1,9 s | 0 ms |
+
+Bramka §10 (≥ 95 mobile) spełniona na wszystkich czterech.
+
 ### Otwarte dla właściciela (opener)
 
 - **Puste pole pod wstęgą.** Na `page` przy 1920–2560 px opener rośnie do 818–838 px (geometria: im
