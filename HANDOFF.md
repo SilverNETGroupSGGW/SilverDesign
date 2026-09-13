@@ -291,9 +291,11 @@ i `overflow: visible` + `clip-path: inset(0 0 -200vh 0)`, więc pas biegnie pod 
 krawędzi. Pas może przechodzić za linkami nawigacji (ruling), nawigacja na podstronie ma
 `max-inline-size: none`; poniżej 40rem odstępy i logo są mniejsze, żeby pięć elementów weszło
 w jeden wiersz. **Wstęga logo w topbarze** (`ribbonTopBar`, `markTopBarPath`): górne ramię biegnie
-w nieskończoność (wychodzi górą strony), dolne po 20 j. skręca łukiem o promieniu 300 j. w poziom
-i biegnie w lewo do krawędzi strony jako dolna krawędź topbaru; górna krawędź poziomego pasa
-zrównuje się ze spodem S. Własne ramię znaku jest obcięte `clipPath` w punkcie pełnej szerokości
+w nieskończoność (wychodzi górą strony), dolne biegnie prosto 140 j. za końcem zwężenia (ruling:
+nie zaginać pasa, dopóki zmienia grubość), potem skręca łukiem o promieniu 260 j. w poziom i biegnie
+w lewo do krawędzi strony jako dolna krawędź topbaru, poniżej wiersza nawigacji. Wiersz nawigacji
+centruje się na ciasnym pudełku S + słowo (`--box-*` w stylu linku, `--logo-h` 3rem / 2,5rem na
+telefonie), więc linki leżą na wysokości środka słowa. Własne ramię znaku jest obcięte `clipPath` w punkcie pełnej szerokości
 (`markTopBarKeep`), bo plik znaku rysuje je do krawędzi pudełka i wystawałoby pod pasem. Svg logo
 jest absolutny w linku o rozmiarze ciasnego pudełka lockupu (1188 × 650 j.), `overflow: visible`,
 a `clip-path` openera tnie ramiona na krawędziach strony. Testy dla

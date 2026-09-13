@@ -1,7 +1,7 @@
 ---
 import { getEntry } from "astro:content";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
-import { lockupPath, lockupTightViewBox } from "../lib/lockup";
+import { lockupPath, lockupTightBox } from "../lib/lockup";
 import {
   markBandPath,
   markPathId,
@@ -58,6 +58,9 @@ const style = [
 ].join(";");
 // The polygons name the zone's own origin, and a custom property resolves its var() references on
 // the element it is declared on: they have to sit on the zone, not on the opener.
+// The top bar's lockup box is the S and the word: the row centres on those, and the bar's horizontal
+// run hangs below the row.
+const logoStyle = `--box-x:${lockupTightBox.x};--box-y:${lockupTightBox.y};--box-w:${lockupTightBox.w};--box-h:${lockupTightBox.h}`;
 const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
 const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
@@ -86,7 +89,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       <div class="zone below">
         {route !== undefined && (
           <nav aria-label={copy.nav.mainLabel}>
-            <a class="logo" href={pathFor("home", locale)} aria-label={site.name}>
+            <a class="logo" href={pathFor("home", locale)} aria-label={site.name} style={logoStyle}>
               <svg viewBox={markViewBox} aria-hidden="true">
                 <defs>
                   <clipPath id={`bar-${uid}`}>
@@ -313,16 +316,18 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     align-items: center;
     max-inline-size: none;
   }
-  /* The lockup heads the navigation on a page, tall enough for the S to read as the S and the
-     word as the word. The link is the lockup's own box; the svg is the whole mark box placed so
-     the lockup fills the link, and its ribbon runs out of it: up to the top edge, and left along
-     the bar's bottom edge to the left edge, where the opener's clip ends both. */
+  /* The lockup heads the navigation on a page and the row centres on it, so the links sit level
+     with the middle of the word. The link is the lockup's box (--box-*, in mark units: the S and
+     the word); the svg is the whole 600-unit mark box placed so that box fills the link, and its
+     ribbon runs out of it: up to the top edge, and left along the bar's bottom edge, below the row,
+     to the left edge, where the opener's clip ends both. */
   .backdrop .logo {
+    --logo-h: 3rem;
+    --unit: calc(var(--logo-h) / var(--box-h));
     position: relative;
     display: block;
-    block-size: 2.75rem;
-    /* The lockup's tight box is 1188 × 650 mark units. */
-    inline-size: calc(2.75rem * 1188 / 650);
+    block-size: var(--logo-h);
+    inline-size: calc(var(--unit) * var(--box-w));
     margin-inline-end: var(--space-2);
   }
   /* Five items and the lockup do not fit a phone's row at the site's gaps; tighter, they just do. */
@@ -331,24 +336,16 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       gap: var(--space-2) var(--space-3);
     }
     .backdrop .logo {
-      block-size: 2.25rem;
-      inline-size: calc(2.25rem * 1188 / 650);
+      --logo-h: 2.5rem;
       margin-inline-end: var(--space-1);
-    }
-    .backdrop .logo svg {
-      inline-size: calc(2.25rem * 600 / 650);
-      block-size: calc(2.25rem * 600 / 650);
-      inset-inline-start: calc(-2.25rem * 136.4 / 650);
-      inset-block-start: calc(2.25rem * 176.9 / 650);
     }
   }
   .backdrop .logo svg {
     position: absolute;
-    /* The mark box is 600 units; the tight box starts 136.4 units in and 176.9 units below its top. */
-    inline-size: calc(2.75rem * 600 / 650);
-    block-size: calc(2.75rem * 600 / 650);
-    inset-inline-start: calc(-2.75rem * 136.4 / 650);
-    inset-block-start: calc(2.75rem * 176.9 / 650);
+    inline-size: calc(var(--unit) * 600);
+    block-size: calc(var(--unit) * 600);
+    inset-inline-start: calc(var(--unit) * (300 - var(--box-x)));
+    inset-block-start: calc(var(--unit) * (300 - var(--box-y)));
     overflow: visible;
     pointer-events: none;
   }

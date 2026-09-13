@@ -13,7 +13,9 @@ export const lockupPath = lockup.path;
  * cut where the box ends, so the ribbon reads as leaving it. A hair of room keeps the strokes off
  * the edges.
  */
-export const lockupTightViewBox = ((): string => {
+const r = (n: number): number => Math.round(n * 10) / 10;
+
+export const lockupTightBox = ((): { x: number; y: number; w: number; h: number } => {
   const [bx, by, bw, bh] = lockup.bodyBox;
   const [wx, wy, ww, wh] = lockup.wordBox;
   const pad = 12;
@@ -21,5 +23,5 @@ export const lockupTightViewBox = ((): string => {
   const y0 = Math.min(by, wy) - pad;
   const x1 = Math.max(bx + bw, wx + ww) + pad;
   const y1 = Math.max(by + bh, wy + wh) + pad;
-  return [x0, y0, x1 - x0, y1 - y0].map((n) => Math.round(n * 10) / 10).join(" ");
+  return { x: r(x0), y: r(y0), w: r(x1 - x0), h: r(y1 - y0) };
 })();

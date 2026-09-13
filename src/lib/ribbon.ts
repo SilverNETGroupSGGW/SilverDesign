@@ -48,10 +48,27 @@ export const ribbonLowerStart = (ribbon: RibbonGeometry, centre: number[]): numb
   return [twin[0]! - direction[0]! * start, twin[1]! - direction[1]! * start];
 };
 
+/** The bend of the top bar's lower arm: a straight run past the taper's end, then the arc's radius. */
+export const TOP_BAR_BEND = { run: 140, radius: 260 };
+
+/** The centreline of the top bar's horizontal run, and the band's half width, in the mark's units. */
+export const ribbonTopBarLevel = (
+  ribbon: RibbonGeometry,
+  centre: number[],
+  bend = TOP_BAR_BEND,
+): { level: number; halfWidth: number } => {
+  const { direction, axis, start, width } = ribbon;
+  const twin = [2 * centre[0]! - axis[0]!, 2 * centre[1]! - axis[1]!];
+  const d = [-direction[0]!, -direction[1]!];
+  const right = [-d[1]!, d[0]!];
+  const p1 = [twin[0]! + d[0]! * (start + bend.run), twin[1]! + d[1]! * (start + bend.run)];
+  return { level: p1[1]! + right[1]! * bend.radius + bend.radius, halfWidth: width / 2 };
+};
+
 export const ribbonTopBar = (
   ribbon: RibbonGeometry,
   centre: number[],
-  bend = { run: 20, radius: 300 },
+  bend = TOP_BAR_BEND,
 ): string => {
   const { direction, axis, start, width } = ribbon;
   const across = [-direction[1]! * (width / 2), direction[0]! * (width / 2)];
@@ -69,7 +86,7 @@ export const ribbonTopBar = (
   const p1 = along(start + bend.run);
   const r = bend.radius;
   const c = [p1[0]! + right[0]! * r, p1[1]! + right[1]! * r];
-  const level = c[1]! + r;
+  const { level } = ribbonTopBarLevel(ribbon, centre, bend);
   const hw = width / 2;
   const off = (p: number[], k: number): string =>
     `${f(p[0]! + left[0]! * k)} ${f(p[1]! + left[1]! * k)}`;
