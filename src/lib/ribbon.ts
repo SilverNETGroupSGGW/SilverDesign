@@ -48,6 +48,24 @@ export const ribbonLowerStart = (ribbon: RibbonGeometry, centre: number[]): numb
   return [twin[0]! - direction[0]! * start, twin[1]! - direction[1]! * start];
 };
 
+/**
+ * The part of the mark the top bar keeps, as a polygon: everything on the S's side of the line
+ * across the lower arm at its full-width point. A cut along that line, not a horizontal one,
+ * meets the bent band's own start edge with no wedge left undrawn between them.
+ */
+export const ribbonTopBarKeep = (ribbon: RibbonGeometry, centre: number[]): string => {
+  const { direction } = ribbon;
+  const p0 = ribbonLowerStart(ribbon, centre);
+  const across = [-direction[1]!, direction[0]!];
+  const far = REACH;
+  const a = [p0[0]! + across[0]! * far, p0[1]! + across[1]! * far];
+  const b = [p0[0]! - across[0]! * far, p0[1]! - across[1]! * far];
+  // Towards the S: along the arm's direction, which points up-right from the lower arm.
+  const c = [b[0]! + direction[0]! * far, b[1]! + direction[1]! * far];
+  const d = [a[0]! + direction[0]! * far, a[1]! + direction[1]! * far];
+  return [a, b, c, d].map((p) => `${f(p[0]!)},${f(p[1]!)}`).join(" ");
+};
+
 /** The bend of the top bar's lower arm: a straight run past the taper's end, then the arc's radius. */
 export const TOP_BAR_BEND = { run: 140, radius: 260 };
 

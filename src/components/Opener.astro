@@ -93,7 +93,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
               <svg viewBox={markViewBox} aria-hidden="true">
                 <defs>
                   <clipPath id={`bar-${uid}`}>
-                    <rect {...markTopBarKeep} />
+                    <polygon points={markTopBarKeep} />
                   </clipPath>
                 </defs>
                 <g fill={`url(#foil-${uid})`}>
