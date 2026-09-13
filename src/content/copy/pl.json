@@ -30,7 +30,7 @@
       },
       {
         "title": "Pracujesz nad nim przez semestr",
-        "body": "Samodzielnie albo w zespole, w swoim tempie. Co jakiś czas spotykamy się na żywo w sali 3/79."
+        "body": "Samodzielnie albo w zespole, w swoim tempie. A kiedy trzeba usiąść razem, spotykamy się na żywo w sali 3/79."
       }
     ],
     "hackathons": "Jeździmy też na hackathony. HackArena 3.0, marzec 2026: 4. miejsce w finale."
@@ -62,7 +62,7 @@
   },
   "join": {
     "heading": "Dołącz",
-    "lead": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole.",
+    "lead": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole!",
     "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Tam też ogłaszamy terminy spotkań na żywo.",
     "discord": "Discord",
     "email": "Mail",
@@ -90,7 +90,7 @@
       "lead": "Nasze aplikacje docierają na cały kampus. Ty możesz napisać następną, niezależnie od wydziału!",
       "stepsHeading": "Jak to działa",
       "appsHeading": "Nasze aplikacje",
-      "threshold": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole.",
+      "threshold": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole!",
       "qrLabel": "Wpadnij na Discorda, gdzie zaczyna się każdy projekt."
     },
     "companies": {
