@@ -51,7 +51,10 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/brand/foil-texture.jpg" as="image" fetchpriority="high" />
+    {/* Warmed early but not ahead of the queue: the LCP element is the lead on the home page and
+        the first card's screenshot on the listings, never the 108 KB foil, and a high hint put the
+        texture in front of both (mobile LCP 2.9 s → 2.0 s on /pl/, 3.1 s → 2.6 s on /pl/projekty/). */}
+    <link rel="preload" href="/brand/foil-texture.jpg" as="image" />
     <meta name="theme-color" content="#16161B" />
   </head>
   <body>
