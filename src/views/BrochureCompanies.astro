@@ -55,7 +55,7 @@ const projects = (await getCollection("projects")).toSorted((a, c) => a.data.ord
       <div class="lines">
         <p class="mono">{site.email}</p>
         <p class="mono muted">{site.faculty[locale]}, {site.university}</p>
-        <p class="mono muted">{site.address.join(", ")}</p>
+        {site.address.map((line) => <p class="mono muted">{line}</p>)}
       </div>
     </div>
     <div class="code">

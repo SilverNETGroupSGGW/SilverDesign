@@ -133,6 +133,15 @@ const { locale, title } = Astro.props;
     gap: var(--print-space-4);
     align-items: center;
   }
+  /* The caption stands beside the code, ranged towards it, and the code sits on the plate's right
+     edge: the pair reads as one label, and the plate is never taller than the code. */
+  .page .code {
+    display: grid;
+    grid-template-columns: minmax(0, 16ch) max-content;
+    gap: var(--print-space-3);
+    align-items: center;
+    justify-self: end;
+  }
   .page .ask {
     display: grid;
     gap: var(--print-space-3);
@@ -145,8 +154,9 @@ const { locale, title } = Astro.props;
   /* The plate's padding is the code's quiet zone on three sides; the caption keeps the same
      distance below it. */
   .page .code p {
-    margin-top: var(--print-space-3);
+    order: -1;
     font-size: var(--print-step--1);
-    max-width: 26ch;
+    text-align: end;
+    max-width: none;
   }
 </style>
