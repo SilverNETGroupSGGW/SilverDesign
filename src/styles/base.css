@@ -62,9 +62,12 @@ svg {
   outline: 2px solid var(--bright);
   outline-offset: 3px;
 }
+/* The opener's column stops at 24rem from the left edge (CONTAINER_LEFT in src/lib/opener.ts), so
+   the centred block has to stop there too: above ~2160px the hero title started 300px left of every
+   heading under it. Below that the expression is what auto centring already computed. */
 .container {
   width: min(100% - 2 * var(--gutter), var(--container));
-  margin-inline: auto;
+  margin-inline: min(max(var(--gutter), (100% - var(--container)) / 2), 24rem) auto;
 }
 /* The band's diagonal reduced to a section marker. The skew lifts the bar out of its 3px box, so
    the top margin gives back the rise it takes. */
