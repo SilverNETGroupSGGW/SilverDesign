@@ -17,6 +17,7 @@
     "brochure": "bun scripts/render-brochures.ts"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.3.2",
     "qrcode": "^1.5.4"
   },
