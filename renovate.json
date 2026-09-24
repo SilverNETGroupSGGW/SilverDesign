@@ -12,6 +12,11 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "groupName": "non-major dependencies",
       "groupSlug": "non-major"
+    },
+    {
+      "description": "astro check needs TypeScript's programmatic API, which the native 7.x compiler does not ship yet (withastro/roadmap discussion 1321).",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7"
     }
   ]
 }

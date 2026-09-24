@@ -86,12 +86,13 @@ describe("the ribbon never ends inside the opener", () => {
         expect(e.leftTop).toBeGreaterThan(0);
       });
 
+      // One edge of the band may cross the top past the right corner, as long as it then leaves
+      // through the right edge above the opener's bottom.
+      // A backdrop's box ends with its copy, so a right exit only has to be below the top.
+      const leaves = (topX: number, rightY: number): boolean =>
+        topX <= w ? topX > 0 : rightY > 0 && (backdrop || rightY < v.h - rem);
+
       test(`${variant} at ${w}: the upper arm leaves through the top or the right edge`, () => {
-        // One edge of the band may cross the top past the right corner, as long as it then leaves
-        // through the right edge above the opener's bottom.
-        // A backdrop's box ends with its copy, so a right exit only has to be below the top.
-        const leaves = (topX: number, rightY: number): boolean =>
-          topX <= w ? topX > 0 : rightY > 0 && (backdrop || rightY < v.h - rem);
         expect(leaves(e.topStart, e.rightTop)).toBe(true);
         expect(leaves(e.topEnd, e.rightBottom)).toBe(true);
       });
