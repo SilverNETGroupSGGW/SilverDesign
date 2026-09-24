@@ -55,9 +55,8 @@ for (const job of jobs) {
   const metrics = await page.evaluate(() => {
     const el = document.querySelector(".page")!;
     const rect = el.getBoundingClientRect();
-    // Every box that clips: the sheet itself, the plate and the cards (their corner cut), the
-    // codes. One of those losing a line does not move the sheet's own scroll size, which is how a
-    // card shipped with its last line cut once already.
+    // Every box that clips, not only the sheet: a card losing a line does not move the sheet's own
+    // scroll size.
     const clipped = [...el.querySelectorAll<HTMLElement>("*")].filter((node) => {
       // The visually-hidden utility clips by design: a 1 px box carrying an accessible name.
       if (node.classList.contains("visually-hidden")) return false;
@@ -75,8 +74,7 @@ for (const job of jobs) {
         const name = `${node.tagName.toLowerCase()}.${[...node.classList].join(".")}`;
         return `${name} by ${node.scrollWidth - node.clientWidth}×${node.scrollHeight - node.clientHeight} px`;
       });
-    // The clip check above misses blocks that land on top of each other, which is how a heading
-    // once ended up on a card.
+    // The clip check misses blocks that land on top of each other.
     const boxes = [...el.children]
       .filter((node): node is HTMLElement => node instanceof HTMLElement)
       .map((node) => ({

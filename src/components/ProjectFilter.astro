@@ -78,8 +78,8 @@ const options = [
     });
   };
 
-  // The filter is the only state this page has, and it is all in the query string: a new entry per
-  // change makes Back undo one, and every entry is read back from its own URL.
+  // The filter is the page's only state: a history entry per change makes Back undo one, and every
+  // entry is read back from its own URL.
   const fromUrl = (): string | undefined => {
     const wanted = new URL(location.href).searchParams.get(param);
     if (!wanted) return undefined;
@@ -139,7 +139,6 @@ const options = [
     z-index: -1;
     background: var(--ink);
   }
-  /* The choices are drawn in one after another, and the one in force fills cut end first. */
   .filter {
     --reveal-gap: 250ms;
   }

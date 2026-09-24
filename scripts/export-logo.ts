@@ -51,8 +51,8 @@ const result = await page.evaluate(() => {
     Pouter[1] + inn2[1] * (armWidth / 2),
   ];
   const twin: [number, number] = [2 * centre - axis[0], 2 * centre - axis[1]];
-  // The S is its spine offset by half the line width either side; a page that draws the S in the
-  // order the stroke runs needs the spine, from the upper arm's joint to the lower one's.
+  // The S is its spine offset by half the line width either side; a page that draws the S in stroke
+  // order needs the spine.
   // @ts-expect-error configurator globals
   const { spine } = build(state) as { spine: [number, number][] };
   const span: [number, number] = [twin[0] - axis[0], twin[1] - axis[1]];

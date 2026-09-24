@@ -55,9 +55,8 @@ const title = sides.map((s) => s.copy.title).join(" · ");
         </section>
       ))}
     </main>
-    {/* A 404 has no locale of its own, and the footer's contact details and its link to the club's
-        year are the same in both: it renders in Polish, the site's default, with the switch
-        pointing at the English home page. */}
+    {/* A 404 has no locale of its own and the footer says the same in both: Polish, the site's
+        default, with the switch pointing at the English home page. */}
     <Footer locale="pl" route="home" />
   </body>
 </html>

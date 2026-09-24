@@ -1,4 +1,3 @@
-/** Past this many entrances waiting on screen, they follow each other at CROWDED_GAP_MS. */
 const CROWDED = 4;
 const CROWDED_GAP_MS = 60;
 
@@ -13,18 +12,16 @@ const inDocumentOrder = (a: Element, b: Element): number =>
   a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
 
 /**
- * Lets in what carries `data-reveal` as it comes into view, what is on screen at load included (the
- * states are styled in base.css). Base.astro's head script sets `data-reveals` on the root before the
- * first frame, which hides them; without it (reduced motion, or the page already opened up by
- * itself) nothing is touched.
+ * States are styled in base.css. Acts only if Base.astro's head script has set `data-reveals` on the
+ * root before the first frame; without it (reduced motion, or the page already opened up by itself)
+ * nothing is touched.
  */
 export const watchReveals = (): void => {
   const root = document.documentElement;
   if (root.dataset.reveals !== "") return;
   const main = document.querySelector("main");
-  // Entrances queue in reading order however fast the page scrolls: each starts no sooner than its
-  // predecessor's --reveal-gap after it. The first waits for the page's own heading (<main>'s
-  // --reveal-start). Only what is still on screen when its turn comes takes a turn; what scrolled
+  // Entrances queue in reading order however fast the page scrolls, each no sooner than its
+  // predecessor's --reveal-gap after it; the first waits for <main>'s --reveal-start. What scrolled
   // away while waiting is let in unseen, so the entrances being watched never wait behind it.
   const queue: HTMLElement[] = [];
   const onScreen = new Set<Element>();

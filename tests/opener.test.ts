@@ -21,10 +21,9 @@ import {
 } from "../src/lib/opener";
 import { tipSpan, unrollSpan } from "../src/lib/unroll-span";
 
-/** The viewports the opener's sizes are checked at. */
 // 980 and 1000 sit on both sides of the 56rem breakpoint, where the narrow floor is tightest.
 const WIDTHS = [400, 768, 980, 1000, 1024, 1440, 1920, 2560];
-/** A stand-in window height: no size reads one any more. */
+/** A stand-in: no size reads the window height. */
 const WINDOW_H = 400;
 
 const overlaps = (a: [number, number], b: [number, number]): boolean => a[0] < b[1] && b[0] < a[1];
@@ -100,22 +99,21 @@ describe("the ribbon never ends inside the opener", () => {
       test(`${variant} at ${w}: the word stays on screen`, () => {
         if (backdrop) return;
         expect(wordEndPoint(v)[0]).toBeLessThanOrEqual(0.95 * w);
-        // In y as well as in x: the word is the one part of the composition that may not leave
-        // through an edge, and the opener clips it.
+        // In y too: the word is the one part that may not leave through an edge, and the opener
+        // clips it.
         expect(evalForm(lockupBox.origin[1], v)).toBeGreaterThanOrEqual(v.g);
       });
 
       test(`${variant} at ${w}: the navigation's box is clear of the foil`, () => {
         // On a page the lockup is a dimmed backdrop the copy stands on, so the foil may run under
-        // the navigation; the S itself still keeps clear of it (next test).
+        // the navigation.
         if (backdrop) return;
         const nav = {
           x: [v.aboveX, v.aboveX + v.navW] as [number, number],
           y: [v.navTop, v.navTop + v.navH] as [number, number],
         };
         // Both bands, where they reach highest inside the nav's box: its right edge. The upper arm
-        // is taken as a full line, which is stricter than the drawn arm, since that one starts at
-        // the S.
+        // is taken as a full line, stricter than the drawn arm, which starts at the S.
         const at = nav.x[1];
         const lower: [number, number] = [e.leftTop - tan * at, e.leftBottom - tan * at];
         const upper: [number, number] = [(e.topStart - at) * tan, (e.topEnd - at) * tan];
@@ -124,7 +122,7 @@ describe("the ribbon never ends inside the opener", () => {
       });
 
       test(`${variant} at ${w}: the S sits below the navigation's box`, () => {
-        // A backdrop has no S, and its dimmed band may pass behind the links (an owner ruling).
+        // A backdrop has no S, and its dimmed band may pass behind the links.
         if (backdrop) return;
         expect(v.by).toBeGreaterThanOrEqual(v.navTop + v.navH + v.g);
       });

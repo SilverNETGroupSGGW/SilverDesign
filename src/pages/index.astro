@@ -15,9 +15,8 @@ const target = pathFor("home", "pl");
         not own. */}
     <link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
     <title>Silver</title>
-    {/* The redirect is immediate, but a slow connection still paints this frame, and the site it
-        leads to is dark throughout. Nothing else on this page loads tokens.css, so --bg and --ink
-        are repeated here as literals. */}
+    {/* A slow connection still paints this frame before the redirect, and the site is dark
+        throughout. Nothing here loads tokens.css, so --bg and --ink are repeated as literals. */}
     <style is:inline>
       :root {
         color-scheme: dark;

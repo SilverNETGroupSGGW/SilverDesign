@@ -8,13 +8,12 @@ const lockup = JSON.parse(lockupJson) as {
 
 /** The word "ilver", as outlines in the mark's own user units. */
 export const lockupPath = lockup.path;
-/**
- * The S and the word, tight, as a viewBox for the small lockup in a page's navigation: the arms are
- * cut where the box ends, so the ribbon reads as leaving it. A hair of room keeps the strokes off
- * the edges.
- */
 const r = (n: number): number => Math.round(n * 10) / 10;
 
+/**
+ * The S and the word, as a viewBox for the small lockup in a page's navigation: the arms are cut
+ * where the box ends, so the ribbon reads as leaving it. The pad keeps the strokes off the edges.
+ */
 export const lockupTightBox = ((): { x: number; y: number; w: number; h: number } => {
   const [bx, by, bw, bh] = lockup.bodyBox;
   const [wx, wy, ww, wh] = lockup.wordBox;

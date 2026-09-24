@@ -1,25 +1,23 @@
 /**
  * Under the ribbon the room for text widens line by line, so the lead's lines should grow the same
- * way, ending on the longest one. Greedy line breaking leaves the last line as a remainder instead;
- * this picks the block width and the first-line indent at which every line starts a step left of
- * the one above it. The page stays as the browser laid it out where scripts do not run.
+ * way, ending on the longest. Greedy breaking leaves the last line as a remainder instead; this
+ * picks the block width and first-line indent at which every line starts a step left of the one
+ * above. Without scripts the browser's layout stands.
  */
 const STEPS = 24;
 /**
- * Every probe is a style write read back through the line boxes, i.e. a forced layout, so the
- * indents are searched coarse first — every COARSE-th, then the bracket around the best one.
- * COARSE divides STEPS, so the widest indent is always among the coarse probes. The ceiling is
- * still the exhaustive count (a bracket can walk back to the first indent); what it buys is the
- * average, about a third of the probes, and the same answer as the exhaustive scan on every
- * width measured.
+ * Every probe forces a layout, so indents are searched coarse first, then in the bracket around
+ * the best. COARSE must divide STEPS so the widest indent is among the coarse probes. The worst
+ * case is still exhaustive (the bracket can walk back to the first indent); on average it takes a
+ * third of the probes, with the exhaustive scan's answer on every width measured.
  */
 const COARSE = 3;
 /**
  * Where the lead may start, in line heights below its own top: lower in the wedge every line is
- * wider, which is what a text too long for the room at the top needs before any indent can help.
+ * wider, which a text too long for the room at the top needs before any indent can help.
  */
 const DROPS = [0, 0.5, 1, 1.5, 2];
-/** The block's widths to try, as fractions of the zone: on a wide screen the width, not the foil, may set the line. */
+/** Fractions of the zone: on a wide screen the width, not the foil, may set the line. */
 const WIDTHS = [1, 0.8, 0.6];
 
 const lineStarts = (range: Range): number[] => {
@@ -55,7 +53,6 @@ export const fillWedge = (lead: HTMLElement): void => {
   lead.style.textIndent = "";
   lead.style.maxWidth = "";
   lead.style.marginBlockStart = "";
-  // One range for the whole search: the text does not change, only the boxes it is laid out in.
   const range = document.createRange();
   range.selectNodeContents(lead);
   const starts = lineStarts(range);
@@ -64,7 +61,7 @@ export const fillWedge = (lead: HTMLElement): void => {
   const right = lead.getBoundingClientRect().right;
   let best = { drop: 0, width: 1, indent: 0 };
   let bestScore = shortfall(starts, right, step);
-  // Only a strict improvement is taken, and no score is below zero: there is nothing left to find.
+  // No score is below zero.
   if (bestScore === 0) return;
   search: for (const drop of DROPS) {
     lead.style.marginBlockStart = `${drop * step}px`;
@@ -73,10 +70,9 @@ export const fillWedge = (lead: HTMLElement): void => {
       lead.style.maxWidth = `${width * 100}%`;
       lead.style.textIndent = "";
       const flush = lineStarts(range);
-      // A narrower block that leaves every line where it was is taken to score the same all the way
-      // through: a line's start is the float's edge at that line's own height, so only the line
-      // count matters, and the count is observed unchanged at every indent — an assumption the
-      // exhaustive scan agreed with on every width measured, not a proof.
+      // A narrower block that leaves every line where it was is taken to score the same at every
+      // indent: a line starts at the float's edge at its own height, so only the line count
+      // matters. An assumption, not a proof; the exhaustive scan agreed on every width measured.
       if (widest && same(flush, widest)) continue;
       widest ??= flush;
       // The first line's own length: an indent past most of it only pushes its words down.
@@ -125,9 +121,9 @@ export const fillWedge = (lead: HTMLElement): void => {
 };
 
 export const fillWedges = (root: ParentNode = document): void => {
-  // Only the zones that carry a shaped float: without one the lead is a plain left-aligned block,
-  // where the score still charges a step per line and buys a stray first-line indent — and the
-  // measuring pass costs a long task for a layout it must not change.
+  // Only zones with a shaped float: in a plain block the score still charges a step per line and
+  // buys a stray first-line indent, and the measuring costs a long task for a layout it must not
+  // change.
   for (const lead of root.querySelectorAll<HTMLElement>(".opener .below:has(.sh) .lead")) {
     fillWedge(lead);
   }

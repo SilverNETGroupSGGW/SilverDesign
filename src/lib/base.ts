@@ -1,6 +1,6 @@
 /**
- * Where the site is served from: "/" unless the build is given a base (the Pages workflow passes
- * the project path to `astro build --base`). Every link and asset URL goes through `withBase`.
+ * "/" unless the build is given a base (the Pages workflow passes the project path to
+ * `astro build --base`). Every link and asset URL goes through `withBase`.
  */
 export const BASE = (import.meta.env.BASE_URL ?? "/").replace(/\/?$/, "/");
 

@@ -8,7 +8,7 @@
   },
   "packageRules": [
     {
-      "description": "Every non-major update lands in one PR, so CI and the brochure render check them together; majors keep a PR each.",
+      "description": "One PR, so CI and the brochure render check the non-major updates together; majors keep a PR each.",
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "groupName": "non-major dependencies",
       "groupSlug": "non-major"

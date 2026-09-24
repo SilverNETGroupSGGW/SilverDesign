@@ -46,8 +46,7 @@ const { href, variant = "primary", ...attrs } = Astro.props;
   .primary:hover::before {
     background: var(--bright);
   }
-  /* Revealed on its own (reveal.ts): the fill comes in cut end first and the label, dark on dark
-     until then, appears with it; the outline button is drawn left to right. */
+  /* Revealed by its own clip rather than base.css's fade: the fill cuts in and the outline draws. */
   :global(:root[data-reveals]) .button[data-reveal]:not([data-reveal="in"]) {
     opacity: 1;
   }

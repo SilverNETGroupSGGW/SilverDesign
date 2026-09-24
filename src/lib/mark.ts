@@ -6,8 +6,8 @@ import { compactPath } from "./svg-path";
 
 export const markPathId = "silver-mark-path";
 
-// The exported SVG inlines the same 261 KB JPEG four times; pointing the tiles at the copy in
-// public/ keeps the inline markup at ~31 KB instead of ~1 MB per mark.
+// The exported SVG inlines the same JPEG four times; pointing the tiles at public/'s copy keeps each
+// inline mark at ~31 KB instead of ~1 MB.
 const source = markSvg.replaceAll(
   /data:image\/jpeg;base64,[^"]+/g,
   withBase("brand/foil-texture.jpg"),
@@ -46,5 +46,4 @@ export const markAxis = geometry.ribbon.direction;
 export const markRibbonPath = compactPath(ribbonArms(geometry.ribbon, centre));
 export const markBandPath = compactPath(ribbonBand(geometry.ribbon));
 export const markTopBarPath = compactPath(ribbonTopBar(geometry.ribbon, centre));
-/** The polygon of the mark the top bar keeps: the S's side of the lower arm's full-width line. */
 export const markTopBarKeep = ribbonTopBarKeep(geometry.ribbon, centre);

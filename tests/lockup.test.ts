@@ -76,7 +76,8 @@ describe("brand/logo/lockup.json", () => {
       [BODY.l, BODY.t, BODY.r - BODY.l, BODY.b - BODY.t].map((n) => Math.round(n * 10) / 10),
     );
     const [x, y, w, h] = lockup.wordBox as [number, number, number, number];
-    // The word starts on the S's end and runs out past the frame's right edge, above its bottom.
+    // The word starts at the S's end, runs out past the mark box's right edge, and stays above the
+    // S's bottom.
     expect(x).toBeGreaterThan(BODY.r - lockup.gapU * 4);
     expect(x + w).toBeGreaterThan(vbX + vbSize);
     expect(y).toBeGreaterThan(vbY - vbSize);

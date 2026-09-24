@@ -67,9 +67,9 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
 
 <style>
   /* The buttons stay inline-level: a block-level flex row clears the float's whole box instead of
-     following its shape, and the line box they make is what finds a band beside the ribbon wide
-     enough to hold the row. Their own block margins are that line box's only leading, so the row
-     keeps its gap where it wraps beside the diagonal. */
+     following its shape, and their line box is what finds a band beside the ribbon wide enough for
+     the row. Their block margins are that line box's only leading, so the row keeps its gap where
+     it wraps beside the diagonal. */
   .ctas {
     position: relative;
     z-index: 2;

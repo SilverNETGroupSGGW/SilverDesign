@@ -14,13 +14,8 @@ const subpath = (points: number[][]): string =>
 const REACH = 20000;
 
 /**
- * The two arm polygons, as one path: each rectangle continues a drawn arm outward from `start`, the
- * distance at which the taper has reached full width. They overlap the drawn arm instead of abutting
- * it, so there is no edge to show. The second is the first turned about the mark's centre.
- */
-/**
- * One straight band along the upper arm's axis, both ways, for the pages that carry the ribbon
- * without the S: there is no jog to turn about, so the arm's line simply runs through.
+ * For the pages that carry the ribbon without the S: with no jog to turn about, the upper arm's line
+ * runs through both ways.
  */
 export const ribbonBand = (ribbon: RibbonGeometry): string => {
   const { direction, axis, width } = ribbon;
@@ -33,14 +28,8 @@ export const ribbonBand = (ribbon: RibbonGeometry): string => {
 };
 
 /**
- * The ribbon as a page's top bar carries it: the upper arm runs on to the top edge as it does
- * everywhere, and the lower arm, after a short run, turns through an arc into the horizontal and
- * runs left to the page's edge, so the bar's bottom edge is the ribbon itself. `run` and `radius`
- * are in the mark's units; the arc's centre sits to the right of travel, the side the turn is on.
- */
-/**
- * Where the lower arm reaches full width, in the mark's units: the mark's own arm is cut there on
- * the top bar, and the bent band takes over on the same line.
+ * Where the lower arm reaches full width, in mark units: the top bar cuts the mark's own arm there,
+ * and the bent band takes over on the same line.
  */
 export const ribbonLowerStart = (ribbon: RibbonGeometry, centre: number[]): number[] => {
   const { direction, axis, start } = ribbon;
@@ -49,9 +38,9 @@ export const ribbonLowerStart = (ribbon: RibbonGeometry, centre: number[]): numb
 };
 
 /**
- * The part of the mark the top bar keeps, as a polygon: everything on the S's side of the line
- * across the lower arm at its full-width point. A cut along that line, not a horizontal one,
- * meets the bent band's own start edge with no wedge left undrawn between them.
+ * As polygon points: everything on the S's side of the line across the lower arm at its full-width
+ * point. A cut along that line, not a horizontal one, meets the bent band's start edge with no
+ * undrawn wedge between them.
  */
 export const ribbonTopBarKeep = (ribbon: RibbonGeometry, centre: number[]): string => {
   const { direction } = ribbon;
@@ -60,16 +49,16 @@ export const ribbonTopBarKeep = (ribbon: RibbonGeometry, centre: number[]): stri
   const far = REACH;
   const a = [p0[0]! + across[0]! * far, p0[1]! + across[1]! * far];
   const b = [p0[0]! - across[0]! * far, p0[1]! - across[1]! * far];
-  // Towards the S: along the arm's direction, which points up-right from the lower arm.
+  // `direction` points up-right, towards the S.
   const c = [b[0]! + direction[0]! * far, b[1]! + direction[1]! * far];
   const d = [a[0]! + direction[0]! * far, a[1]! + direction[1]! * far];
   return [a, b, c, d].map((p) => `${f(p[0]!)},${f(p[1]!)}`).join(" ");
 };
 
-/** The bend of the top bar's lower arm: a straight run past the taper's end, then the arc's radius. */
+/** In mark units: a straight run past the taper's end, then the arc's radius. */
 export const TOP_BAR_BEND = { run: 140, radius: 260 };
 
-/** The centreline of the top bar's horizontal run, and the band's half width, in the mark's units. */
+/** The centreline of the top bar's horizontal run, and the band's half width, in mark units. */
 export const ribbonTopBarLevel = (
   ribbon: RibbonGeometry,
   centre: number[],
@@ -83,6 +72,11 @@ export const ribbonTopBarLevel = (
   return { level: p1[1]! + right[1]! * bend.radius + bend.radius, halfWidth: width / 2 };
 };
 
+/**
+ * The upper arm runs on to the top edge; the lower arm, after a short run, arcs into the horizontal
+ * and runs left to the page's edge, so the bar's bottom edge is the ribbon itself. The arc's centre
+ * sits to the right of travel, the side the turn is on.
+ */
 export const ribbonTopBar = (
   ribbon: RibbonGeometry,
   centre: number[],
@@ -115,6 +109,10 @@ export const ribbonTopBar = (
   return `${upper} ${lower}`;
 };
 
+/**
+ * Each rectangle continues a drawn arm outward from `start`, where the taper reaches full width,
+ * overlapping the drawn arm instead of abutting it so there is no edge to show.
+ */
 export const ribbonArms = (ribbon: RibbonGeometry, centre: number[]): string => {
   const { direction, axis, start, width } = ribbon;
   const across = [-direction[1]! * (width / 2), direction[0]! * (width / 2)];

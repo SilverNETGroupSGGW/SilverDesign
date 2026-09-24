@@ -41,8 +41,8 @@ p {
   max-width: var(--measure);
   text-wrap: pretty;
 }
-/* A lead runs one size up and sits under a heading on its own: at --measure it ran as one long
-   line with a word or two left over, so it gets a measure that breaks it into a few even lines. */
+/* At --measure a lead runs as one long line with a word or two left over; this breaks it into a
+   few even lines. */
 .lead {
   max-width: 48ch;
 }
@@ -65,8 +65,8 @@ svg {
   outline-offset: 3px;
 }
 /* The opener's column stops at 24rem from the left edge (CONTAINER_LEFT in src/lib/opener.ts), so
-   the centred block has to stop there too: above ~2160px the hero title started 300px left of every
-   heading under it. Below that the expression is what auto centring already computed. */
+   the centred block stops there too, or on wide screens the hero title starts left of every
+   heading under it. Below that the expression equals auto centring. */
 .container {
   width: min(100% - 2 * var(--gutter), var(--container));
   margin-inline: min(max(var(--gutter), (100% - var(--container)) / 2), 24rem) auto;
@@ -190,8 +190,8 @@ svg {
 }
 
 /* While the root carries data-reveals (Base.astro), whatever has data-reveal and is not yet "in"
-   waits hidden; src/lib/reveal.ts turns it "in" when its turn in the queue comes. Each kind of
-   element sets its own entrance, and in --reveal-gap how long the next one waits behind it. */
+   waits hidden until src/lib/reveal.ts turns it "in". Each kind of element sets its own entrance,
+   and in --reveal-gap how long the next one waits behind it. */
 [data-reveal] {
   --reveal-gap: 150ms;
 }
@@ -207,8 +207,8 @@ svg {
 [data-reveal="in"] {
   animation: axis-in 700ms var(--ease-out) both;
 }
-/* Text arrives the way it is read: a soft edge crosses every line left to right at once. It runs
-   on the element itself or on text inside a revealed block, --read-after later than the block. */
+/* A soft edge crosses every line left to right at once, on the element itself or on text inside a
+   revealed block, --read-after later than the block. */
 [data-motion="read"][data-reveal="in"],
 [data-reveal="in"] [data-motion="read"] {
   animation: read-in 1000ms cubic-bezier(0.3, 0.1, 0.3, 1) var(--read-after, 0ms) both;

@@ -15,8 +15,6 @@ const sorted = entries.toSorted(
 type Entry = CollectionEntry<"history">["data"];
 const label = (d: Entry) => ("year" in d ? String(d.year) : `${d.yearFrom}–${d.yearTo}`);
 const end = (d: Entry) => ("year" in d ? d.year : d.yearTo);
-// The years count on from where the previous entry ended; a span's end then counts on from its
-// start, a beat later.
 const years = sorted.map((e, i) => {
   const start = String(historyStart(e.data));
   const before = i === 0 ? start : String(end(sorted[i - 1]!.data));
@@ -102,7 +100,6 @@ const DIGITS = [..."01234567890123456789"];
   p {
     color: var(--muted);
   }
-  /* Each digit is a wheel of 0–9 written out twice, standing at --to. */
   .odo {
     --cell: 1.5em;
     display: inline-flex;
@@ -119,11 +116,6 @@ const DIGITS = [..."01234567890123456789"];
     flex-direction: column;
     translate: 0 calc(var(--to) * -1 * var(--cell));
   }
-  /* A row arrives whole, under a front that runs at the band's angle the way the ribbon crosses the
-     page: the year first, then the title and the text, and the divider's cut last, with a faint
-     light riding just behind the front. The page moves through time as it is read, so the year
-     counts on from where the previous entry ended as the front passes it: a longer gap turns the
-     wheels further and for longer, and a span's end joins once its start has turned. */
   @property --row {
     syntax: "<percentage>";
     inherits: true;

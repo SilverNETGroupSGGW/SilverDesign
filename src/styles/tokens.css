@@ -30,7 +30,7 @@
   --cut: 1.25rem;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  /* How far an entrance travels up the band's axis (the axis-in keyframes in base.css). */
+  /* How far an entrance travels up the band's axis (axis-in in base.css). */
   --travel: 1.25rem;
 
   --font-sans: "Geist", system-ui, sans-serif;

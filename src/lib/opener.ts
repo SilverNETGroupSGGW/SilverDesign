@@ -3,12 +3,11 @@ import lockup from "../../brand/logo/lockup.json";
 import type { UnrollFrame } from "./unroll-span";
 
 /**
- * The opener's sizes, in px. Every point of the construction is linear in these, so one polygon
- * string written in `calc()` of the matching custom properties serves every breakpoint, and a test
- * can evaluate the same points as numbers.
+ * The opener's sizes, in px. Every point is linear in these, so one `calc()` polygon of the matching
+ * custom properties serves every breakpoint, and a test can evaluate the same points as numbers.
  */
 export interface OpenerVars {
-  /** The mark box's size (the exported viewBox is square). */
+  /** The mark box's side; the exported viewBox is square. */
   m: number;
   /** The S body's top-left corner in the opener's box. */
   bx: number;
@@ -81,7 +80,7 @@ const across = [-dir[1], dir[0]] as const;
 const centre = [vbX + vbSize / 2, vbY + vbSize / 2] as const;
 const twin = [2 * centre[0] - axis[0]!, 2 * centre[1] - axis[1]!] as const;
 
-/** The one inclination of the whole system, as a slope in screen coordinates. */
+/** The system's inclination, as a slope in screen coordinates. */
 export const tan = -dir[1] / dir[0];
 
 /** The S body's size, as a fraction of the mark box. */
@@ -98,7 +97,7 @@ const along = (base: readonly [number, number], t: number, u: number): [number, 
   base[1] + dir[1] * t + across[1] * u,
 ];
 
-/** Where the line through `p` at the system's inclination is, given one coordinate. */
+/** The line through `p` at the system's inclination, solved for one coordinate given the other. */
 const lineY = (p: Point, x: Form): Form => add(p[1], mul(add(x, mul(p[0], -1)), -tan));
 const lineX = (p: Point, y: Form): Form => add(p[0], mul(add(p[1], mul(y, -1)), 1 / tan));
 
@@ -112,8 +111,8 @@ const wordCorners = ((): [number, number][] => {
   ];
 })();
 /**
- * How far the word's outline reaches along the arm and below its centreline. The axis-aligned
- * `wordBox` is the wrong thing to hug: its corners lie well outside the rotated letters.
+ * How far the word's outline reaches along the arm and below its centreline. Not `wordBox`: that
+ * box is axis-aligned, and its corners lie well outside the rotated letters.
  */
 const wordSpan = lockup.wordSpan as { along: [number, number]; across: [number, number] };
 const wordStartT = wordSpan.along[0];
@@ -124,8 +123,8 @@ const wordOff = wordSpan.across[1];
 export const lockupTop = (bodyY - Math.min(bodyY, lockup.wordBox[1]!)) / vbSize;
 
 /**
- * The four arm edges and the word's bottom rule, each as a point the line runs through: the upper
- * arm is the one that leaves towards the top right, the lower arm its turned twin.
+ * Each as a point its line runs through at the system's inclination. The upper arm leaves towards
+ * the top right; the lower arm is its turned twin.
  */
 export const edges = {
   upperTop: at(along(axis as [number, number], 0, -width / 2)),
@@ -142,10 +141,10 @@ const segment = (a: readonly number[], b: readonly number[]): string =>
 const UNROLL_REACH = 20000;
 
 /**
- * The home page's unroll, in mark units. The tip's position `s` runs along one path: up the lower
- * arm to its joint (s = 0), along the S's spine, and out along the upper arm from its joint
- * (s = spineLength). `lower` and `upper` are the arms' centre points at their joints; `wordStart`,
- * `wordEnd` and `wordAcross` place the word along and across the band from the mark's centre.
+ * In mark units. The tip's position `s` runs up the lower arm to its joint (s = 0), along the S's
+ * spine, and out along the upper arm from its joint (s = spineLength). `lower` and `upper` are the
+ * arms' centre points at their joints; `wordStart`, `wordEnd` and `wordAcross` place the word along
+ * and across the band from the mark's centre.
  */
 export const unroll = ((): UnrollFrame & {
   angle: number;
@@ -204,7 +203,7 @@ const bodyBottom = add(BY, form({ m: body.h }), G);
 const wordStart = at(along(axis as [number, number], wordStartT, wordOff));
 const wordEnd = at(along(axis as [number, number], wordEndT, wordOff));
 
-/** Where an arm edge leaves through the top. Past the right edge it is clipped, not wrong. */
+/** An exit past the right edge is clipped by the float's box, not wrong. */
 const topExit = (line: Point): Point => [lineX(line, ZERO_F), ZERO_F];
 
 /**
@@ -226,8 +225,8 @@ export const aboveBoundary: Point[] = [
  */
 export const belowBoundary: Point[] = [
   [ZERO_F, lineY(edges.lowerBottom, ZERO_F)],
-  // The lower arm runs into the S's bottom-left: the boundary follows its edge up to the S's
-  // bottom rule, since a vertical step at the S's left would let text under the arm's corner.
+  // Along the arm's edge up to the S's bottom rule: a vertical step at the S's left would let text
+  // under the arm's corner.
   [lineX(edges.lowerBottom, bodyBottom), bodyBottom],
   [add(BX, form({ m: body.w })), bodyBottom],
   [wordStart[0], lineY(edges.wordBottom, wordStart[0])],
@@ -236,7 +235,7 @@ export const belowBoundary: Point[] = [
   topExit(edges.upperBottom),
 ];
 
-/** The float above the ribbon holds everything below the boundary; the one below it, everything above. */
+/** The float above the ribbon holds everything below its boundary; the one below, everything above. */
 export const shapeAbove: Point[] = [...aboveBoundary, [W, ZERO_F], [W, H], [ZERO_F, H]];
 export const shapeBelow: Point[] = [
   [ZERO_F, ZERO_F],
@@ -244,10 +243,8 @@ export const shapeBelow: Point[] = [
   ...belowBoundary.slice(0, -1).toReversed(),
 ];
 
-/** The mark's svg sits on its own box, which the S body's corner places. */
 export const markOrigin = at([vbX, vbY]);
 
-/** The box of the S and the word. */
 export const lockupBox = ((): { origin: Point; w: Form; h: Form } => {
   const xs = [bodyX, bodyX + bodyW, ...wordCorners.map((c) => c[0])];
   const ys = [bodyY, bodyY + bodyH, ...wordCorners.map((c) => c[1])];
@@ -305,8 +302,7 @@ export const wordEndPoint = (v: OpenerVars): [number, number] => [
   evalForm(wordEnd[1], v),
 ];
 
-/* The sizes the construction is driven by, written once so the component's custom properties and
-   the invariant test read the same numbers. */
+/* Sizes are data so the component's custom properties and the invariant test read the same numbers. */
 
 const SIZE_UNITS = ["px", "rem", "cqw", "svh", "m", "bx", "by", "g", "tb"] as const;
 type SizeUnit = (typeof SIZE_UNITS)[number];
@@ -321,14 +317,12 @@ export type Size =
   | { wide: Size; narrow: Size };
 
 /**
- * Below this container width the title takes the whole width and the lockup sits under it. 56rem
- * (~990px) rather than 64: a laptop at 1024 still has room for a three-line title beside the S, and
- * the copy wrapping along the ribbon is the composition, so it should show on as many screens as can
- * hold it.
+ * Below this container width the title takes the whole width and the lockup sits under it. As low
+ * as 56rem (~990px) because a 1024 laptop still fits a three-line title beside the S, and the copy
+ * wrapping along the ribbon is the composition: it should show on every screen that can hold it.
  */
 export const NARROW_REM = 56;
 
-/** What a length resolves against: the opener's box, the root font size, and the sizes above. */
 export interface SizeContext extends Record<SizeUnit, number> {
   px: 1;
   narrow: boolean;
@@ -379,7 +373,7 @@ export const sizeCss = (s: Size): string => {
   return bare ? terms[0]! : `calc(${terms.join("")})`;
 };
 
-/** One opener's sizes. Everything after `g` may be written in terms of the four before it. */
+/** Everything after `g` may be written in terms of the four before it. */
 export interface OpenerLayout {
   m: Size;
   bx: Size;
@@ -415,17 +409,16 @@ export const OPENER_PROPS: Record<keyof OpenerLayout, string> = {
 };
 
 const NAV_TOP: Size = { clamp: [{ rem: 1 }, { cqw: 2.4 }, { rem: 2 }] };
-/** The box the navigation is allowed: wide enough for four links with their icons, and no wider. */
+/** Wide enough for four links with their icons, and no wider. */
 const NAV_W: Size = { min: [{ cqw: 80 }, { rem: 25 }] };
 const NAV_H: Size = { rem: 4 };
-/** The title starts below the box the navigation reserves. */
 const ABOVE_Y: Size = {
   max: [{ clamp: [{ rem: 4.5 }, { cqw: 8.9 }, { rem: 7.5 }] }, { sum: [NAV_TOP, NAV_H] }],
 };
 /**
  * Capped where the longest Polish word in the title still fits the column beside the S. The floor
- * is bounded by the opener's own width too: a display line has to stay inside its column on a phone
- * whose root font size is 32 px, and the lead, the navigation and the buttons still scale in rem.
+ * is bounded by the opener's width too, so a display line stays inside its column on a phone with a
+ * 32 px root font size; the lead, the navigation and the buttons still scale in rem.
  */
 const titleTimes = (k: number): Size => ({
   clamp: [{ min: [{ rem: 2 * k }, { cqw: 8 * k }] }, { cqw: 4.4 * k }, { rem: 3.6 * k }],
@@ -435,9 +428,9 @@ export const TITLE_LINE_HEIGHT = 1.02;
 /** How many lines a title takes on the narrowest phone (320 px, 32 px type): about 14 characters each. */
 export const titleLines = (title: string): number => Math.max(1, Math.ceil(title.length / 14));
 /**
- * On a narrow opener the upper arm leaves through the right edge, above the lead and under the
- * navigation: the S has to sit low enough that the arm's upper edge at the right edge clears the
- * box the navigation reserves (a one-line title would otherwise put the band across the links).
+ * On a narrow opener the upper arm leaves through the right edge under the navigation: the S sits
+ * low enough that the arm's upper edge there clears the navigation's box, or a one-line title would
+ * put the band across the links.
  */
 const ARM_CLEAR_BY: Size = ((): Size => {
   const p = edges.upperTop;
@@ -446,8 +439,8 @@ const ARM_CLEAR_BY: Size = ((): Size => {
   };
 })();
 /**
- * Where the lockup's top sits: level with the title on a wide opener, and under the title's band
- * (`--title-band` = its lines × line height × size) on a narrow one. `by` follows from it.
+ * The lockup's top sits level with the title on a wide opener, and under the title's band
+ * (`--title-band` = its lines × line height × size) on a narrow one.
  */
 const BY_SIZE: Size = {
   wide: { sum: [ABOVE_Y, { m: lockupTop }] },
@@ -456,10 +449,10 @@ const BY_SIZE: Size = {
 const LEAD: Size = { clamp: [{ rem: 1.05 }, { cqw: 1.67 }, { rem: 1.35 }] };
 
 /**
- * The left edge of the page's own container, so the title starts where the body copy does — until
- * 24rem, where it stops. `--bx` stops with it, and past that point the container keeps centring on
- * 72rem while the S does not: letting this follow it squeezes the title's column against the
- * diagonal until a single word breaks mid-word (`Projekt/y` at 2560 on a page).
+ * The page container's left edge, so the title starts where the body copy does, capped at 24rem
+ * (`--bx` caps with it): past that the container keeps centring on 72rem while the S does not, and
+ * following it squeezes the title's column against the diagonal until a word breaks mid-word
+ * (`Projekt/y` at 2560 on a page).
  */
 const CONTAINER_LEFT: Size = {
   min: [
@@ -467,19 +460,17 @@ const CONTAINER_LEFT: Size = {
     { rem: 24 },
   ],
 };
-/** The S sits clear of the title's column, and the lead starts short of the S. */
 const BELOW_X: Size = { max: [CONTAINER_LEFT, { bx: 1, m: -0.77 }] };
 /**
- * The lead starts a third of the way down the S, not under it: the word's bottom edge runs up from
- * the S's bottom-right corner, so lines placed beside the S sit under the word and step along it —
- * the shape's margin keeps them --g off the foil, so no clearance is added here. Starting this high
- * makes the upper lines short enough that the steps between them show at laptop widths too.
+ * A third of the way down the S, not under it: the word's bottom edge runs up from the S's
+ * bottom-right corner, so lines beside the S step along it, and starting this high keeps the upper
+ * lines short enough for the steps to show at laptop widths. No clearance here: the shape's margin
+ * keeps the lines --g off the foil.
  */
 const BELOW_Y: Size = { by: 1, m: body.h * 0.3 };
 /**
- * The opener is never shorter than the height at which the lower arm's lower edge still leaves
- * through the left edge: that exit is what makes the ribbon read as crossing the page, so it sets
- * the floor rather than being checked against one.
+ * The height at which the lower arm's lower edge still leaves through the left edge, plus `slack`
+ * rem: that exit makes the ribbon read as crossing the page, so it sets the floor.
  */
 const leftExitFloor = (slack: number): Size => {
   const y = lineY(edges.lowerBottom, ZERO_F);
@@ -487,8 +478,8 @@ const leftExitFloor = (slack: number): Size => {
 };
 
 /**
- * The variants whose ribbon is a dimmed background the copy stands on, not a shape it wraps: one
- * straight band along the upper arm's line, with the lockup itself small in the navigation.
+ * Variants whose ribbon is a dimmed band the copy stands on rather than a shape it wraps, with the
+ * lockup small in the navigation.
  */
 export const backdropVariants: ReadonlySet<string> = new Set(["page"]);
 
@@ -499,10 +490,8 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     by: BY_SIZE,
     g: { clamp: [{ px: 12 }, { cqw: 1.39 }, { px: 20 }] },
     /**
-     * The exit is the only floor the composition needs: the ribbon leaves through the left edge
-     * inside the box at every width, and what a window's own height added past that was empty
-     * canvas under the diagonal — 276 to 400px of it on a wide screen, with the next section pushed
-     * off the first screen to make room for nothing.
+     * No window-height floor: past the left exit, height only adds empty canvas under the diagonal
+     * and pushes the next section off the first screen.
      */
     h: {
       wide: { max: [{ rem: 48 }, leftExitFloor(2)] },
@@ -519,11 +508,9 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
     lead: LEAD,
   },
   /**
-   * A page carries the ribbon alone as a dimmed background, a straight band along the line the
-   * upper arm would take with the S to the right of the title's column and under the navigation's
-   * line; the navigation, the title and the lead stand in one column over it, nothing wraps, and
-   * the lockup itself heads the navigation. The header is as tall as its copy: the band runs on
-   * under the page's content and leaves through the page's left edge further down.
+   * The band follows the line the upper arm would take with the S right of the title's column and
+   * under the navigation. `h` is 0 because the header is as tall as its copy: the band runs on under
+   * the page's content and leaves through the page's left edge further down.
    */
   page: {
     m: { clamp: [{ rem: 5.5 }, { cqw: 12.5 }, { rem: 11 }] },
@@ -544,7 +531,7 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   sheet: {
     m: { px: 200 },
     bx: { px: 420 },
-    // The word's top is level with the title's, as on the pages.
+    // The word's top is level with the title's.
     by: { px: 96, m: lockupTop },
     g: { px: 16 },
     h: { max: [{ px: 480 }, leftExitFloor(1.5)] },
@@ -562,11 +549,11 @@ export const openerLayouts: Record<"home" | "page" | "sheet", OpenerLayout> = {
   },
 };
 
-/** The root font size the page's own scale resolves to at a given viewport width. */
+/** The root font size (--step-0 in tokens.css) at a viewport width, both in px. */
 export const rootFontSize = (w: number): number =>
   Math.min(18, Math.max(16, 0.95 * 16 + 0.0025 * w));
 
-/** Every size of one opener, resolved to px at a given viewport. */
+/** Every size resolved to px at a given viewport. */
 export const openerSizes = (
   layout: OpenerLayout,
   viewport: { w: number; h: number; rem?: number; titleLines?: number },

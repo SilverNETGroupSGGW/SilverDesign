@@ -7,10 +7,9 @@ import { compactPath } from "../src/lib/svg-path";
 
 const FAMILY = "Syncopate";
 /**
- * The cuts the "heaviest stem that still fits" rule is evaluated over. Regular is an input to the
- * rule, not a shipped asset: while it is the only cut that fits, the synthetic stroke that brings
- * it up to the S's weight pushes the letters below the S's bottom line, which is what drives the
- * cap height down to the ratio at which Bold fits and the rule settles.
+ * Regular is an input to the "heaviest stem that still fits" rule, not a shipped asset: while it is
+ * the only cut that fits, the stroke that brings it up to the S's weight pushes the letters below
+ * the S's bottom line, which drives the cap height down until Bold fits.
  */
 const CUTS = [
   { weight: 400, file: "Syncopate-Regular.ttf" },
@@ -162,9 +161,8 @@ const layout = await (async (): Promise<Layout> => {
       axis[1] + dir[1] * t + n[1] * u,
     ];
     const sBodyPath = document.querySelector<SVGPathElement>("#sbody")!;
-    // Everything the fit measures hangs off this box: the cap height, the bottom rule and the frame
-    // all quote it as a constant, so a re-exported mark that moved would place the word against a
-    // box that no longer exists — silently, since the expectations would move with it.
+    // The cap height, the bottom rule and the frame all quote this box as a constant, so a
+    // re-exported mark that moved would silently place the word against a stale box.
     const drawn = sBodyPath.getBBox();
     const measured = {
       l: drawn.x,
@@ -255,8 +253,8 @@ const layout = await (async (): Promise<Layout> => {
       return Math.max(gap - mean, floor - Math.min(...ds));
     };
 
-    // Letters: the tallest cap height (<= the starting ratio of the S body) at which the first letter
-    // still ends on the inner edge of the S's bottom stroke. Stem = the S's stroke, the heaviest cut
+    // The tallest cap height (<= the starting ratio of the S body) at which the first letter still
+    // ends on the inner edge of the S's bottom stroke. Stem = the S's stroke, in the heaviest cut
     // that fits under it. The first letter's left ink edge sits on the S's end: the perpendicular
     // through the notch (t = start). One gap for everything, taken from S -> first letter: the word
     // hangs `gap` under the arm, which moves the letter across the S's bow, so the gap is a fixed
@@ -265,8 +263,8 @@ const layout = await (async (): Promise<Layout> => {
       const cap = capRatio * BODY_H;
       let weight = input.weights[0]!;
       let k = ink(weight);
-      // A stroke adds only the remainder, so the counters keep their drawn shape (a 400 cut stroked
-      // to 50 u clogged the "e").
+      // The heaviest cut that fits, so a stroke adds only the remainder and the counters keep their
+      // drawn shape; a 400 cut stroked to 50 u clogs the "e".
       for (const w of input.weights) {
         const kw = ink(w);
         if ((kw.stemEm * cap) / kw.asc <= stroke + 0.5) {
@@ -347,7 +345,6 @@ const layout = await (async (): Promise<Layout> => {
     }
     const { k, fs, strokeU, h, sils, gapU, ds, q } = best;
 
-    // Per-pair optical spacing: mean row gap `gapU` after the stroke, no row closer than 0.6 gapU.
     const penEm = [0];
     let extraU = 0;
     for (let i = 0; i + 1 < text.length; i++) {
@@ -447,11 +444,9 @@ const wordPath = compactPath(word);
 const round = (n: number): number => Math.round(n * 10) / 10;
 const frame = layout.frame.map(round) as [number, number, number, number];
 
-// The page lays the word and the S body out against the ribbon's edges, so the boxes it measures
-// them by are exported next to the path instead of being retyped wherever a layout needs them.
-// `wordBox` is axis-aligned; the word is not, so the box's corners reach well past the letters
-// across the arm. `wordSpan` is the outline itself projected on the arm's axis (along) and on its
-// normal (across, positive below the centreline), which is what a layout hugging the word needs.
+// `wordBox` is axis-aligned, so its corners reach well past the rotated letters. `wordSpan` is the
+// outline projected on the arm's axis (along) and its normal (across, positive below the
+// centreline), which is what a layout hugging the word needs.
 const { wordBox, wordSpan } = await (async (): Promise<{
   wordBox: [number, number, number, number];
   wordSpan: { along: [number, number]; across: [number, number] };
@@ -515,9 +510,8 @@ const lockup = {
 writeFileSync(join(out, "lockup.json"), JSON.stringify(lockup, null, 2) + "\n");
 
 const box = frame.join(" ");
-// The mark master inlines the same 261 KB JPEG once per tile; one <symbol> behind four <use>es is
-// the same foil at a quarter of the bytes, and taking the tiles from the master instead of retyping
-// them keeps the lockup's texture identical to the page's if the configurator ever changes it.
+// The mark master inlines the same JPEG once per tile; one <symbol> behind four <use>s is a quarter
+// of the bytes, and taking the tiles from the master keeps the lockup's foil identical to the page's.
 const tiles = pattern.replaceAll(/<image href="data:[^"]*"/g, '<use href="#foilTex"');
 if (!tiles.includes("#foilTex") || tiles.includes("data:")) {
   throw new Error("brand/logo/mark-transparent.svg: the foil pattern is not four inline images");

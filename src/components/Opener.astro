@@ -57,14 +57,11 @@ const style = [
   `--mark-x:${formCss(markOrigin[0])}`,
   `--mark-y:${formCss(markOrigin[1])}`,
 ].join(";");
-// The polygons name the zone's own origin, and a custom property resolves its var() references on
-// the element it is declared on: they have to sit on the zone, not on the opener.
-// The top bar's lockup box is the S and the word: the row centres on those, and the bar's horizontal
-// run hangs below the row.
+// The S and the word only: the row centres on those, and the bar's horizontal run hangs below it.
 const logoStyle = `--box-x:${lockupTightBox.x};--box-y:${lockupTightBox.y};--box-w:${lockupTightBox.w};--box-h:${lockupTightBox.h}`;
-// The S and the word on their own, cut to the lockup's tight box: the element that flies between the
-// hero and the navigation's corner when the page changes (Base.astro). On the home page it sits over
-// the hero's lockup, a fraction of --m in from the mark box's corner.
+// The element that flies between the hero and the navigation's corner on a page change
+// (Base.astro). On the home page it sits over the hero's lockup, a fraction of --m in from the mark
+// box's corner.
 const { x: tx, y: ty, w: tw, h: th } = lockupTightBox;
 const tightViewBox = `${tx} ${ty} ${tw} ${th}`;
 const [mvx, mvy, mvs] = markViewBox.split(" ").map(Number) as [number, number, number];
@@ -73,10 +70,12 @@ const besideLockup = `M -30000 -30000 H 30000 V 30000 H -30000 Z M ${tx} ${ty} h
 /** In mark units: how far the unroll's strokes and the word's lane reach past what they uncover. */
 const UNROLL_MARGIN = 8;
 const SPINE_WIDTH = unroll.lineWidth + UNROLL_MARGIN;
-/** Longer than any path position the tip takes, rest included (Opener's CSS, --unroll-tip). */
+/** Longer than any path position --unroll-tip takes, its resting value included. */
 const UNROLL_DASH = 100000;
 const { centre, dir, half, lower, upper, spineLength, wordEnd } = unroll;
 const frame = { centre, dir, half, lower, upper, spineLength, wordEnd };
+// The polygons name the zone's own origin, and a custom property resolves its var() references on
+// the element it is declared on: they have to sit on the zone, not on the opener.
 const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
 const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
@@ -89,12 +88,10 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       style={variant === "home" ? `--beside-lockup:url(#beside-lockup-${uid})` : undefined}
     >
       <defs set:html={markPattern(uid)} />
-      {/* The ribbon unrolls onto the home page from the left edge, and the S is drawn as the band
-          runs through it: a wide stroke up the lower arm, a line-width stroke along the S's spine,
-          a wide stroke out along the upper arm, and the word uncovered in its own lane as the upper
-          arm passes over it. One custom property, the tip's position on that path, moves all four,
-          so the tip never jumps between them. The arm strokes stop square at the joints, where the
-          S's halves do not reach, and the word's lane holds nothing else past the S. */}
+      {/* One custom property, the tip's position on the path up the lower arm, along the spine and
+          out along the upper arm, moves all four reveals, so the tip never jumps between them. The
+          arm strokes stop square at the joints, where the S's halves do not reach, and the word's
+          lane holds nothing else past the S. */}
       {variant === "home" && (
         <defs>
           <clipPath id={`beside-lockup-${uid}`}>
@@ -155,9 +152,8 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
           <nav aria-label={copy.nav.mainLabel}>
             <a class="logo" href={pathFor("home", locale)} aria-label={site.name} style={logoStyle}>
               <svg class="mark" viewBox={markViewBox} aria-hidden="true">
-                {/* The hero draws the mark about eight times larger; at the logo's own scale the texture
-                    tiles every few dozen pixels and reads as a repeat along the bar. Past 3× the
-                    highlights no longer fit on the logo and it turns flat grey. */}
+                {/* Unscaled at the logo's size the texture tiles every few dozen pixels and reads as a
+                    repeat along the bar; past 3× the highlights no longer fit and it turns flat grey. */}
                 <defs>
                   <Fragment set:html={markPattern(`${uid}-logo`, 3)} />
                   <clipPath id={`bar-${uid}`}>
@@ -228,20 +224,19 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 </script>
 
 <style>
-  /* The opener is its own query container's child, not the container: an element never answers its
-     own container queries, so cqw in --h or the grid's rows would read the viewport (scrollbar
+  /* The opener is the container's child, not the container: an element never answers its own
+     container queries, so cqw in --h or the grid's rows would read the viewport (scrollbar
      included) instead of the opener's box. */
   .frame {
     container-type: inline-size;
-    /* The backdrop opener trades overflow for a clip path, and a clip path hides the band's paint
-       without taking its box out of the scrollable overflow region: at 200% text zoom the svg's
-       right edge scrolled a phone sideways. Clipping here contains the box, and block-direction
-       overflow stays visible, so the band still runs on under the content. */
+    /* The backdrop's clip path hides the band's paint but leaves its box in the scrollable overflow,
+       which scrolls a phone sideways at 200% text zoom. Clipping only x here keeps the band running
+       on under the content. */
     overflow-x: clip;
   }
-  /* The English labels fit one line down to a narrower row than the Polish ones. A container query
-     cannot read a custom property, but its em is the container's font size: this moves the fold's
-     30.75em bound to 28.25rem in English, and the opener takes the root size back. */
+  /* The English labels fit one line down to a narrower row. A container query cannot read a custom
+     property, but its em is the container's font size: this moves the fold's 30.75em bound to
+     28.25rem in English, and the opener takes the root size back. */
   .frame:lang(en) {
     font-size: calc(28.25rem / 30.75);
   }
@@ -253,17 +248,17 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     position: relative;
     isolation: isolate;
     display: grid;
-    /* Row one is the title's band. It is exactly --below-y while the title fits, so the lead starts
-       where the polygon says it does, and it grows — pushing the lead down — when the title needs
-       more room than the composition budgeted (a large root font size), rather than being cut. */
+    /* Row one is the title's band: exactly --below-y while the title fits, so the lead starts where
+       the polygon says; it grows rather than cuts when the title needs more room than the
+       composition budgeted (a large root font size). */
     grid-template-rows: minmax(var(--below-y), auto) auto;
     grid-template-columns: minmax(0, 1fr);
     min-block-size: var(--h);
-    /* The ribbon runs thousands of user units past the mark's box on both ends; the opener is what
-       cuts it to the page, so every end of it lands on a real edge of the document. */
+    /* The ribbon runs thousands of units past the mark's box; the opener cuts it, so every end lands
+       on a real edge of the document. */
     overflow: hidden;
   }
-  /* Under the breakpoint the title takes the whole width, so the lockup moves under it. */
+  /* NARROW_REM in opener.ts. */
   @container (width < 56rem) {
     .opener {
       --by: var(--by-narrow);
@@ -271,8 +266,8 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     }
   }
   /* Inline-level and in flow: a block-level box would clear the float's whole margin box instead of
-     following its shape, and out of flow it could not push the title down when it wraps to a second
-     line (which it does at a 32 px root font size). --nav-h is what it reserves when it fits. */
+     following its shape, and out of flow it could not push the title down when it wraps (at a 32 px
+     root font size). --nav-h is what it reserves when it fits. */
   nav {
     position: relative;
     z-index: 3;
@@ -284,11 +279,10 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     gap: var(--space-2) var(--space-4);
     align-items: start;
   }
-  /* Four labels have to share the --nav-w box, and at the site's column gap the switch wrapped onto
-     a row of its own at 360 px and below — one line above the headline, where it reads as a kicker
-     rather than as a control. The gaps take what the box has left after the labels (15rem covers
-     the wider locale's row, Polish at 224 px on a 16 px root, with room to spare) and give it back
-     from 400 px up, where the full gap fits again. */
+  /* At the site's full gap the switch wraps onto its own row at 360 px and below, where it reads as
+     a kicker above the headline rather than a control. The gaps take what --nav-w leaves after the
+     labels (15rem covers Polish, the wider row, at 224 px on a 16 px root) and reach the full gap
+     again from 400 px. */
   .opener:not(.backdrop) nav {
     column-gap: clamp(var(--space-2), (var(--nav-w) - 15rem) / 3, var(--space-4));
   }
@@ -358,24 +352,22 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     float: left;
     block-size: calc(var(--h) - var(--below-y));
   }
-  /* base.css balances headings, which counts characters against a rectangle the shape has already
-     taken apart; the diagonal is what should set the line lengths. */
+  /* Not balanced as base.css does: balancing counts characters against a rectangle the shape has
+     already taken apart, and the diagonal should set the line lengths. */
   .above h1 {
-    /* --above-y is where the title sits when the navigation fits the box it reserves; the rest of
-       the distance is the navigation's own height, so a wrapped nav moves the title instead of
-       landing on it. */
+    /* --above-y is where the title sits when the navigation fits its box; the navigation's own
+       height makes up the rest, so a wrapped nav moves the title instead of landing on it. */
     margin-block-start: calc(var(--above-y) - var(--nav-top) - var(--nav-h));
     font-size: var(--title);
-    /* --title-band, which places the lockup under the title on a narrow opener, assumes this. */
+    /* TITLE_LINE_HEIGHT in opener.ts; --title-band assumes it. */
     line-height: 1.02;
     letter-spacing: -0.025em;
     max-width: none;
     color: var(--bright);
     text-wrap: pretty;
-    /* At 200% text zoom a single Polish word is wider than a phone viewport. The limits keep the
-       hyphen for those and off the ordinary ones: at 400 px the EN title broke as "sci-/ence".
-       Chromium reads the first, WebKit the second; Firefox has neither and falls back to plain
-       hyphens: auto, which is what shipped before. */
+    /* At 200% text zoom a single Polish word is wider than a phone. The limits keep the hyphen for
+       those and off ordinary words ("sci-/ence" at 400 px). Chromium reads the first, WebKit the
+       second; Firefox reads neither and hyphenates freely. */
     hyphens: auto;
     hyphenate-limit-chars: 10 4 4;
     -webkit-hyphenate-limit-before: 4;
@@ -386,10 +378,9 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .sheet .above h1 {
     hyphens: manual;
   }
-  /* The zone's box starts where the diagonal's foot is, so base.css's measure is taken from the
-     right margin instead: the block sits there and its line boxes shorten where the float reaches
-     in. Ranged right, the lead's ragged edge falls along the word and the foil and its straight edge
-     on the margin, mirroring the title on the other side of the ribbon. */
+  /* The zone's box starts at the diagonal's foot, so a narrowed block sits against the right margin
+     and its lines shorten where the float reaches in. Ranged right, the ragged edge falls along the
+     word and the foil and the straight edge on the margin, mirroring the title across the ribbon. */
   .below .lead {
     font-size: var(--lead);
     line-height: 1.35;
@@ -401,16 +392,12 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     text-wrap: pretty;
     color: var(--ink);
   }
-  /* Over the ribbon, and under the buttons, which carry the same z-index one step up: the title and
-     the lead are static, so they stay below it wherever their boxes reach across the diagonal. */
-  /* On a page the lockup is a backdrop: dimmed until white copy reads on it, with the navigation,
-     the title and the lead in one plain column over it, so the page's content starts where a
-     header's would and nothing wraps. The mark still links home. */
+  /* Dimmed until white copy reads on it. */
   .backdrop .ribbon {
     opacity: 0.25;
   }
   /* The band passes behind this row, and --muted over its brightest pixels measures 3.5:1: the
-     icons keep the home page's quieter grey, the labels step up to ink, which clears 4.5:1. */
+     icons keep the quieter grey, the labels step up to ink, which clears 4.5:1. */
   .backdrop nav :global(.label) {
     color: var(--ink);
     transition: color 120ms;
@@ -419,9 +406,9 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .backdrop nav a[aria-current="page"] :global(.label) {
     color: var(--bright);
   }
-  /* The page's header is only as tall as its copy; the dimmed ribbon keeps going under the content
-     that follows until it leaves through the page's left edge on its own. The clip still cuts it at
-     the top and the sides, so nothing widens the document. */
+  /* The header is only as tall as its copy, and the band runs on under the content until it leaves
+     through the page's left edge. The clip still cuts the top and sides, so nothing widens the
+     document. */
   .backdrop {
     overflow: visible;
     clip-path: inset(0 0 -200vh 0);
@@ -437,11 +424,10 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     align-items: center;
     max-inline-size: none;
   }
-  /* The lockup heads the navigation on a page and the row centres on it, so the links sit level
-     with the middle of the word. The link is the lockup's box (--box-*, in mark units: the S and
-     the word); the svg is the whole 600-unit mark box placed so that box fills the link, and its
-     ribbon runs out of it: up to the top edge, and left along the bar's bottom edge, below the row,
-     to the left edge, where the opener's clip ends both. */
+  /* The row centres on the lockup, so the links sit level with the middle of the word. The link is
+     the lockup's box (--box-*, in mark units: the S and the word); the svg is the whole 600-unit
+     mark box placed so that box fills the link, and its ribbon runs out of it to the top edge and,
+     along the bar's bottom edge below the row, to the left edge, where the opener's clip ends both. */
   .backdrop .logo {
     --logo-h: 3rem;
     --unit: calc(var(--logo-h) / var(--box-h));
@@ -457,7 +443,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     position: absolute;
     inset: min(0px, (var(--logo-h) - 2.75rem) / 2) 0;
   }
-  /* Five items and the lockup do not fit a phone's row at the site's gaps; tighter, they just do. */
+  /* Five items and the lockup fit a phone's row only at these tighter gaps. */
   @container (width < 40rem) {
     .backdrop nav {
       gap: var(--space-2) var(--space-3);
@@ -470,15 +456,14 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     }
   }
   /* Where the links would wrap onto a second row, each becomes a column, the icon over a short
-     label, decided here rather than in script so the first paint already has it. The bounds are in
-     rem, measured with the one-line row wrapping below 30.06rem in Polish and 27.63rem in English and
-     the folded row fitting from 17.75rem with the lockup (14.3rem without it), both with room for
-     another engine's text metrics. Below the fold's floor, which large text reaches on a phone, the
-     links wrap as they did before the fold existed: a row that cannot shrink would scroll the page.
-     The columns are equal, not spaced evenly: the labels differ in length, and even gaps between
-     unequal boxes set the icons at uneven distances. The margins take back the links' own padding so
-     the outer columns stand as far from their page edges as each other. The --nav-w budget is for
-     the one-line labels; this row is short enough to clear the band across the full width. */
+     label, in CSS so the first paint already has it. The bounds are measured: the one-line row
+     wraps below 30.06rem in Polish and 27.63rem in English, and the folded row fits from 17.75rem
+     with the lockup (14.3rem without), both with room for another engine's text metrics. Below the
+     floor, which large text reaches on a phone, the links wrap: a row that cannot shrink would
+     scroll the page. The columns are equal, not spaced evenly: even gaps between unequal labels set
+     the icons at uneven distances. The margins take back the links' padding so the outer columns
+     stand equally far from the page edges. The --nav-w budget is for the one-line labels; this row
+     is short enough to clear the band across the full width. */
   @container (18.25rem <= width < 30.75em) {
     nav {
       --pad: 0.1rem;
@@ -522,14 +507,13 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     overflow: visible;
     pointer-events: none;
   }
-  /* The home page's arrival, in the order it is read: the lockup, the title, the lead, and the
-     navigation last. Not replayed when the visitor comes back from another page of the site
-     (Base.astro sets data-hero="still"). The buttons are slotted, so Home.astro times them. */
-  /* --unroll-tip is the tip's position on its path (see the mask above); each stroke shows the part
-     of itself behind the tip, and the word's lane is uncovered up to the tip's place along the upper
-     arm. Its resting value lies past the end of every stroke. --unroll-from and --unroll-to are the
-     tip's run for the viewport (unroll.ts); the fallbacks cover a desktop opener, so without the
-     script the tip only spends a few more frames beyond the left edge. */
+  /* The home page's arrival, in reading order: the lockup, the title, the lead, the navigation. Not
+     replayed on the way back from another page (Base.astro sets data-hero="still"). The slotted
+     buttons are timed in Home.astro. */
+  /* --unroll-tip is the tip's position on its path (see the mask above). Its resting value lies
+     past the end of every stroke. --unroll-from and --unroll-to are the tip's run for the viewport
+     (unroll.ts); the fallbacks cover a desktop opener, so without the script the tip only spends a
+     few more frames beyond the left edge. */
   @property --unroll-tip {
     syntax: "<number>";
     inherits: true;
@@ -574,9 +558,9 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       animation: fade-in 700ms ease-out both;
     }
   }
-  /* Only while a page change is being captured (Base.astro sets .vt-lockup around it) does the
-     lockup stand on its own layer: the overlay shows and takes the transition's name, and the same
-     S and word in the big drawing step aside, so the ribbon and the bar stay behind with the page. */
+  /* Only while a page change is captured (Base.astro sets .vt-lockup around it) does the lockup
+     stand on its own layer: the overlay shows and takes the transition's name, and the same S and
+     word in the big drawing step aside, so the ribbon and the bar stay behind with the page. */
   .lockup-vt {
     position: absolute;
     visibility: hidden;
@@ -612,8 +596,8 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     color: var(--bright);
     max-width: none;
   }
-  /* A page's title and lead read in as it opens; the dimmed band and the navigation stay put, since
-     they are the same on every page and the crossfade between pages leaves them standing. */
+  /* The band and the navigation do not animate: they are the same on every page, and the crossfade
+     leaves them standing. */
   .backdrop h1,
   .backdrop .below .lead {
     animation: read-in 900ms cubic-bezier(0.3, 0.1, 0.3, 1) both;

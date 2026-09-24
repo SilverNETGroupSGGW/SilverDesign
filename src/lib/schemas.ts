@@ -131,6 +131,5 @@ export const CopySchema = z.object({
 });
 export type Copy = z.infer<typeof CopySchema>;
 
-/** A result that opens with a number is a measurement, which §8 sets in Geist Mono; one that opens
- *  with a word is a sentence about the project and stays in Geist. */
+/** A result that opens with a number is a measurement, which spec §8 sets in Geist Mono. */
 export const isMeasurement = (result: string): boolean => /^\d/.test(result);

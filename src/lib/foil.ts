@@ -52,8 +52,8 @@ const foil = (mark: HTMLElement) => {
     // the whole glide in one jump.
     const dt = last ? Math.min(now - last, 34) : 16;
     last = now;
-    // Added to the pointer's target, not in its place: a cursor resting on the hero at load would
-    // otherwise cancel the glint with its first event.
+    // The glint adds to the pointer's target rather than replacing it: a cursor resting on the hero
+    // at load would otherwise cancel the glint with its first event.
     if (now - glintAt >= 5 * GLINT_PEAK) glintAt = -1;
     const reach = glintAt >= 0 ? glint(now - glintAt) * GLINT_REACH : 0;
     const tx = px + ax * w * reach;

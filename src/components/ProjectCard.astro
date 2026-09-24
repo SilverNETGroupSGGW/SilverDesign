@@ -48,9 +48,8 @@ const links = [
   p.links.github && { href: p.links.github, label: copy.projects.github },
 ].filter((l): l is { href: string; label: string } => Boolean(l));
 
-// The first screenshot of a listing is the page's LCP element: the default quality puts it at
-// 130 KB, which costs the page ~5 Lighthouse performance points. Card screenshots render
-// grayscale at 85% opacity, so 65 is invisible here.
+// The first screenshot of a listing is the page's LCP element, and at the default quality it weighs
+// 130 KB. The cards render it grayscale at 85% opacity, where 65 is invisible.
 const shotQuality = 65;
 ---
 <article class="card cut" data-status={p.status} data-reveal>
@@ -109,8 +108,6 @@ const shotQuality = 65;
     filter: saturate(0);
     opacity: 0.85;
   }
-  /* A card arrives the way a print develops: the screenshot comes up out of an overexposed blur
-     into its grey, and the text follows. */
   .card {
     --reveal-gap: 220ms;
   }

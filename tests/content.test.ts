@@ -92,10 +92,8 @@ describe("copy", () => {
     }
   });
   test("hero title stays inside three h1 lines at 1024 CSS px", () => {
-    // At 1024 the opener's h1 is 45px on a 46px line and its lines end on the ribbon's upper edge,
-    // so three of them reach y = 239 — still clear of the S's band, which starts at --by - --g =
-    // 268. A fourth line has to fit the column beside the S instead (--above-x to --bx - --g, 305
-    // px), where "informatyków" alone already measures 281 px.
+    // At 1024 three h1 lines reach y = 239, clear of the S's band at --by - --g = 268. A fourth
+    // would have to fit the 305 px column beside the S, where "informatyków" alone measures 281 px.
     for (const locale of ["pl", "en"]) {
       const copy = CopySchema.parse(readJson(join(root, "copy", `${locale}.json`)));
       expect(copy.hero.title.length, locale).toBeLessThanOrEqual(38);

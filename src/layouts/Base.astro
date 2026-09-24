@@ -13,7 +13,6 @@ interface Props {
   route: RouteKey;
   title: string;
   description: string;
-  /** The opener: the page's own heading and lead, wrapped around the ribbon. */
   variant: "home" | "page";
   heading: string;
   lead: string;
@@ -52,17 +51,13 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     <link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
     <link rel="preload" href={withBase("fonts/Geist-Variable.woff2")} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={withBase("fonts/GeistMono-Variable.woff2")} as="font" type="font/woff2" crossorigin />
-    {/* Warmed early but not ahead of the queue: the LCP element is the lead on the home page and
-        the first card's screenshot on the listings, never the 108 KB foil, and a high hint put the
-        texture in front of both (mobile LCP 2.9 s → 2.0 s on /pl/, 3.1 s → 2.6 s on /pl/projekty/). */}
+    {/* No high priority: the LCP element is the lead on the home page and the first card's
+        screenshot on the listings, never the foil, and a high hint puts the texture ahead of both. */}
     <link rel="preload" href={withBase("brand/foil-texture.jpg")} as="image" />
     <meta name="theme-color" content="#16161B" />
-    {/* Coming back to the home page from another page of the site, it is already at rest: the
-        arrival sequence is for the first look; a reload and the root redirect play it again. Inline
-        and in the head so the attribute is there before the first frame. */}
     {/* Entrances hide their elements from the first frame, so something already painted never
         blinks out and back in; reveal.ts takes over, and if it never arrives the page opens up by
-        itself. Under reduced motion nothing is hidden. */}
+        itself. */}
     <script is:inline>
       try {
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -87,6 +82,9 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
       });
       addEventListener("pageshow", () => document.documentElement.classList.remove("vt-lockup"));
     </script>
+    {/* Back from another page of the site, the home page is already at rest; a reload and the root
+        redirect replay the arrival. Inline in the head so the attribute is set before the first
+        frame. */}
     {variant === "home" && (
       <script is:inline define:vars={{ rootPath: BASE }}>
         try {
@@ -124,8 +122,8 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     navigation: auto;
   }
   /* What is on screen at load enters after the page's own heading: on a phone the home page's first
-     section shares the first screen with the hero and waits for its sequence, and a page's first
-     rows follow its title. Anything revealed later by scrolling starts at once (reveal.ts). */
+     section shares the first screen with the hero and waits for its sequence. Anything revealed
+     later by scrolling starts at once (reveal.ts). */
   main {
     --reveal-start: 250ms;
   }

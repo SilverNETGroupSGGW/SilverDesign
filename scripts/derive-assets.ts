@@ -12,17 +12,16 @@ const write = async (to: string, data: Buffer) => {
 };
 
 const texture = join(root, "brand", "foil-texture.jpg");
-// The master is a print-weight JPEG; on the page it only ever renders at opacity .08 behind the
-// hero band and inside the mark's foil pattern, where re-encoding is invisible.
+// The master is print weight; the page only renders it at opacity .08 behind the hero band and
+// inside the mark's foil pattern, where re-encoding is invisible.
 await write(
   join(root, "public", "brand", "foil-texture.jpg"),
   await sharp(texture).jpeg({ quality: 85 }).toBuffer(),
 );
 
-// Card screenshots are cropped to one aspect so a row of cards shows one band of picture and the
-// bodies start on the same line. 9:5 is the tallest the Plan WZIM shot can be: row 598 is the last
-// one above the "2071, b.23 — <lecturer>" line of its first card, and spec §2.7 keeps no former
-// member's name anywhere on the site.
+// One aspect for every card, so a row shows one band of picture and the bodies start level. 9:5 is
+// the tallest the Plan WZIM shot can be: row 598 is the last above the "2071, b.23 — <lecturer>"
+// line of its first card, and spec §2.7 keeps former members' names off the site.
 const cardAspect = 9 / 5;
 const crop = async (from: string, to: string, width: number, left = 0, top = 0) => {
   const height = Math.round(width / cardAspect);
@@ -39,9 +38,9 @@ const crop = async (from: string, to: string, width: number, left = 0, top = 0) 
       : await source.jpeg({ quality: 80 }).toBuffer(),
   );
 };
-// The Kampus master is captured at about twice Plan WZIM's pixel density (its app bar is 7% of the
-// width against 15.6%), so it is cut 705 px wide to put both cards' UI at one scale, over the pins
-// in the middle of the campus rather than the woods under its app bar.
+// The Kampus master has about twice Plan WZIM's pixel density (its app bar is 7% of the width
+// against 15.6%), so a 705 px cut puts both cards' UI at one scale, over the pins in the middle of
+// the campus rather than the woods under its app bar.
 await crop("kampus-sggw-map.jpg", "kampus-sggw-map-crop.jpg", 705, 540, 662);
 await crop("plan-wzim-day.png", "plan-wzim-day-crop.png", 1077);
 
