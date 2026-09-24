@@ -22,7 +22,7 @@
     "items": [
       {
         "title": "Wchodzisz na Discorda",
-        "body": "Całe koło żyje na Discordzie: projekty, ludzie, terminy spotkań. Napisz parę słów o sobie i o tym, co chcesz robić."
+        "body": "Całe koło żyje na Discordzie: projekty, ludzie, terminy spotkań. Przedstaw się i napisz, czym chcesz się zająć."
       },
       {
         "title": "Wybierasz projekt albo zgłaszasz swój",
@@ -56,18 +56,18 @@
   },
   "build": {
     "heading": "Co budujemy i czym",
-    "what": "Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni. Stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić coś znanego po swojemu.",
+    "what": "Część naszych projektów rozwiązuje problemy, które sami mamy na uczelni. Stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić coś znanego po swojemu.",
     "how": "Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie sięgamy po nowe rzeczy, czasem zanim ktokolwiek uzna je za stabilne.",
     "inOrg": "W naszej organizacji na GitHubie:"
   },
   "join": {
     "heading": "Dołącz",
     "lead": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole!",
-    "threshold": "Wejdź na Discorda, przedstaw się, wybierz projekt. Tam też ogłaszamy terminy spotkań na żywo.",
+    "threshold": "Terminy spotkań i bieżące projekty ogłaszamy na Discordzie. Wejdź, przedstaw się i napisz, co chcesz robić.",
     "discord": "Discord",
     "email": "Mail",
     "room": "Sala",
-    "stripProjects": "Takie rzeczy robimy samodzielnie albo w małych zespołach. Wybierasz projekt albo przychodzisz ze swoim.",
+    "stripProjects": "Budujemy samodzielnie albo w małych zespołach. Dołączasz do trwającego projektu albo przychodzisz z własnym.",
     "stripHistory": "Ciąg dalszy dzieje się teraz. Projekty i terminy spotkań ogłaszamy na Discordzie."
   },
   "footer": {
@@ -97,7 +97,7 @@
       "title": "Koło naukowe informatyków SGGW",
       "lead": "Siedmioosobowy zespół studentów, który wypuszcza aplikacje do sklepów.",
       "whoHeading": "Kim jesteśmy",
-      "who": "Koło Naukowe Informatyków Silver .NET przy WIII SGGW (dawniej WZIM). Robimy aplikacje mobilne i webowe — dla studentów z kampusu i dla siebie.",
+      "who": "Koło Naukowe Informatyków Silver przy WIII SGGW (dawniej WZIM). Robimy aplikacje mobilne i webowe — dla studentów z kampusu i dla siebie.",
       "builtHeading": "Co zbudowaliśmy",
       "togetherHeading": "Co możemy zrobić razem",
       "together": [

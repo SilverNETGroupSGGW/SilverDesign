@@ -2,7 +2,6 @@ import { mkdirSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import sharp from "sharp";
 import subsetFont from "subset-font";
-import { compactPath } from "../src/lib/svg-path";
 
 const root = resolve(import.meta.dir, "..");
 
@@ -42,23 +41,6 @@ const crop = async (from: string, to: string, width: number) => {
 };
 await crop("kampus-sggw-map.jpg", "kampus-sggw-map-crop.jpg", 1562);
 await crop("plan-wzim-day.png", "plan-wzim-day-crop.png", 1077);
-
-const mark = await Bun.file(join(root, "brand", "logo", "mark.svg")).text();
-const viewBox = /viewBox="([^"]+)"/.exec(mark)?.[1];
-const outline = /\sd="([^"]+)"/.exec(mark)?.[1];
-if (!viewBox || !outline) throw new Error("brand/logo/mark.svg: no viewBox or path");
-// The configurator's export carries the foil tiles the favicon can never show at 32 px, so the
-// icon is the same geometry flattened to the two brand greys.
-const box = viewBox.trim().split(/\s+/).map(Number);
-await write(
-  join(root, "public", "favicon.svg"),
-  Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${compactPath(viewBox)}" width="1200" height="1200">` +
-      `<rect x="${box[0]}" y="${box[1]}" width="${box[2]}" height="${box[3]}" fill="#16161B"/>` +
-      `<path d="${compactPath(outline)}" fill="#D8DBDE"/>` +
-      `</svg>\n`,
-  ),
-);
 
 // Spec §8: latin + latin-ext subsets. The ranges are Google Fonts' own definitions of those two
 // subsets; subset-font keeps the weight axis, so 100–900 still interpolates.

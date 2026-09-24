@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import Button from "../components/Button.astro";
+import JoinStrip from "../components/JoinStrip.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import Steps from "../components/Steps.astro";
 import Base from "../layouts/Base.astro";
@@ -41,6 +42,8 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     </div>
     <p><a href={pathFor("projects", locale)}>{copy.projects.viewAll} →</a></p>
   </section>
+
+  <JoinStrip locale={locale} text={copy.join.stripProjects} />
 
   <section class="build container" aria-labelledby="build-heading">
     <h2 class="angled" id="build-heading">{copy.build.heading}</h2>

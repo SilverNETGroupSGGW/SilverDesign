@@ -63,12 +63,12 @@
   "join": {
     "heading": "Join",
     "lead": "Ever got a script for class, a website or a bot to work? Then you have the basics, and you'll learn the rest in a team!",
-    "threshold": "Join the Discord, introduce yourself, pick a project. That's where we post the in-person meetups too.",
+    "threshold": "We post meetup dates and current projects on the Discord. Come in, introduce yourself and say what you'd like to build.",
     "discord": "Discord",
     "email": "Email",
     "room": "Room",
-    "stripProjects": "We build this kind of thing solo or in small teams. Pick a project that's running, or bring your own.",
-    "stripHistory": "The list is still growing. What we're building now, and when we meet, is on the Discord."
+    "stripProjects": "We build solo or in small teams. Join a project that's running, or bring your own.",
+    "stripHistory": "The next chapter is happening now. We post projects and meetup dates on the Discord."
   },
   "footer": {
     "since": "At WIII SGGW (formerly WZIM) since {year}",
@@ -97,7 +97,7 @@
       "title": "SGGW computer science student club",
       "lead": "A seven-person student team that ships apps to the stores.",
       "whoHeading": "Who we are",
-      "who": "The Silver .NET computer science student club at WIII (formerly WZIM), SGGW. We build mobile and web apps — for students on campus and for ourselves.",
+      "who": "The Silver computer science student club at WIII (formerly WZIM), SGGW. We build mobile and web apps — for students on campus and for ourselves.",
       "builtHeading": "What we've built",
       "togetherHeading": "What we can do together",
       "together": [

@@ -1,0 +1,20 @@
+<!--
+  Template for /favicon.svg, filled at build by src/pages/favicon.svg.ts with the viewBox and the
+  outline of brand/logo/mark.svg. Comments are stripped from the output.
+
+  The foil can never show at 32 px, so the icon is the mark flattened to the two brand greys. The
+  background is transparent and the greys swap with the browser's scheme. The outline is the tab
+  strip's own extreme (white on a light scheme, black on a dark one), so on a matching strip it
+  melts in instead of fringing the S, and it still gives an edge on mid-tone custom themes and on a
+  dark theme under a light OS scheme, where the icon gets the wrong grey. Thinner than 30 units it
+  vanishes at 16 px.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="{viewBox}" width="1200" height="1200">
+  <style>
+    path { fill: #16161B; stroke: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      path { fill: #D8DBDE; stroke: #000000; }
+    }
+  </style>
+  <path d="{path}" stroke-width="30" stroke-linejoin="round" paint-order="stroke"/>
+</svg>

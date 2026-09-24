@@ -126,6 +126,11 @@ describe("the ribbon never ends inside the opener", () => {
         expect(v.by).toBeGreaterThanOrEqual(v.navTop + v.navH + v.g);
       });
 
+      test(`${variant} at ${w}: the lead and the navigation's offset stay capped`, () => {
+        expect(v.lead).toBeLessThanOrEqual(1.35 * rem);
+        expect(v.navTop).toBeLessThanOrEqual(2 * rem);
+      });
+
       test(`${variant} at ${w}: the lead starts beside the S, below its top third`, () => {
         if (backdrop) return;
         expect(v.belowY).toBeGreaterThanOrEqual(v.by + body.h * 0.3 * v.m);

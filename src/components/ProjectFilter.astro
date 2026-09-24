@@ -94,6 +94,11 @@ const options = [
     padding: 0.4em 1em;
     cursor: pointer;
   }
+  @media (pointer: coarse) {
+    button {
+      min-block-size: 2.75rem;
+    }
+  }
   button[aria-pressed="true"] {
     color: var(--bg);
     border-color: transparent;

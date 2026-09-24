@@ -188,7 +188,7 @@ export const shapeBelow: Point[] = [
 /** The mark's svg sits on its own box, which the S body's corner places. */
 export const markOrigin = at([vbX, vbY]);
 
-/** The link to the home page covers the S and the word, and nothing else. */
+/** The box of the S and the word. */
 export const lockupBox = ((): { origin: Point; w: Form; h: Form } => {
   const xs = [bodyX, bodyX + bodyW, ...wordCorners.map((c) => c[0])];
   const ys = [bodyY, bodyY + bodyH, ...wordCorners.map((c) => c[1])];
@@ -356,8 +356,8 @@ export const OPENER_PROPS: Record<keyof OpenerLayout, string> = {
 };
 
 const NAV_TOP: Size = { clamp: [{ rem: 1 }, { cqw: 2.4 }, { rem: 2 }] };
-/** The box the navigation is allowed: wide enough for four links on a phone, and no wider. */
-const NAV_W: Size = { min: [{ cqw: 80 }, { rem: 21 }] };
+/** The box the navigation is allowed: wide enough for four links with their icons, and no wider. */
+const NAV_W: Size = { min: [{ cqw: 80 }, { rem: 25 }] };
 const NAV_H: Size = { rem: 4 };
 /** The title starts below the box the navigation reserves. */
 const ABOVE_Y: Size = {

@@ -1,16 +1,20 @@
 ---
 import { getEntry } from "astro:content";
+import Languages from "lucide-static/icons/languages.svg";
 import { otherLocale, pathFor, type Locale, type RouteKey } from "../lib/i18n";
 
 interface Props {
   locale: Locale;
   route: RouteKey;
+  icon?: boolean;
 }
-const { locale, route } = Astro.props;
+const { locale, route, icon = false } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const target = otherLocale(locale);
 ---
-<a class="switch mono" href={pathFor(route, target)} hreflang={target} lang={target}>{copy.nav.switchTo}</a>
+<a class="switch mono" href={pathFor(route, target)} hreflang={target} lang={target}>
+  {icon && <Languages class="icon" aria-hidden="true" />}<span class="label">{copy.nav.switchTo}</span>
+</a>
 
 <style>
   /* The opener sets --nav-rest/--nav-hover where its navigation stands on the foil. */

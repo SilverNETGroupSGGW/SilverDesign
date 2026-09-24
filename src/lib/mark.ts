@@ -20,9 +20,6 @@ export const markPathData = compactPath(capture(/\sd="([^"]+)"/, "path"));
 
 const pattern = capture(/(<pattern[\s\S]*?<\/pattern>)/, "foil pattern");
 
-export const markPattern = (uid: string): string =>
-  pattern.replaceAll('id="foil"', `id="foil-${uid}"`);
-
 const geometry = JSON.parse(geometryJson) as {
   angleDeg: number;
   ribbon: { direction: number[]; axis: number[]; start: number; width: number; offset: number };
@@ -30,6 +27,15 @@ const geometry = JSON.parse(geometryJson) as {
 
 const [vbX, vbY, vbSize] = markViewBox.split(" ").map(Number) as [number, number, number];
 const centre = [vbX + vbSize / 2, vbY + vbSize / 2];
+
+/** `scale` enlarges the texture about the mark's centre, for a mark drawn much smaller than the hero's. */
+export const markPattern = (uid: string, scale = 1): string =>
+  pattern.replace(
+    'id="foil"',
+    scale === 1
+      ? `id="foil-${uid}"`
+      : `id="foil-${uid}" patternTransform="translate(${centre.join(" ")}) scale(${scale}) translate(${centre.map((c) => -c).join(" ")})"`,
+  );
 
 export const markRibbonPath = compactPath(ribbonArms(geometry.ribbon, centre));
 export const markBandPath = compactPath(ribbonBand(geometry.ribbon));

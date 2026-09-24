@@ -15,7 +15,6 @@ const site = (await getEntry("site", "site"))!.data;
   <div class="container grid">
     <div>
       <p class="name">{site.formalName}</p>
-      <p class="muted">{site.faculty[locale]}, {site.university}</p>
       <p class="muted"><a href={pathFor("history", locale)}>{fill(copy.footer.since, { year: site.since })}</a></p>
     </div>
     <div>
@@ -92,5 +91,18 @@ const site = (await getEntry("site", "site"))!.data;
   /* The padded link boxes in this column would otherwise overlap each other vertically. */
   .linkcol p:not(.label) + p {
     margin-top: var(--space-2);
+  }
+  @media (pointer: coarse) {
+    .linkcol a,
+    .linkcol :global(.switch),
+    .mono a {
+      display: inline-flex;
+      align-items: center;
+      min-block-size: 2.75rem;
+      padding-block: 0;
+    }
+    .linkcol p:not(.label) + p {
+      margin-top: 0;
+    }
   }
 </style>

@@ -1,5 +1,8 @@
 ---
 import { getEntry } from "astro:content";
+import FolderCode from "lucide-static/icons/folder-code.svg";
+import History from "lucide-static/icons/history.svg";
+import UserPlus from "lucide-static/icons/user-plus.svg";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import { lockupPath, lockupTightBox } from "../lib/lockup";
 import {
@@ -14,7 +17,6 @@ import {
 import {
   backdropVariants,
   formCss,
-  lockupBox,
   markOrigin,
   openerLayouts,
   openerStyle,
@@ -31,7 +33,7 @@ interface Props {
   variant: "home" | "page" | "sheet";
   title: string;
   lead: string;
-  /** Given for a page of the site, which carries the navigation and links the mark home. */
+  /** Given for a page of the site, which carries the navigation. */
   route?: RouteKey;
 }
 const { locale, variant, title, lead, route } = Astro.props;
@@ -39,9 +41,9 @@ const backdrop = backdropVariants.has(variant);
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const links = route === undefined ? [] : [
-  { href: pathFor("projects", locale), label: copy.nav.projects, key: "projects" },
-  { href: pathFor("history", locale), label: copy.nav.history, key: "history" },
-  { href: `${pathFor("home", locale)}#join`, label: copy.nav.join, key: "join" },
+  { href: pathFor("projects", locale), label: copy.nav.projects, key: "projects", Icon: FolderCode },
+  { href: pathFor("history", locale), label: copy.nav.history, key: "history", Icon: History },
+  { href: `${pathFor("home", locale)}#join`, label: copy.nav.join, key: "join", Icon: UserPlus },
 ];
 // Each render gets its own pattern id: two marks on one page would otherwise both
 // resolve url(#foil) to the first one's pattern.
@@ -51,10 +53,6 @@ const style = [
   `--title-band:calc(${titleLines(title)} * ${TITLE_LINE_HEIGHT} * var(--title))`,
   `--mark-x:${formCss(markOrigin[0])}`,
   `--mark-y:${formCss(markOrigin[1])}`,
-  `--link-x:${formCss(lockupBox.origin[0])}`,
-  `--link-y:${formCss(lockupBox.origin[1])}`,
-  `--link-w:${formCss(lockupBox.w)}`,
-  `--link-h:${formCss(lockupBox.h)}`,
 ].join(";");
 // The polygons name the zone's own origin, and a custom property resolves its var() references on
 // the element it is declared on: they have to sit on the zone, not on the opener.
@@ -66,10 +64,6 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
 <div class="frame">
   <header class:list={["opener", variant, backdrop && "backdrop"]} style={style} data-foil={variant === "home" ? "" : undefined}>
-    {route !== undefined && !backdrop && (
-      <a class="lockup-link" href={pathFor("home", locale)} aria-label={site.name}></a>
-    )}
-
     <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
       <defs set:html={markPattern(uid)} />
       <g fill={`url(#foil-${uid})`}>
@@ -91,12 +85,16 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
           <nav aria-label={copy.nav.mainLabel}>
             <a class="logo" href={pathFor("home", locale)} aria-label={site.name} style={logoStyle}>
               <svg viewBox={markViewBox} aria-hidden="true">
+                {/* The hero draws the mark about eight times larger; at the logo's own scale the texture
+                    tiles every few dozen pixels and reads as a repeat along the bar. Past 3× the
+                    highlights no longer fit on the logo and it turns flat grey. */}
                 <defs>
+                  <Fragment set:html={markPattern(`${uid}-logo`, 3)} />
                   <clipPath id={`bar-${uid}`}>
                     <polygon points={markTopBarKeep} />
                   </clipPath>
                 </defs>
-                <g fill={`url(#foil-${uid})`}>
+                <g fill={`url(#foil-${uid}-logo)`}>
                   <path d={markTopBarPath} />
                   <use href={`#${markPathId}`} clip-path={`url(#bar-${uid})`} />
                   <path d={lockupPath} />
@@ -104,9 +102,11 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
               </svg>
             </a>
             {links.map((l) => (
-              <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
+              <a href={l.href} aria-current={l.key === route ? "page" : undefined}>
+                <l.Icon class="icon" aria-hidden="true" /><span class="label">{l.label}</span>
+              </a>
             ))}
-            <LocaleSwitch locale={locale} route={route} />
+            <LocaleSwitch locale={locale} route={route} icon />
           </nav>
         )}
         <h1 id="main" tabindex="-1">{title}</h1>
@@ -120,9 +120,11 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
           {route !== undefined && (
             <nav aria-label={copy.nav.mainLabel}>
               {links.map((l) => (
-                <a href={l.href} aria-current={l.key === route ? "page" : undefined}>{l.label}</a>
+                <a href={l.href} aria-current={l.key === route ? "page" : undefined}>
+                <l.Icon class="icon" aria-hidden="true" /><span class="label">{l.label}</span>
+              </a>
               ))}
-              <LocaleSwitch locale={locale} route={route} />
+              <LocaleSwitch locale={locale} route={route} icon />
             </nav>
           )}
           <h1
@@ -161,7 +163,14 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
        overflow stays visible, so the band still runs on under the content. */
     overflow-x: clip;
   }
+  /* The English labels fit one line down to a narrower row than the Polish ones. A container query
+     cannot read a custom property, but its em is the container's font size: this moves the fold's
+     30.75em bound to 28.25rem in English, and the opener takes the root size back. */
+  .frame:lang(en) {
+    font-size: calc(28.25rem / 30.75);
+  }
   .opener {
+    font-size: 1rem;
     --w: 100cqw;
     --by: var(--by-wide);
     --h: var(--h-wide);
@@ -172,6 +181,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
        where the polygon says it does, and it grows — pushing the lead down — when the title needs
        more room than the composition budgeted (a large root font size), rather than being cut. */
     grid-template-rows: minmax(var(--below-y), auto) auto;
+    grid-template-columns: minmax(0, 1fr);
     min-block-size: var(--h);
     /* The ribbon runs thousands of user units past the mark's box on both ends; the opener is what
        cuts it to the page, so every end of it lands on a real edge of the document. */
@@ -210,6 +220,17 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     text-decoration: none;
     color: var(--muted);
     padding-block: 0.45rem;
+  }
+  nav a:not(.logo),
+  nav :global(.switch) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+  nav :global(.icon) {
+    inline-size: 1.1em;
+    block-size: 1.1em;
+    flex: none;
   }
   nav a:hover,
   nav a[aria-current="page"] {
@@ -311,19 +332,13 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   .backdrop .ribbon {
     opacity: 0.25;
   }
-  /* The band passes behind this row, and --muted over its brightest pixels measures 3.5:1. Ink
-     clears 4.5:1 everywhere on it, so the resting colour steps up and hover keeps its distance.
-     The language switch reads the same two properties, so it follows without a cross-component
-     selector that a renamed class would silently undo. */
-  .backdrop nav {
-    --nav-rest: var(--ink);
-    --nav-hover: var(--bright);
-  }
-  .backdrop nav a {
+  /* The band passes behind this row, and --muted over its brightest pixels measures 3.5:1: the
+     icons keep the home page's quieter grey, the labels step up to ink, which clears 4.5:1. */
+  .backdrop nav :global(.label) {
     color: var(--ink);
   }
-  .backdrop nav a:hover,
-  .backdrop nav a[aria-current="page"] {
+  .backdrop nav a:hover :global(.label),
+  .backdrop nav a[aria-current="page"] :global(.label) {
     color: var(--bright);
   }
   /* The page's header is only as tall as its copy; the dimmed ribbon keeps going under the content
@@ -358,16 +373,66 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     inline-size: calc(var(--unit) * var(--box-w));
     margin-inline-end: var(--space-2);
   }
+  /* The lockup is 2.1rem tall on a phone; the hit area reaches 44 px without moving the row. */
+  .backdrop .logo::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, (var(--logo-h) - 2.75rem) / 2) 0;
+  }
   /* Five items and the lockup do not fit a phone's row at the site's gaps; tighter, they just do. */
   @container (width < 40rem) {
     .backdrop nav {
       gap: var(--space-2) var(--space-3);
     }
     .backdrop .logo {
-      --logo-h: 2.5rem;
+      --logo-h: 2.1rem;
       /* No margin of its own: the row's gap is the space, and four more pixels cost a third row
          between 399 and 402 px. */
       margin-inline-end: 0;
+    }
+  }
+  /* Where the links would wrap onto a second row, each becomes a column, the icon over a short
+     label, decided here rather than in script so the first paint already has it. The bounds are in
+     rem, measured with the one-line row wrapping below 30.06rem in Polish and 27.63rem in English and
+     the folded row fitting from 17.75rem with the lockup (14.3rem without it), both with room for
+     another engine's text metrics. Below the fold's floor, which large text reaches on a phone, the
+     links wrap as they did before the fold existed: a row that cannot shrink would scroll the page.
+     The columns are equal, not spaced evenly: the labels differ in length, and even gaps between
+     unequal boxes set the icons at uneven distances. The margins take back the links' own padding so
+     the outer columns stand as far from their page edges as each other. The --nav-w budget is for
+     the one-line labels; this row is short enough to clear the band across the full width. */
+  @container (18.25rem <= width < 30.75em) {
+    nav {
+      --pad: 0.1rem;
+      inline-size: calc(100% + 2 * var(--pad));
+      max-inline-size: none;
+      margin-inline: calc(-1 * var(--pad));
+      flex-wrap: nowrap;
+      column-gap: 0;
+    }
+    /* On a page the lockup leads, with no padding of its own, from the zone's left inset, which is
+       narrower than its right one. The equal columns are the only spacing. */
+    .backdrop nav {
+      inline-size: auto;
+      margin-inline: 0 calc(var(--below-x) - var(--above-x) - var(--pad));
+      column-gap: 0;
+    }
+    nav a:not(.logo),
+    nav :global(.switch) {
+      flex: 1 1 0;
+      min-inline-size: 0;
+      flex-direction: column;
+      gap: 0.2rem;
+      padding: 0.35rem var(--pad);
+      font-family: inherit;
+      font-size: 0.8rem;
+    }
+    nav :global(.icon) {
+      inline-size: 1.45rem;
+      block-size: 1.45rem;
+    }
+    .backdrop nav .logo {
+      margin-inline-end: var(--space-3);
     }
   }
   .backdrop .logo svg {
@@ -392,18 +457,5 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     margin-inline-start: 0;
     max-width: 48ch;
     text-align: start;
-  }
-  .lockup-link {
-    position: absolute;
-    inset-block-start: var(--link-y);
-    inset-inline-start: var(--link-x);
-    inline-size: var(--link-w);
-    block-size: var(--link-h);
-    z-index: 1;
-  }
-  /* The ring runs across the foil, which is as light as --bright: on its own it measures 1.3:1
-     there. Filling the outline's offset with --bg gives it a 3:1 neighbour the whole way round. */
-  .lockup-link:focus-visible {
-    box-shadow: 0 0 0 3px var(--bg);
   }
 </style>

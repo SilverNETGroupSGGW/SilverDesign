@@ -45,7 +45,7 @@ robić_, _czy dam radę_, _kiedy, gdzie i jak dołączyć_. Nic ponad to.
 
 | Fakt           | Wartość                                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------------------------------- |
-| Nazwa          | Silver (formalnie: Koło Naukowe Informatyków Silver .NET)                                                     |
+| Nazwa          | Silver (formalnie: Koło Naukowe Informatyków Silver)                                                          |
 | Jednostka      | Wydział Zastosowań Informatyki i Matematyki, SGGW                                                             |
 | Od kiedy       | 2013 (tylko stopka)                                                                                           |
 | Sala           | 3/79, ul. Nowoursynowska 159, budynek 34, 02-776 Warszawa                                                     |
