@@ -81,7 +81,7 @@ const shotQuality = 65;
     <p class="links">
       {/* Three "GitHub" links on a listing are three identical accessible names in a links list. */}
       {links.map((l) => (
-        <a href={l.href}>{l.label}<span class="visually-hidden">{` — ${p.name}`}</span></a>
+        <a href={l.href}>{l.label}<span class="visually-hidden">{`, ${p.name}`}</span></a>
       ))}
     </p>
   </div>
@@ -104,6 +104,8 @@ const shotQuality = 65;
     max-height: 18rem;
     object-fit: cover;
     object-position: top;
+    /* A lazy screenshot is an empty frame until it decodes; the tint keeps it from reading as a gap. */
+    background: var(--line);
     filter: saturate(0);
     opacity: 0.85;
   }

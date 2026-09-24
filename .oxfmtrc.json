@@ -9,6 +9,7 @@
     "brand",
     "docs/superpowers",
     "CLAUDE.md",
-    "HANDOFF.md"
+    "HANDOFF.md",
+    ".claude"
   ]
 }

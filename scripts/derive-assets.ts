@@ -24,11 +24,11 @@ await write(
 // one above the "2071, b.23 — <lecturer>" line of its first card, and spec §2.7 keeps no former
 // member's name anywhere on the site.
 const cardAspect = 9 / 5;
-const crop = async (from: string, to: string, width: number) => {
+const crop = async (from: string, to: string, width: number, left = 0, top = 0) => {
   const height = Math.round(width / cardAspect);
   const source = sharp(join(root, "brand", "screenshots", from)).extract({
-    left: 0,
-    top: 0,
+    left,
+    top,
     width,
     height,
   });
@@ -39,7 +39,10 @@ const crop = async (from: string, to: string, width: number) => {
       : await source.jpeg({ quality: 80 }).toBuffer(),
   );
 };
-await crop("kampus-sggw-map.jpg", "kampus-sggw-map-crop.jpg", 1562);
+// The Kampus master is captured at about twice Plan WZIM's pixel density (its app bar is 7% of the
+// width against 15.6%), so it is cut 705 px wide to put both cards' UI at one scale, over the pins
+// in the middle of the campus rather than the woods under its app bar.
+await crop("kampus-sggw-map.jpg", "kampus-sggw-map-crop.jpg", 705, 540, 662);
 await crop("plan-wzim-day.png", "plan-wzim-day-crop.png", 1077);
 
 // Spec §8: latin + latin-ext subsets. The ranges are Google Fonts' own definitions of those two
