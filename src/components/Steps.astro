@@ -7,17 +7,17 @@ interface Props {
 const { steps } = Astro.props;
 ---
 <section class="steps container" aria-labelledby="steps-heading">
-  <h2 class="angled" id="steps-heading">{steps.heading}</h2>
+  <h2 class="angled" id="steps-heading" data-reveal>{steps.heading}</h2>
   <ol role="list">
     {steps.items.map((s, i) => (
-      <li class="cut">
+      <li class="cut" data-reveal>
         <span class="n mono">0{i + 1}</span>
         <h3>{s.title}</h3>
         <p>{s.body}</p>
       </li>
     ))}
   </ol>
-  <p class="hack">{steps.hackathons}</p>
+  <p class="hack" data-reveal data-motion="read">{steps.hackathons}</p>
 </section>
 
 <style>
@@ -39,6 +39,7 @@ const { steps } = Astro.props;
     grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
   }
   li {
+    position: relative;
     padding: var(--space-4);
     background: var(--surface);
     border: 1px solid var(--line);
@@ -52,6 +53,50 @@ const { steps } = Astro.props;
   }
   h3 {
     font-size: var(--step-1);
+  }
+  /* The steps are a sequence, so they arrive in its order and slower than a row of equals: each
+     card's top edge lights up left to right and settles back into the border, and its number,
+     title and body follow. */
+  li {
+    --reveal-gap: 260ms;
+  }
+  li::after {
+    content: "";
+    position: absolute;
+    inset: -1px -1px auto;
+    block-size: 2px;
+    background: var(--bright);
+    opacity: 0;
+    pointer-events: none;
+  }
+  li[data-reveal="in"] {
+    animation: fade-in 500ms ease-out both;
+  }
+  li[data-reveal="in"]::after {
+    animation: step-line 1100ms var(--ease-out) 60ms both;
+  }
+  li[data-reveal="in"] > * {
+    animation: fade-in 450ms ease-out 200ms both;
+  }
+  li[data-reveal="in"] > h3 {
+    animation-delay: 280ms;
+  }
+  li[data-reveal="in"] > p {
+    animation-delay: 360ms;
+  }
+  @keyframes step-line {
+    0% {
+      clip-path: inset(0 100% 0 0);
+      opacity: 1;
+    }
+    55% {
+      clip-path: inset(0);
+      opacity: 1;
+    }
+    100% {
+      clip-path: inset(0);
+      opacity: 0;
+    }
   }
   p {
     color: var(--muted);

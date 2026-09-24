@@ -29,6 +29,10 @@
   /* Run of every corner cut and rule tail; the rise that goes with it is --cut * tan(--angle). */
   --cut: 1.25rem;
 
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* How far an entrance travels up the band's axis (the axis-in keyframes in base.css). */
+  --travel: 1.25rem;
+
   --font-sans: "Geist", system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
 
@@ -49,4 +53,11 @@
   --measure: 58ch;
   --container: 72rem;
   --gutter: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* Entrances keep their fades and lose their travel. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --travel: 0px;
+  }
 }

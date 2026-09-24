@@ -1,11 +1,13 @@
 ---
-interface Props {
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends Omit<HTMLAttributes<"a">, "class"> {
   href: string;
   variant?: "primary" | "ghost";
 }
-const { href, variant = "primary" } = Astro.props;
+const { href, variant = "primary", ...attrs } = Astro.props;
 ---
-<a class:list={["button", variant, variant === "primary" && "cut-fill"]} href={href}><span class="label"><slot /></span></a>
+<a class:list={["button", variant, variant === "primary" && "cut-fill"]} href={href} {...attrs}><span class="label"><slot /></span></a>
 
 <style>
   .button {
@@ -43,5 +45,30 @@ const { href, variant = "primary" } = Astro.props;
   }
   .primary:hover::before {
     background: var(--bright);
+  }
+  /* Revealed on its own (reveal.ts): the fill comes in cut end first and the label, dark on dark
+     until then, appears with it; the outline button is drawn left to right. */
+  :global(:root[data-reveals]) .button[data-reveal]:not([data-reveal="in"]) {
+    opacity: 1;
+  }
+  :global(:root[data-reveals]) .primary[data-reveal]:not([data-reveal="in"])::before,
+  :global(:root[data-reveals]) .ghost[data-reveal]:not([data-reveal="in"]) {
+    clip-path: inset(0 100% 0 0);
+  }
+  /* Dark on dark is still faintly there on an antialiased edge; the label waits for its fill. */
+  :global(:root[data-reveals]) .primary[data-reveal]:not([data-reveal="in"]) .label {
+    opacity: 0;
+  }
+  .primary[data-reveal="in"] .label {
+    animation: fade-in 250ms ease-out 250ms both;
+  }
+  .button[data-reveal="in"] {
+    animation: none;
+  }
+  .primary[data-reveal="in"]::before {
+    animation: cut-in 650ms var(--ease-out) both;
+  }
+  .ghost[data-reveal="in"] {
+    animation: draw 650ms var(--ease-out) both;
   }
 </style>

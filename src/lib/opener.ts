@@ -1,5 +1,6 @@
 import geometry from "../../brand/logo/geometry.json";
 import lockup from "../../brand/logo/lockup.json";
+import type { UnrollFrame } from "./unroll-span";
 
 /**
  * The opener's sizes, in px. Every point of the construction is linear in these, so one polygon
@@ -133,6 +134,64 @@ export const edges = {
   lowerBottom: at(along(twin, 0, width / 2)),
   wordBottom: at(along(axis as [number, number], 0, wordOff)),
 };
+
+const segment = (a: readonly number[], b: readonly number[]): string =>
+  `M ${a.map((n) => n.toFixed(2)).join(" ")} L ${b.map((n) => n.toFixed(2)).join(" ")}`;
+
+/** How far the unroll's arm strokes run out from the joints, past any viewport the mark scales into. */
+const UNROLL_REACH = 20000;
+
+/**
+ * The home page's unroll, in mark units. The tip's position `s` runs along one path: up the lower
+ * arm to its joint (s = 0), along the S's spine, and out along the upper arm from its joint
+ * (s = spineLength). `lower` and `upper` are the arms' centre points at their joints; `wordStart`,
+ * `wordEnd` and `wordAcross` place the word along and across the band from the mark's centre.
+ */
+export const unroll = ((): UnrollFrame & {
+  angle: number;
+  lineWidth: number;
+  upperAlong: number;
+  lowerArm: string;
+  upperArm: string;
+  spinePath: string;
+  wordStart: number;
+  wordAcross: [number, number];
+} => {
+  const t = (p: readonly [number, number]): number =>
+    (p[0] - centre[0]) * dir[0] + (p[1] - centre[1]) * dir[1];
+  const u = (p: readonly [number, number]): number =>
+    (p[0] - centre[0]) * across[0] + (p[1] - centre[1]) * across[1];
+  const upper = [axis[0]!, axis[1]!] as [number, number];
+  const lower = [twin[0], twin[1]] as [number, number];
+  const spine = geometry.spine.points.toReversed() as [number, number][];
+  const spineLength = spine
+    .slice(1)
+    .reduce((sum, p, i) => sum + Math.hypot(p[0] - spine[i]![0], p[1] - spine[i]![1]), 0);
+  const out = (p: readonly [number, number], k: number): [number, number] => [
+    p[0] + dir[0] * k,
+    p[1] + dir[1] * k,
+  ];
+  return {
+    centre: [centre[0], centre[1]],
+    dir: [dir[0], dir[1]],
+    half: width / 2,
+    lower,
+    upper,
+    spineLength,
+    lineWidth: geometry.spine.lineWidth,
+    upperAlong: t(upper),
+    wordEnd: t(upper) + wordSpan.along[1],
+    angle: (Math.atan2(dir[1], dir[0]) * 180) / Math.PI,
+    lowerArm: segment(out(lower, -UNROLL_REACH), lower),
+    upperArm: segment(upper, out(upper, UNROLL_REACH)),
+    spinePath: `M ${spine.map((p) => p.join(" ")).join(" L ")}`,
+    wordStart: t(upper) + wordSpan.along[0],
+    wordAcross: [u(upper) + wordSpan.across[0], u(upper) + wordSpan.across[1]],
+  };
+})();
+
+/** The lower arm stroke's length, which its dash offset counts from. */
+export const UNROLL_ARM_LENGTH = UNROLL_REACH;
 
 const ZERO_F = form({});
 const W = form({ w: 1 });

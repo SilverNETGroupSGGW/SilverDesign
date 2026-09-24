@@ -16,8 +16,10 @@ import {
   shapeBelow,
   sizeCss,
   tan,
+  unroll,
   wordEndPoint,
 } from "../src/lib/opener";
+import { tipSpan, unrollSpan } from "../src/lib/unroll-span";
 
 /** The viewports the opener's sizes are checked at. */
 // 980 and 1000 sit on both sides of the 56rem breakpoint, where the narrow floor is tightest.
@@ -148,5 +150,60 @@ describe("the ribbon never ends inside the opener", () => {
     expect(wordEndPoint(v)[0]).toBeLessThanOrEqual(0.95 * 1240);
     // A sheet is printed: the word may not be cut by the sheet's top edge.
     expect(evalForm(lockupBox.origin[1], v)).toBeGreaterThanOrEqual(v.g);
+  });
+});
+
+describe("the home page's unroll", () => {
+  const [dx, dy] = unroll.dir;
+  const n = [-dy, dx] as const;
+  const along = (p: readonly number[]): number =>
+    (p[0]! - unroll.centre[0]) * dx + (p[1]! - unroll.centre[1]) * dy;
+  const acrossOf = (p: readonly number[]): number =>
+    (p[0]! - unroll.centre[0]) * n[0] + (p[1]! - unroll.centre[1]) * n[1];
+  const spine = unroll.spinePath
+    .slice(2)
+    .split(" L ")
+    .map((q) => q.split(" ").map(Number));
+  const edges = { left: -400, right: 1700, top: -250 };
+  const { from, to } = unrollSpan(unroll, edges);
+
+  test("its tip is square to the band", () => {
+    expect(Math.tan((-unroll.angle * Math.PI) / 180)).toBeCloseTo(tan, 6);
+  });
+  test("starts where the lower arm first shows over the left edge", () => {
+    const s = from - along(unroll.lower);
+    const onEdge = (w: number): number => unroll.lower[0] + s * dx + w * n[0];
+    expect(onEdge(unroll.half)).toBeCloseTo(edges.left, 6);
+    expect(onEdge(-unroll.half)).toBeLessThan(edges.left);
+  });
+  test("stops past the word and past the last of the upper arm inside the box", () => {
+    expect(to).toBeGreaterThanOrEqual(unroll.wordEnd);
+    const s = to - along(unroll.upper);
+    for (const w of [-unroll.half, unroll.half]) {
+      const x = unroll.upper[0] + s * dx + w * n[0];
+      const y = unroll.upper[1] + s * dy + w * n[1];
+      expect(x >= edges.right - 1e-6 || y <= edges.top + 1e-6).toBe(true);
+    }
+  });
+  test("the tip's path runs up the lower arm, along the spine, then out along the upper arm", () => {
+    const tip = tipSpan(unroll, edges);
+    expect(tip.from).toBeCloseTo(from - along(unroll.lower), 9);
+    expect(tip.to).toBeCloseTo(unroll.spineLength + to - along(unroll.upper), 9);
+    expect(along(spine[0]!)).toBeCloseTo(along(unroll.lower), 1);
+    expect(along(spine.at(-1)!)).toBeCloseTo(along(unroll.upper), 1);
+  });
+  // Each reveal stroke may only uncover its own part: an arm stroke stops square at its joint, so
+  // the S has to lie on the far side of it, and the word's lane has to be clear of the S.
+  test("no part of the S lies inside an arm's stroke or the word's lane", () => {
+    const reach = unroll.half + 8 + unroll.lineWidth / 2;
+    const cutLower = along(unroll.lower) - unroll.lineWidth / 2;
+    const cutUpper = along(unroll.upper) + unroll.lineWidth / 2;
+    for (const p of spine) {
+      const a = along(p);
+      const u = acrossOf(p);
+      expect(a < cutLower && Math.abs(u - acrossOf(unroll.lower)) < reach).toBe(false);
+      expect(a > cutUpper && Math.abs(u - acrossOf(unroll.upper)) < reach).toBe(false);
+      expect(a + unroll.lineWidth / 2).toBeLessThan(unroll.wordStart - 8);
+    }
   });
 });

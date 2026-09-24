@@ -377,6 +377,62 @@ Bramka §10 (≥ 95 mobile) spełniona na wszystkich czterech.
   krawędzią. Zgodne z decyzją („górną albo prawą"), ale trójkąt nad wstęgą jest tam mały.
 - Na telefonie CTA układają się jeden pod drugim (pasmo obok wstęgi jest za wąskie na dwa).
 
+## Ruch (2026-09-24)
+
+Decyzja właściciela (`impeccable animate`): pełny zestaw, §8 przepisany. Jeden materiał — światło
+na folii — plus ruch tylko tam, gdzie mówi o stanie. Tego samego dnia druga decyzja: sekwencja
+wejścia na stronie głównej (najpierw Silver, potem tytuł, potem lead i przyciski) i wejścia sekcji
+przy przewijaniu; §8 przepisany drugi raz („wszystko jedzie wzdłuż wstęgi").
+
+| Ruch | Gdzie | Reduced motion |
+|---|---|---|
+| Błysk folii po załadowaniu: tekstura przebiega wzdłuż osi wstęgi (`markAxis` z `geometry.json` przez `data-foil`) i wraca, szczyt ~180 j. przy ~0,5 s, spoczynek ~1 s; także dotyk | `src/lib/foil.ts`, tylko home | brak |
+| Kursor: sprężyna krytycznie tłumiona (ω = 14/s, dokładny krok), wyjście kursora wraca płynnie zamiast skoku | `foil.ts`, `pointer: fine` | brak |
+| Filtr projektów: zostające karty jadą na nowe miejsca 360 ms, znikające gasną 140 ms, nowe wchodzą po 120 ms | `ProjectFilter.astro`, View Transitions | karty stoją, przenikania zostają |
+| Przejście między stronami: przenikanie 200 ms; na podstronach pas i nawigacja stoją | `Base.astro` (`@view-transition`) | bez zmian (sama przezroczystość) |
+| Lockup Silver przelatuje między hero a rogiem nawigacji (650 ms, `cubic-bezier(0.5, 0, 0.15, 1)`), w obie strony; powrót na główną ląduje w spoczynku (`data-hero="still"`) | `Opener.astro` (`.lockup-vt`), `Base.astro` (`pageswap`/`pagereveal` → `.vt-lockup`) | skok bez lotu, przenikanie zostaje |
+| Kolory linków nawigacji, przełącznika języka i pigułek filtra: 120 ms; pigułka dostała brakujący hover | `Opener`, `LocaleSwitch`, `ProjectFilter` | bez zmian |
+| Sekwencja strony głównej: wstęga rozwija się z lewej krawędzi 0–1100 ms — maska SVG z trzech kresek na jednej ścieżce: szeroka po dolnym ramieniu, szerokości linii po kręgosłupie S, szeroka po górnym ramieniu, plus pas słowa odsłaniany, gdy górne ramię nad nim przechodzi; jedna zarejestrowana własność `--unroll-tip` (pozycja czoła na ścieżce) napędza wszystkie cztery. Tytuł 650 ms, lead 850, przyciski 990/1070 (wypełnienie ścięciem naprzód, obrys rysowany, etykieta po wypełnieniu), nawigacja 1130, `<main>` 1150 | `Opener.astro`, `Home.astro`, `Base.astro`, `src/lib/unroll.ts`, `unroll-span.ts` | bez rozwijania i bez przesunięć: lockup i tekst tylko się pojawiają |
+| Wejście z innej strony serwisu = strona w spoczynku (`data-hero="still"`, skrypt inline w `<head>`); przeładowanie i przekierowanie z `/` odtwarzają sekwencję | `Base.astro` | — |
+| Wejścia spod pierwszego ekranu, każdy rodzaj po swojemu (`reveal.ts` numeruje w `--reveal-order` tylko to, co wchodzi w tym samym wywołaniu IntersectionObservera): tekst `data-motion="read"` — miękka krawędź maski w kierunku czytania; znaczniki `h2` rysowane, potem słowa; kroki — co 240 ms, jasna linia po górnej krawędzi karty wraca w obramowanie, potem numer, tytuł, treść; karty projektów — zrzut z prześwietlonego rozmycia w szarość, potem tekst; pasek „Dołącz" — `cut-in` (ścięcie naprzód), potem tekst i przycisk; przycisk — wypełnienie `cut-in`, obrys `draw`, etykieta po wypełnieniu; oś czasu — cały wiersz pod maską z czołem pod kątem pasa (`calc(180deg - var(--angle))`, zarejestrowane `--row`) i słabym światłem tuż za czołem, wiersze co 180 ms; lata jak licznik: każda cyfra to kółko 0–9 (zapisane dwa razy), kręci się naprzód od roku, w którym skończył się poprzedni wpis (`src/lib/odometer.ts`, testy), koniec przedziału dołącza po 570 ms i liczy od jego początku; filtr projektów — pigułki `draw` co 90 ms, wciśnięta wypełnia się `cut-in`; tytuł i lead podstron — `read-in` przy wejściu | `reveal.ts`, `base.css`, `Steps`, `ProjectCard`, `JoinStrip`, `Button`, `Timeline`, `Home.astro` | nic nie jest ukrywane |
+
+**Rulingi:**
+
+| Ruling | Dlaczego | Koszt, jeśli złe |
+|---|---|---|
+| Błysk „tam i z powrotem" od spoczynku, nie wjazd z przesunięcia | start z przesunięcia pokazałby skok, jeśli tekstura zdąży się narysować przed skryptem; wejście wstęgi rysowanej od krawędzi złamałoby zasadę „wstęga nigdy nie kończy się w kadrze" | jedna funkcja `glint` |
+| Błysk dodawany do celu kursora, nie w jego miejsce | Chromium wysyła `pointermove` spod stojącego kursora po załadowaniu — kursor na hero kasował błysk | dwie linie |
+| Start po `decode()` tekstury i dwie klatki po `fonts.ready` | `wedge.ts` układa lead w klatce po `fonts.ready` (do 55 ms przy 4× CPU) | jedna obietnica |
+| `@view-transition` w `Base.astro`, nie w `base.css` | renderer broszur przechodzi przez cztery arkusze w jednej karcie | jedna reguła |
+| Maska rozwijania zdejmowana po animacji (`unroll.ts`) | maska to dodatkowy przebieg offscreen przy każdym przemalowaniu folii za kursorem; w spoczynku (bez animacji) jej czoło leży 30 000 j. za wszystkim | kilka linii |
+| Rozwijanie zamiast przejazdu krawędzi (decyzja właściciela 2026-09-24): pas przez chwilę kończy się w kadrze | właściciel chciał, żeby wstęga „rozwinęła się na ekran"; zasada „nigdy nie kończy się w kadrze" dotyczy spoczynku | przywrócić `sweep` z historii gita |
+| S rysowane wzdłuż kręgosłupa zamiast odcinane prostopadle (decyzja właściciela) | właściciel: S „pojawiało się z kosmosu" zamiast iść za pasem. Kręgosłup eksportuje `export-logo.ts` z `build()` konfiguratora (dodany do zwracanej wartości) do `geometry.json` → `spine`, co czwarta próbka; `mark.svg` bez zmian bajt w bajt | pole w `geometry.json` + jedna linia w konfiguratorze |
+| Kreski ramion kończą się prostopadle w przegubach, kreska S ma szerokość linii + 8 j. | połówki S leżą po drugiej stronie przegubów niż ramiona, a pas słowa zaczyna się za S — test `no part of the S lies inside an arm's stroke or the word's lane` tego pilnuje | — |
+| `cut-in` startuje piksel na lewo od pudełka | krawędź wielokąta na lewym brzegu pudełka antyaliasowała się w widoczną kreskę 10 px przed przyciskiem | jedna wartość |
+| Start i koniec czoła liczone w przeglądarce (`unroll-span.ts`, testowane), nie w CSS | przeliczenie px → jednostki znaku wymaga dzielenia długości przez długość, którego `calc()` jeszcze nie ma wszędzie; bez skryptu CSS ma zapas (−2000…1500 j.), a czoło spędza wtedy kilka klatek za lewą krawędzią | jedna para zmiennych |
+| Treść widoczna po załadowaniu też wchodzi (decyzja właściciela): skrypt inline w `<head>` ustawia `data-reveals` na korzeniu przed pierwszą klatką, więc elementy są ukryte, zanim się narysują; `reveal.ts` ustawia `on` dopiero po podpięciu obserwatora, a jeśli nie zdąży w 3 s, skrypt z `<head>` zdejmuje atrybut i strona otwiera się sama (sprawdzone z rzucającym `IntersectionObserver`); bez JS i przy reduced motion nic nie jest ukrywane | wcześniej ukrywane było tylko to, co pod pierwszym ekranem — widoczne od razu elementy nie miały wejścia | skrypt inline + jeden warunek |
+| Wejścia idą w kolejce w kolejności czytania (decyzja właściciela: przy szybkim przewijaniu wszystko startowało naraz): `reveal.ts` wpuszcza element dopiero, gdy minie `--reveal-gap` poprzedniego (tekst 180 ms, nagłówek 260, krok 260, karta 220, wiersz osi czasu 280, pasek 350, filtr 250, reszta 150); gdy na ekranie czeka więcej niż 4 — co 60 ms. To, co zjechało z ekranu, zanim przyszła jego kolej, wchodzi od razu, niewidziane, i nie zajmuje kolejki (pomiar: szybkie przewinięcie strony głównej — 16 minionych elementów naraz, widoczna sekcja „Dołącz" po kolei co 183–233 ms). Czas trzyma skrypt, nie `animation-delay`, więc opóźnienia w CSS komponentów liczą się od chwili wejścia | CSS nie wie, co jest na ekranie, a kolejka z opóźnieniami CSS kazała widocznym elementom czekać za tymi, które już minęły (do 1,4 s) | jeden moduł |
+| Lot lockupu: osobna nakładka z samym S i słowem przyciętymi do `lockupTightBox` na obu stronach (ta sama tekstura i skala co rysunek pod spodem), widoczna i nazwana `silver-lockup` tylko w klatkach, które przejście przechwytuje; w tym czasie duży rysunek chowa S i słowo (na głównej `clip-path` z dziurą w kształcie pudełka, na podstronie `visibility`), więc wstęga i pasek zostają ze stroną | nazwanie całego SVG hero przeniosłoby ramiona na 20 000 j.; wspólny obraz musi mieć ten sam kształt na obu stronach | nakładka ×2 + kilka reguł |
+| W trakcie lotu wstęga ma dziurę w miejscu lockupu | to przycięcie do pudełka; przy lądowaniu czyta się jak „Silver wlatuje na swoje miejsce" | — |
+| `ms()` w `reveal.ts` czyta jednostkę | minifikator CSS zapisuje `250ms` jako `.25s` we własnościach niestandardowych — bez tego kolejka dostawała 0,25 ms | trzy linie |
+| Pierwsza partia wejść czeka na nagłówek strony: `--reveal-start` na `<main>` 250 ms, na głównej 1150 ms (po sekwencji; zastąpiło przenikanie całego `<main>`); wszystko przewinięte później startuje od razu | na telefonie „Start w trzech krokach" było widoczne przed Silver | dwie wartości |
+| Nazwy `view-transition-name` na kartach tylko na czas przejścia filtra | zostawione wciągnęłyby karty w przenikanie przy wyjściu ze strony | kilka linii |
+
+**Pomiary:** Lighthouse mobile po sekwencji: `/pl/` 99 · 99 (LCP symulowany 1,8 s, TBT 70–100 ms),
+`/en/` 100, `/pl/projekty/` 99 (2,2 s), `/pl/historia/` 100 (1,7 s), CLS 0–0,001. **Koszt:** Lantern
+nie modeluje opóźnień animacji — obserwowany LCP `/pl/` to 939 ms przy FCP 229 ms, czyli sekwencja
+dokłada realnym użytkownikom ~0,7 s LCP (lead wchodzi od 680 ms). Po zamianie na rozwijanie: `/pl/`
+98–100, `/en/` 99, obserwowany LCP 864–910 ms przy FCP 185–214 ms. Po wejściach per element i S
+po kręgosłupie: `/pl/` 100, `/pl/projekty/` 99, `/pl/historia/` 100, CLS 0; Lighthouse raportuje
+teraz LCP = FCP (~90–120 ms) bez elementu — najpewniej obrys przycisku (ukryty `clip-path`, nie
+przezroczystością) liczy się jako namalowany od pierwszej klatki; lead nadal pojawia się od 850 ms. Pierwszy pomiar po samym błysku:
+`/pl/` 99–100 (TBT 30–80 ms — było 0), `/pl/projekty/` 99. Headless Chromium bez GPU: przesuwanie wzoru folii co klatkę daje 33 kl./s przy 1440 px
+(55–61 przy 1024 i na telefonie) — ten sam koszt, co istniejąca interakcja kursora; na realnym GPU do
+sprawdzenia ręcznie. **Sprawdzone 2026-09-24:** rozwijanie przy 1440 px w Chromium z akceleracją GPU
+(`--use-angle=gl`, zintegrowany Radeon 780M; też RTX 4070 przez Vulkan) — 59–60 kl./s, najdłuższa
+przerwa 17 ms; bez GPU (renderowanie programowe) 24–29 kl./s niezależnie od błysku i obszaru maski.
+Telefon 400 px bez GPU: 58–59 kl./s. Firefox i Safari niesprawdzone. Detektor Impeccable `[]`, broszury 4× 2480×3508 bez zmian.
+
 ## Do decyzji właściciela (przed deployem)
 
 1. **Ścieżka bazowa Pages.** `astro.config.ts` ma `site: https://silvernetgroupsggw.github.io`, a repo nazywa się `SilverDesign` — project Pages serwuje pod `/SilverDesign/`, a strona używa ścieżek od korzenia (`/pl/`, `/fonts/`, `/brand/`). Trzeba: własna domena (`silver.sggw.pl`, `public/CNAME`) albo repo user-site, albo zmiana `site`/`base` (inwazyjna: `pathFor` + URL-e assetów). Do tego Pages → Source: „GitHub Actions".

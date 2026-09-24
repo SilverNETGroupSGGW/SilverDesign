@@ -21,7 +21,7 @@ const options = [
 ---
 {/* Hidden until the script upgrades it: without JavaScript the pills answer nothing, and a
     pressed state no click can change is a claim the page cannot keep. */}
-<div class="filter" role="group" aria-label={copy.filterLabel} data-project-filter data-param={param} hidden>
+<div class="filter" role="group" aria-label={copy.filterLabel} data-project-filter data-param={param} data-reveal hidden>
   {options.map((o, i) => (
     <button type="button" class="cut-fill" data-value={o.value} data-slug={o.slug} aria-pressed={i === 0 ? "true" : "false"}>
       {o.label}
@@ -54,29 +54,53 @@ const options = [
     }
   };
 
+  // Without the transition the grid reflows in one frame and nothing says which card went where.
+  // The names exist only for its duration; left on, a navigation away would carry them into the
+  // page crossfade.
+  let running: ViewTransition | undefined;
+  const change = (value: string) => {
+    if (!("startViewTransition" in document)) return apply(value);
+    cards.forEach((card, i) => {
+      card.style.setProperty("view-transition-name", `project-${i}`);
+      card.style.setProperty("view-transition-class", "project");
+    });
+    const transition = document.startViewTransition(() => apply(value));
+    running = transition;
+    // A second click skips the first transition, whose finish would otherwise strip the names the
+    // second one is about to capture.
+    transition.finished.finally(() => {
+      if (running !== transition) return;
+      running = undefined;
+      for (const card of cards) {
+        card.style.removeProperty("view-transition-name");
+        card.style.removeProperty("view-transition-class");
+      }
+    });
+  };
+
   // The filter is the only state this page has, and it is all in the query string: a new entry per
   // change makes Back undo one, and every entry is read back from its own URL.
-  const sync = (): void => {
+  const fromUrl = (): string | undefined => {
     const wanted = new URL(location.href).searchParams.get(param);
-    const button = wanted
-      ? root?.querySelector<HTMLButtonElement>(`button[data-slug="${CSS.escape(wanted)}"]`)
-      : null;
-    apply(button?.dataset.value ?? "all");
+    if (!wanted) return undefined;
+    return root?.querySelector<HTMLButtonElement>(`button[data-slug="${CSS.escape(wanted)}"]`)
+      ?.dataset.value;
   };
 
   root?.addEventListener("click", (e) => {
     const button = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-value]");
-    if (!button?.dataset.value) return;
-    apply(button.dataset.value);
+    if (!button?.dataset.value || button.getAttribute("aria-pressed") === "true") return;
+    change(button.dataset.value);
     const url = new URL(location.href);
     if (button.dataset.slug) url.searchParams.set(param, button.dataset.slug);
     else url.searchParams.delete(param);
     if (url.href !== location.href) history.pushState(null, "", url);
   });
 
-  addEventListener("popstate", sync);
+  addEventListener("popstate", () => change(fromUrl() ?? "all"));
 
-  if (new URL(location.href).searchParams.get(param)) sync();
+  const initial = fromUrl();
+  if (initial) apply(initial);
 </script>
 
 <style>
@@ -93,6 +117,11 @@ const options = [
     border: 1px solid var(--line-interactive);
     padding: 0.4em 1em;
     cursor: pointer;
+    transition: color 120ms, border-color 120ms;
+  }
+  button[aria-pressed="false"]:hover {
+    color: var(--ink);
+    border-color: var(--ink);
   }
   @media (pointer: coarse) {
     button {
@@ -109,5 +138,53 @@ const options = [
     inset: -1px;
     z-index: -1;
     background: var(--ink);
+  }
+  /* The choices are drawn in one after another, and the one in force fills cut end first. */
+  .filter {
+    --reveal-gap: 250ms;
+  }
+  .filter[data-reveal="in"] {
+    animation: none;
+  }
+  .filter[data-reveal="in"] button {
+    animation: draw 500ms var(--ease-out) both;
+  }
+  .filter[data-reveal="in"] button:nth-of-type(2) {
+    animation-delay: 90ms;
+  }
+  .filter[data-reveal="in"] button:nth-of-type(3) {
+    animation-delay: 180ms;
+  }
+  .filter[data-reveal="in"] button[aria-pressed="true"]::before {
+    animation: cut-in 500ms var(--ease-out) 150ms both;
+  }
+</style>
+
+<style is:global>
+  ::view-transition-group(.project) {
+    animation-duration: 360ms;
+    animation-timing-function: var(--ease-out);
+  }
+  ::view-transition-new(.project):only-child {
+    animation: 240ms var(--ease-out) 120ms both project-in;
+  }
+  ::view-transition-old(.project):only-child {
+    animation: 140ms ease-in both project-out;
+  }
+  @keyframes project-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes project-out {
+    to {
+      opacity: 0;
+    }
+  }
+  /* The cards change places without travelling; the fades still say which ones left and arrived. */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(.project) {
+      animation: none;
+    }
   }
 </style>

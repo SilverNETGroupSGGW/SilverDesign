@@ -11,8 +11,8 @@ const { locale, text } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 ---
-<section class="strip container cut" aria-label={copy.join.heading}>
-  <p>{text}</p>
+<section class="strip container cut" aria-label={copy.join.heading} data-reveal>
+  <p data-motion="read">{text}</p>
   <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
 </section>
 
@@ -26,6 +26,23 @@ const site = (await getEntry("site", "site"))!.data;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
+  }
+  /* A length of the band: it unrolls from the left cut end first, like the ribbon on the home page,
+     and its line and its button follow. */
+  .strip {
+    --reveal-gap: 350ms;
+  }
+  .strip[data-reveal="in"] {
+    animation: cut-in 900ms var(--ease-out) both;
+  }
+  .strip[data-reveal="in"] > p {
+    --read-after: 300ms;
+  }
+  .strip[data-reveal="in"] :global(.primary)::before {
+    animation: cut-in 600ms var(--ease-out) 600ms both;
+  }
+  .strip[data-reveal="in"] :global(.primary .label) {
+    animation: fade-in 250ms ease-out 850ms both;
   }
   p {
     font-size: var(--step-1);

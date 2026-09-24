@@ -124,3 +124,108 @@ svg {
   color: var(--ink);
   text-decoration: none;
 }
+
+/* Every entrance moves the way the ribbon runs: in from down-left, up along the band's axis. */
+@keyframes axis-in {
+  from {
+    opacity: 0;
+    translate: calc(-1 * cos(var(--angle)) * var(--travel)) calc(sin(var(--angle)) * var(--travel));
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ink-in {
+  from {
+    color: transparent;
+  }
+}
+/* A line draws along itself; clip-path is taken before the transform, so a skewed or rotated rule
+   draws along its own slope. The end is explicit because inset() cannot interpolate to none. */
+@keyframes draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+/* A cut shape (.cut, .cut-fill) arriving from the left with its cut end leading: every point of the
+   right-hand edge travels the same distance, so the end keeps its shape the whole way. It starts a
+   pixel clear of the box: an edge on the box's own left side antialiases into a visible hairline. */
+@keyframes cut-in {
+  from {
+    clip-path: polygon(
+      -1px 0,
+      -1px 0,
+      -1px calc(100% - var(--cut) * tan(var(--angle))),
+      calc(-1px - var(--cut)) 100%,
+      -1px 100%
+    );
+  }
+  to {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--cut) * tan(var(--angle))),
+      calc(100% - var(--cut)) 100%,
+      0 100%
+    );
+  }
+}
+@property --read {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@keyframes read-in {
+  from {
+    --read: -30%;
+  }
+  to {
+    --read: 100%;
+  }
+}
+
+/* While the root carries data-reveals (Base.astro), whatever has data-reveal and is not yet "in"
+   waits hidden; src/lib/reveal.ts turns it "in" when its turn in the queue comes. Each kind of
+   element sets its own entrance, and in --reveal-gap how long the next one waits behind it. */
+[data-reveal] {
+  --reveal-gap: 150ms;
+}
+.angled[data-reveal] {
+  --reveal-gap: 260ms;
+}
+[data-motion="read"][data-reveal] {
+  --reveal-gap: 180ms;
+}
+:root[data-reveals] [data-reveal]:not([data-reveal="in"]) {
+  opacity: 0;
+}
+[data-reveal="in"] {
+  animation: axis-in 700ms var(--ease-out) both;
+}
+/* Text arrives the way it is read: a soft edge crosses every line left to right at once. It runs
+   on the element itself or on text inside a revealed block, --read-after later than the block. */
+[data-motion="read"][data-reveal="in"],
+[data-reveal="in"] [data-motion="read"] {
+  animation: read-in 1000ms cubic-bezier(0.3, 0.1, 0.3, 1) var(--read-after, 0ms) both;
+  mask-image: linear-gradient(90deg, #000 var(--read), transparent calc(var(--read) + 30%));
+}
+/* A heading fades by colour, not opacity: its marker is its own ::before, which has to be drawing
+   while the words are still hidden. */
+:root[data-reveals] .angled[data-reveal]:not([data-reveal="in"]) {
+  opacity: 1;
+  color: transparent;
+}
+:root[data-reveals] .angled[data-reveal]:not([data-reveal="in"])::before {
+  clip-path: inset(0 100% 0 0);
+}
+.angled[data-reveal="in"] {
+  animation: ink-in 600ms var(--ease-out) 220ms both;
+}
+.angled[data-reveal="in"]::before {
+  animation: draw 520ms var(--ease-out) both;
+}

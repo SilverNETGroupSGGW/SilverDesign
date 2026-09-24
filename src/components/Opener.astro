@@ -6,6 +6,7 @@ import UserPlus from "lucide-static/icons/user-plus.svg";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import { lockupPath, lockupTightBox } from "../lib/lockup";
 import {
+  markAxis,
   markBandPath,
   markPathId,
   markPattern,
@@ -24,6 +25,8 @@ import {
   shapeAbove,
   shapeBelow,
   TITLE_LINE_HEIGHT,
+  unroll,
+  UNROLL_ARM_LENGTH,
   titleLines,
 } from "../lib/opener";
 import LocaleSwitch from "./LocaleSwitch.astro";
@@ -59,32 +62,99 @@ const style = [
 // The top bar's lockup box is the S and the word: the row centres on those, and the bar's horizontal
 // run hangs below the row.
 const logoStyle = `--box-x:${lockupTightBox.x};--box-y:${lockupTightBox.y};--box-w:${lockupTightBox.w};--box-h:${lockupTightBox.h}`;
+// The S and the word on their own, cut to the lockup's tight box: the element that flies between the
+// hero and the navigation's corner when the page changes (Base.astro). On the home page it sits over
+// the hero's lockup, a fraction of --m in from the mark box's corner.
+const { x: tx, y: ty, w: tw, h: th } = lockupTightBox;
+const tightViewBox = `${tx} ${ty} ${tw} ${th}`;
+const [mvx, mvy, mvs] = markViewBox.split(" ").map(Number) as [number, number, number];
+const heroLockupStyle = `--lx:${(tx - mvx) / mvs};--ly:${(ty - mvy) / mvs};--lw:${tw / mvs};--lh:${th / mvs}`;
+const besideLockup = `M -30000 -30000 H 30000 V 30000 H -30000 Z M ${tx} ${ty} h ${tw} v ${th} h ${-tw} Z`;
+/** In mark units: how far the unroll's strokes and the word's lane reach past what they uncover. */
+const UNROLL_MARGIN = 8;
+const SPINE_WIDTH = unroll.lineWidth + UNROLL_MARGIN;
+/** Longer than any path position the tip takes, rest included (Opener's CSS, --unroll-tip). */
+const UNROLL_DASH = 100000;
+const { centre, dir, half, lower, upper, spineLength, wordEnd } = unroll;
+const frame = { centre, dir, half, lower, upper, spineLength, wordEnd };
 const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
 const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
 ---
 <div class="frame">
-  <header class:list={["opener", variant, backdrop && "backdrop"]} style={style} data-foil={variant === "home" ? "" : undefined}>
-    <svg class="ribbon" viewBox={markViewBox} aria-hidden="true">
+  <header class:list={["opener", variant, backdrop && "backdrop"]} style={style} data-foil={variant === "home" ? markAxis.join(" ") : undefined}>
+    <svg
+      class="ribbon"
+      viewBox={markViewBox}
+      aria-hidden="true"
+      style={variant === "home" ? `--beside-lockup:url(#beside-lockup-${uid})` : undefined}
+    >
       <defs set:html={markPattern(uid)} />
-      <g fill={`url(#foil-${uid})`}>
+      {/* The ribbon unrolls onto the home page from the left edge, and the S is drawn as the band
+          runs through it: a wide stroke up the lower arm, a line-width stroke along the S's spine,
+          a wide stroke out along the upper arm, and the word uncovered in its own lane as the upper
+          arm passes over it. One custom property, the tip's position on that path, moves all four,
+          so the tip never jumps between them. The arm strokes stop square at the joints, where the
+          S's halves do not reach, and the word's lane holds nothing else past the S. */}
+      {variant === "home" && (
+        <defs>
+          <clipPath id={`beside-lockup-${uid}`}>
+            <path d={besideLockup} clip-rule="evenodd" />
+          </clipPath>
+          <clipPath id={`word-lane-${uid}`}>
+            <rect
+              x={unroll.wordStart - UNROLL_MARGIN}
+              y={unroll.wordAcross[0] - UNROLL_MARGIN}
+              width="60000"
+              height={unroll.wordAcross[1] - unroll.wordAcross[0] + 2 * UNROLL_MARGIN}
+            />
+          </clipPath>
+          <mask
+            id={`unroll-${uid}`}
+            class="unroll"
+            style={`--spine-length:${unroll.spineLength};--upper-along:${unroll.upperAlong};--arm-length:${UNROLL_ARM_LENGTH};--dash:${UNROLL_DASH}`}
+            data-unroll={JSON.stringify(frame)}
+          >
+            <g fill="none" stroke="#fff" stroke-dasharray={`${UNROLL_DASH} ${UNROLL_DASH}`}>
+              <path class="arm-in" d={unroll.lowerArm} stroke-width={unroll.half * 2 + 2 * UNROLL_MARGIN} />
+              <path class="spine" d={unroll.spinePath} stroke-width={SPINE_WIDTH} stroke-linejoin="round" />
+              <path class="arm-out" d={unroll.upperArm} stroke-width={unroll.half * 2 + 2 * UNROLL_MARGIN} />
+            </g>
+            <g
+              transform={`translate(${unroll.centre.join(" ")}) rotate(${unroll.angle})`}
+              clip-path={`url(#word-lane-${uid})`}
+            >
+              <rect class="word" x="-60000" y="-25000" width="60000" height="50000" fill="#fff" />
+            </g>
+          </mask>
+        </defs>
+      )}
+      <g fill={`url(#foil-${uid})`} mask={variant === "home" ? `url(#unroll-${uid})` : undefined}>
         {backdrop ? (
           <path d={markBandPath} />
         ) : (
           <>
             <path d={markRibbonPath} />
-            <use href={`#${markPathId}`} />
-            <path d={lockupPath} />
+            <use class="lockup-part" href={`#${markPathId}`} />
+            <path class="lockup-part" d={lockupPath} />
           </>
         )}
       </g>
     </svg>
+    {variant === "home" && (
+      <svg class="lockup-vt" viewBox={tightViewBox} style={heroLockupStyle} aria-hidden="true">
+        <g fill={`url(#foil-${uid})`}>
+          <use href={`#${markPathId}`} />
+          <path d={lockupPath} />
+        </g>
+      </svg>
+    )}
 
     {backdrop ? (
       <div class="zone below">
         {route !== undefined && (
           <nav aria-label={copy.nav.mainLabel}>
             <a class="logo" href={pathFor("home", locale)} aria-label={site.name} style={logoStyle}>
-              <svg viewBox={markViewBox} aria-hidden="true">
+              <svg class="mark" viewBox={markViewBox} aria-hidden="true">
                 {/* The hero draws the mark about eight times larger; at the logo's own scale the texture
                     tiles every few dozen pixels and reads as a repeat along the bar. Past 3× the
                     highlights no longer fit on the logo and it turns flat grey. */}
@@ -96,6 +166,12 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
                 </defs>
                 <g fill={`url(#foil-${uid}-logo)`}>
                   <path d={markTopBarPath} />
+                  <use class="lockup-part" href={`#${markPathId}`} clip-path={`url(#bar-${uid})`} />
+                  <path class="lockup-part" d={lockupPath} />
+                </g>
+              </svg>
+              <svg class="lockup-vt" viewBox={tightViewBox} aria-hidden="true">
+                <g fill={`url(#foil-${uid}-logo)`}>
                   <use href={`#${markPathId}`} clip-path={`url(#bar-${uid})`} />
                   <path d={lockupPath} />
                 </g>
@@ -220,6 +296,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     text-decoration: none;
     color: var(--muted);
     padding-block: 0.45rem;
+    transition: color 120ms;
   }
   nav a:not(.logo),
   nav :global(.switch) {
@@ -336,6 +413,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
      icons keep the home page's quieter grey, the labels step up to ink, which clears 4.5:1. */
   .backdrop nav :global(.label) {
     color: var(--ink);
+    transition: color 120ms;
   }
   .backdrop nav a:hover :global(.label),
   .backdrop nav a[aria-current="page"] :global(.label) {
@@ -435,7 +513,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       margin-inline-end: var(--space-3);
     }
   }
-  .backdrop .logo svg {
+  .backdrop .logo .mark {
     position: absolute;
     inline-size: calc(var(--unit) * 600);
     block-size: calc(var(--unit) * 600);
@@ -444,6 +522,88 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     overflow: visible;
     pointer-events: none;
   }
+  /* The home page's arrival, in the order it is read: the lockup, the title, the lead, and the
+     navigation last. Not replayed when the visitor comes back from another page of the site
+     (Base.astro sets data-hero="still"). The buttons are slotted, so Home.astro times them. */
+  /* --unroll-tip is the tip's position on its path (see the mask above); each stroke shows the part
+     of itself behind the tip, and the word's lane is uncovered up to the tip's place along the upper
+     arm. Its resting value lies past the end of every stroke. --unroll-from and --unroll-to are the
+     tip's run for the viewport (unroll.ts); the fallbacks cover a desktop opener, so without the
+     script the tip only spends a few more frames beyond the left edge. */
+  @property --unroll-tip {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 40000;
+  }
+  .unroll .arm-in {
+    stroke-dashoffset: calc((var(--dash) - var(--arm-length) - var(--unroll-tip)) * 1px);
+  }
+  .unroll .spine {
+    stroke-dashoffset: calc((var(--dash) - var(--unroll-tip)) * 1px);
+  }
+  .unroll .arm-out {
+    stroke-dashoffset: calc((var(--dash) + var(--spine-length) - var(--unroll-tip)) * 1px);
+  }
+  .unroll .word {
+    transform: translateX(
+      calc((var(--upper-along) + var(--unroll-tip) - var(--spine-length)) * 1px)
+    );
+  }
+  :global(:root:not([data-hero="still"])) .home .ribbon {
+    animation: ribbon-unroll 1100ms cubic-bezier(0.3, 0.55, 0.3, 1) both;
+  }
+  :global(:root:not([data-hero="still"])) .home .above h1 {
+    animation: axis-in 800ms var(--ease-out) 650ms both;
+  }
+  :global(:root:not([data-hero="still"])) .home .below .lead {
+    animation: axis-in 800ms var(--ease-out) 850ms both;
+  }
+  :global(:root:not([data-hero="still"])) .home nav {
+    animation: fade-in 600ms ease-out 1130ms both;
+  }
+  @keyframes ribbon-unroll {
+    from {
+      --unroll-tip: var(--unroll-from, -2000);
+    }
+    to {
+      --unroll-tip: var(--unroll-to, 2100);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(:root:not([data-hero="still"])) .home .ribbon {
+      animation: fade-in 700ms ease-out both;
+    }
+  }
+  /* Only while a page change is being captured (Base.astro sets .vt-lockup around it) does the
+     lockup stand on its own layer: the overlay shows and takes the transition's name, and the same
+     S and word in the big drawing step aside, so the ribbon and the bar stay behind with the page. */
+  .lockup-vt {
+    position: absolute;
+    visibility: hidden;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .home .lockup-vt {
+    inset-inline-start: calc(var(--mark-x) + var(--lx) * var(--m));
+    inset-block-start: calc(var(--mark-y) + var(--ly) * var(--m));
+    inline-size: calc(var(--lw) * var(--m));
+    block-size: calc(var(--lh) * var(--m));
+  }
+  .backdrop .lockup-vt {
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+  :global(:root.vt-lockup) .lockup-vt {
+    visibility: visible;
+    view-transition-name: silver-lockup;
+  }
+  :global(:root.vt-lockup) .home .lockup-part {
+    clip-path: var(--beside-lockup);
+  }
+  :global(:root.vt-lockup) .backdrop .lockup-part {
+    visibility: hidden;
+  }
   .backdrop h1 {
     margin-block-start: var(--space-4);
     font-size: var(--title);
@@ -451,6 +611,23 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     letter-spacing: -0.025em;
     color: var(--bright);
     max-width: none;
+  }
+  /* A page's title and lead read in as it opens; the dimmed band and the navigation stay put, since
+     they are the same on every page and the crossfade between pages leaves them standing. */
+  .backdrop h1,
+  .backdrop .below .lead {
+    animation: read-in 900ms cubic-bezier(0.3, 0.1, 0.3, 1) both;
+    mask-image: linear-gradient(90deg, #000 var(--read), transparent calc(var(--read) + 30%));
+  }
+  .backdrop .below .lead {
+    animation-delay: 150ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .backdrop h1,
+    .backdrop .below .lead {
+      animation: none;
+      mask-image: none;
+    }
   }
   .backdrop .below .lead {
     margin-block-start: var(--space-3);

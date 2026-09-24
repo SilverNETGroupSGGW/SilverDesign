@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { Locale } from "../lib/i18n";
+import { wheels } from "../lib/odometer";
 import { historyStart } from "../lib/schemas";
 
 interface Props {
@@ -11,13 +12,38 @@ const { entries, locale } = Astro.props;
 const sorted = entries.toSorted(
   (a, b) => historyStart(a.data) - historyStart(b.data) || a.data.order - b.data.order,
 );
-const label = (d: CollectionEntry<"history">["data"]) =>
-  "year" in d ? String(d.year) : `${d.yearFrom}–${d.yearTo}`;
+type Entry = CollectionEntry<"history">["data"];
+const label = (d: Entry) => ("year" in d ? String(d.year) : `${d.yearFrom}–${d.yearTo}`);
+const end = (d: Entry) => ("year" in d ? d.year : d.yearTo);
+// The years count on from where the previous entry ended; a span's end then counts on from its
+// start, a beat later.
+const years = sorted.map((e, i) => {
+  const start = String(historyStart(e.data));
+  const before = i === 0 ? start : String(end(sorted[i - 1]!.data));
+  const parts = [{ lag: 0, wheels: wheels(before, start) }];
+  if (!("year" in e.data)) parts.push({ lag: 1, wheels: wheels(start, String(e.data.yearTo)) });
+  return parts;
+});
+const DIGITS = [..."01234567890123456789"];
 ---
 <ol class="timeline" role="list">
-  {sorted.map((e) => (
-    <li>
-      <span class="year mono">{label(e.data)}</span>
+  {sorted.map((e, i) => (
+    <li data-reveal>
+      <span class="year mono">
+        <span class="visually-hidden">{label(e.data)}</span>
+        <span class="odo" aria-hidden="true">
+          {years[i]!.map((part, p) => (
+            <span class:list={["part", p > 0 && "later"]}>
+              {p > 0 && <span>–</span>}
+              {part.wheels.map((w) => (
+                <span class="wheel" style={`--from:${w.from};--to:${w.to};--ticks:${w.ticks};--lag:${part.lag}`}>
+                  {DIGITS.map((d) => <span>{d}</span>)}
+                </span>
+              ))}
+            </span>
+          ))}
+        </span>
+      </span>
       <div>
         <h2>{e.data.title[locale]}</h2>
         <p>{e.data.body[locale]}</p>
@@ -75,6 +101,79 @@ const label = (d: CollectionEntry<"history">["data"]) =>
   }
   p {
     color: var(--muted);
+  }
+  /* Each digit is a wheel of 0–9 written out twice, standing at --to. */
+  .odo {
+    --cell: 1.5em;
+    display: inline-flex;
+    block-size: var(--cell);
+    line-height: var(--cell);
+    overflow: hidden;
+    user-select: none;
+  }
+  .part {
+    display: inline-flex;
+  }
+  .wheel {
+    display: flex;
+    flex-direction: column;
+    translate: 0 calc(var(--to) * -1 * var(--cell));
+  }
+  /* A row arrives whole, under a front that runs at the band's angle the way the ribbon crosses the
+     page: the year first, then the title and the text, and the divider's cut last, with a faint
+     light riding just behind the front. The page moves through time as it is read, so the year
+     counts on from where the previous entry ended as the front passes it: a longer gap turns the
+     wheels further and for longer, and a span's end joins once its start has turned. */
+  @property --row {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 130%;
+  }
+  li {
+    --reveal-gap: 280ms;
+    position: relative;
+    isolation: isolate;
+  }
+  li[data-reveal="in"] {
+    animation: row-in 1300ms cubic-bezier(0.3, 0.1, 0.25, 1) both;
+    mask-image: linear-gradient(
+      calc(180deg - var(--angle)),
+      #000 calc(var(--row) - 15%),
+      transparent var(--row)
+    );
+  }
+  li[data-reveal="in"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      calc(180deg - var(--angle)),
+      transparent calc(var(--row) - 30%),
+      color-mix(in srgb, var(--ink) 8%, transparent) calc(var(--row) - 10%),
+      transparent var(--row)
+    );
+  }
+  li[data-reveal="in"] .wheel {
+    animation: roll calc(450ms + var(--ticks) * 180ms) var(--ease-out)
+      calc(120ms + var(--lag) * 450ms) both;
+  }
+  li[data-reveal="in"] .later {
+    animation: fade-in 200ms ease-out 570ms both;
+  }
+  @keyframes row-in {
+    from {
+      --row: 0%;
+    }
+    to {
+      --row: 130%;
+    }
+  }
+  @keyframes roll {
+    from {
+      translate: 0 calc(var(--from) * -1 * var(--cell));
+    }
   }
   @media (max-width: 40rem) {
     li {

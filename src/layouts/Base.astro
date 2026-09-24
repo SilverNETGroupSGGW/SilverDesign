@@ -56,6 +56,46 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
         texture in front of both (mobile LCP 2.9 s → 2.0 s on /pl/, 3.1 s → 2.6 s on /pl/projekty/). */}
     <link rel="preload" href="/brand/foil-texture.jpg" as="image" />
     <meta name="theme-color" content="#16161B" />
+    {/* Coming back to the home page from another page of the site, it is already at rest: the
+        arrival sequence is for the first look; a reload and the root redirect play it again. Inline
+        and in the head so the attribute is there before the first frame. */}
+    {/* Entrances hide their elements from the first frame, so something already painted never
+        blinks out and back in; reveal.ts takes over, and if it never arrives the page opens up by
+        itself. Under reduced motion nothing is hidden. */}
+    <script is:inline>
+      try {
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          const root = document.documentElement;
+          root.dataset.reveals = "";
+          setTimeout(() => {
+            if (root.dataset.reveals === "") delete root.dataset.reveals;
+          }, 3000);
+        }
+      } catch {}
+      // The lockup flies between the hero and the navigation's corner (Opener.astro): both pages
+      // put it on its own layer for the frames the transition captures, the old one as it leaves
+      // and the new one before its first frame.
+      addEventListener("pageswap", (e) => {
+        if (e.viewTransition) document.documentElement.classList.add("vt-lockup");
+      });
+      addEventListener("pagereveal", (e) => {
+        if (!e.viewTransition) return;
+        const root = document.documentElement;
+        root.classList.add("vt-lockup");
+        e.viewTransition.finished.finally(() => root.classList.remove("vt-lockup"));
+      });
+      addEventListener("pageshow", () => document.documentElement.classList.remove("vt-lockup"));
+    </script>
+    {variant === "home" && (
+      <script is:inline>
+        try {
+          const [entry] = performance.getEntriesByType("navigation");
+          const from = new URL(document.referrer);
+          if (entry.type !== "reload" && from.origin === location.origin && from.pathname !== "/")
+            document.documentElement.dataset.hero = "still";
+        } catch {}
+      </script>
+    )}
   </head>
   <body>
     <a class="visually-hidden skip-link" href="#main">{copy.nav.skip}</a>
@@ -63,9 +103,51 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     <Opener locale={locale} route={route} variant={variant} title={heading} lead={lead}>
       <slot name="cta" />
     </Opener>
-    <main>
+    <main class:list={[variant === "home" ? "after-opener" : "after-header"]}>
       <slot />
     </main>
     <Footer locale={locale} route={route} />
+    <script>
+      import { watchReveals } from "../lib/reveal";
+      watchReveals();
+    </script>
   </body>
 </html>
+
+{/* Here and not in base.css, which the brochures share: their renderer walks the four sheets in one
+    tab and must never screenshot a crossfade. */}
+<style is:global>
+  /* Between two subpages the dimmed band and the navigation are the same pixels, so a crossfade
+     leaves them standing and changes only what differs. */
+  @view-transition {
+    navigation: auto;
+  }
+  /* What is on screen at load enters after the page's own heading: on a phone the home page's first
+     section shares the first screen with the hero and waits for its sequence, and a page's first
+     rows follow its title. Anything revealed later by scrolling starts at once (reveal.ts). */
+  main {
+    --reveal-start: 250ms;
+  }
+  :root:not([data-hero="still"]) main.after-opener {
+    --reveal-start: 1150ms;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 200ms;
+  }
+  ::view-transition-group(silver-lockup) {
+    animation-duration: 650ms;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.15, 1);
+  }
+  ::view-transition-old(silver-lockup),
+  ::view-transition-new(silver-lockup) {
+    animation-duration: 650ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(silver-lockup),
+    ::view-transition-old(silver-lockup),
+    ::view-transition-new(silver-lockup) {
+      animation-duration: 0s;
+    }
+  }
+</style>

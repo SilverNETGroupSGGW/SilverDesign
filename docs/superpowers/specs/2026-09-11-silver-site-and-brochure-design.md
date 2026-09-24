@@ -247,9 +247,30 @@ Od zera; z poprzedniego systemu nic nie wraca.
   latin-ext (polskie znaki), licencja OFL: **Geist** do wszystkiego, **Geist
   Mono** wyłącznie do metadanych (identyfikatory pakietów, adres). Pliki w
   `public/fonts/` z licencją obok.
-- **Ruch**: jedna interakcja — tekstura w znaku S przesuwa się o kilka
-  procent za kursorem. Wyłączona przy `prefers-reduced-motion`. Żadnych
-  animacji na scroll, żadnych karuzel.
+- **Ruch**: wszystko jedzie wzdłuż wstęgi. Strona główna przy pierwszym
+  wejściu: wstęga rozwija się z lewej krawędzi — czoło biegnie dolnym
+  ramieniem, rysuje S wzdłuż jego kręgosłupa (oś kreski z konfiguratora),
+  wychodzi górnym ramieniem, a słowo odsłania się, gdy ramię nad nim
+  przechodzi (jedyny moment, w którym pas kończy się w kadrze); potem tytuł,
+  lead, przyciski i nawigacja (~1,8 s całość). Powrót na stronę główną z innej
+  strony serwisu zaczyna się w spoczynku; przeładowanie odtwarza sekwencję.
+  Folia idzie za kursorem (sprężyna krytycznie tłumiona) i raz błyska wzdłuż
+  osi po załadowaniu. Tytuł i lead podstron odsłaniają się przy wejściu
+  (pas i nawigacja stoją). Treść wchodzi raz — to, co widać po załadowaniu,
+  zaraz po nagłówku strony (na głównej po sekwencji), reszta przy
+  przewinięciu — każdy rodzaj po swojemu: znaczniki nagłówków rysują się
+  wzdłuż własnego kąta, wpis osi czasu wchodzi cały pod czołem nachylonym
+  jak pas, ze światłem tuż za czołem, a jego rok liczy się jak licznik od
+  końca poprzedniego wpisu (dłuższa przerwa kręci dłużej), pigułki filtra
+  rysują się po kolei, tekst odsłania się w kierunku
+  czytania, kroki 01–03 w swojej kolejności z linią biegnącą po górnej
+  krawędzi kart, karty projektów „wywołują się" jak odbitka, pasek
+  „Dołącz" rozwija się ścięciem naprzód jak wstęga, a wypełnienie przycisku
+  wjeżdża ścięciem naprzód. Filtr projektów przesuwa zostające karty (View
+  Transitions), strony przenikają się 200 ms, lockup Silver przelatuje
+  między hero a rogiem nawigacji podstron (650 ms, w obie strony), kolory zmieniają się w
+  120 ms. Przy `prefers-reduced-motion` nic się nie przesuwa: zostają
+  przenikania, a sekcje nie są ukrywane. Żadnych karuzel ani paralaksy.
 
 ## 9. Stack i narzędzia
 

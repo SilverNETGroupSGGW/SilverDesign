@@ -37,6 +37,8 @@ export const markPattern = (uid: string, scale = 1): string =>
       : `id="foil-${uid}" patternTransform="translate(${centre.join(" ")}) scale(${scale}) translate(${centre.map((c) => -c).join(" ")})"`,
   );
 
+/** The band's direction in the mark's user space, as the ribbon runs: up and to the right. */
+export const markAxis = geometry.ribbon.direction;
 export const markRibbonPath = compactPath(ribbonArms(geometry.ribbon, centre));
 export const markBandPath = compactPath(ribbonBand(geometry.ribbon));
 export const markTopBarPath = compactPath(ribbonTopBar(geometry.ribbon, centre));
