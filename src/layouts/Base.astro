@@ -3,6 +3,7 @@ import { getEntry } from "astro:content";
 import Footer from "../components/Footer.astro";
 import MarkDefs from "../components/MarkDefs.astro";
 import Opener from "../components/Opener.astro";
+import { BASE, withBase } from "../lib/base";
 import { locales, pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import "../styles/tokens.css";
 import "../styles/base.css";
@@ -40,21 +41,21 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={ogLocales[locale]} />
     <meta property="og:locale:alternate" content={ogLocales[locale === "pl" ? "en" : "pl"]} />
-    <meta property="og:image" content={new URL("/og.png", Astro.site)} />
+    <meta property="og:image" content={new URL(withBase("og.png"), Astro.site)} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={site.name} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL("/og.png", Astro.site)} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="twitter:image" content={new URL(withBase("og.png"), Astro.site)} />
+    <link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={withBase("fonts/Geist-Variable.woff2")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase("fonts/GeistMono-Variable.woff2")} as="font" type="font/woff2" crossorigin />
     {/* Warmed early but not ahead of the queue: the LCP element is the lead on the home page and
         the first card's screenshot on the listings, never the 108 KB foil, and a high hint put the
         texture in front of both (mobile LCP 2.9 s → 2.0 s on /pl/, 3.1 s → 2.6 s on /pl/projekty/). */}
-    <link rel="preload" href="/brand/foil-texture.jpg" as="image" />
+    <link rel="preload" href={withBase("brand/foil-texture.jpg")} as="image" />
     <meta name="theme-color" content="#16161B" />
     {/* Coming back to the home page from another page of the site, it is already at rest: the
         arrival sequence is for the first look; a reload and the root redirect play it again. Inline
@@ -87,11 +88,11 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
       addEventListener("pageshow", () => document.documentElement.classList.remove("vt-lockup"));
     </script>
     {variant === "home" && (
-      <script is:inline>
+      <script is:inline define:vars={{ rootPath: BASE }}>
         try {
           const [entry] = performance.getEntriesByType("navigation");
           const from = new URL(document.referrer);
-          if (entry.type !== "reload" && from.origin === location.origin && from.pathname !== "/")
+          if (entry.type !== "reload" && from.origin === location.origin && from.pathname !== rootPath)
             document.documentElement.dataset.hero = "still";
         } catch {}
       </script>

@@ -1,16 +1,17 @@
 import { describe, expect, test } from "bun:test";
+import { BASE } from "../src/lib/base";
 import { fill, locales, otherLocale, pathFor } from "../src/lib/i18n";
 
 describe("pathFor", () => {
   test("home is the locale root", () => {
-    expect(pathFor("home", "pl")).toBe("/pl/");
-    expect(pathFor("home", "en")).toBe("/en/");
+    expect(pathFor("home", "pl")).toBe(`${BASE}pl/`);
+    expect(pathFor("home", "en")).toBe(`${BASE}en/`);
   });
   test("slugs are localized", () => {
-    expect(pathFor("projects", "pl")).toBe("/pl/projekty/");
-    expect(pathFor("projects", "en")).toBe("/en/projects/");
-    expect(pathFor("history", "pl")).toBe("/pl/historia/");
-    expect(pathFor("brochureCompanies", "en")).toBe("/en/brochure/companies/");
+    expect(pathFor("projects", "pl")).toBe(`${BASE}pl/projekty/`);
+    expect(pathFor("projects", "en")).toBe(`${BASE}en/projects/`);
+    expect(pathFor("history", "pl")).toBe(`${BASE}pl/historia/`);
+    expect(pathFor("brochureCompanies", "en")).toBe(`${BASE}en/brochure/companies/`);
   });
   test("every route exists for every locale", () => {
     for (const locale of locales) {
@@ -21,7 +22,7 @@ describe("pathFor", () => {
         "brochureStudents",
         "brochureCompanies",
       ] as const) {
-        expect(pathFor(key, locale)).toMatch(new RegExp(`^/${locale}/.*/$|^/${locale}/$`));
+        expect(pathFor(key, locale)).toMatch(new RegExp(`^${BASE}${locale}/(.*/)?$`));
       }
     }
   });

@@ -435,7 +435,12 @@ Telefon 400 px bez GPU: 58–59 kl./s. Firefox i Safari niesprawdzone. Detektor 
 
 ## Do decyzji właściciela (przed deployem)
 
-1. **Ścieżka bazowa Pages.** `astro.config.ts` ma `site: https://silvernetgroupsggw.github.io`, a repo nazywa się `SilverDesign` — project Pages serwuje pod `/SilverDesign/`, a strona używa ścieżek od korzenia (`/pl/`, `/fonts/`, `/brand/`). Trzeba: własna domena (`silver.sggw.pl`, `public/CNAME`) albo repo user-site, albo zmiana `site`/`base` (inwazyjna: `pathFor` + URL-e assetów). Do tego Pages → Source: „GitHub Actions".
+1. **Ścieżka bazowa Pages — rozwiązane (2026-09-24).** Kod nie zna ścieżki: `src/lib/base.ts` bierze
+   `import.meta.env.BASE_URL` (domyślnie `/`), każdy link i zasób idzie przez `withBase`, a workflow
+   bierze origin i ścieżkę z `actions/configure-pages` i podaje je do `astro build --site --base` oraz
+   do `bun run brochure` (`SITE_BASE`). Repo projektowe → `…github.io/SilverDesign/`; własna domena
+   (CNAME w ustawieniach Pages) → korzeń, bez zmian w kodzie. `robots.txt` jest trasą
+   (`src/pages/robots.txt.ts`), więc adres sitemapy idzie za bazą.
 2. **`mise.toml` pin Buna.** Zacommitowane `1.4.0`; lokalna weryfikacja szła na niezacommitowanym `1.4.2` (zmiana w working tree, nie moja). CI zainstaluje 1.4.0.
 3. **Zrzut `brand/screenshots/plan-wzim-day.png`** zawiera nazwisko prowadzącego („Bartłomiej Kubica") w komórce planu i polskie UI na `/en/`. Zostawić / przyciąć / podmienić?
 4. **QR w broszurach** są jasne-na-ciemnym; nie zeskanowane z fizycznego wydruku. Jeden skan telefonem przed drukiem.

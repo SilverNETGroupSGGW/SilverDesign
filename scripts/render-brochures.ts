@@ -15,11 +15,15 @@ mkdirSync(out, { recursive: true });
 
 const boxPairs = (n: number): number => (n * (n - 1)) / 2;
 
+// The base the site was built with (the Pages workflow sets it for the build and for this step):
+// dist/ holds the pages without it, and their links and assets carry it.
+const BASE = (process.env.SITE_BASE ?? "/").replace(/\/?$/, "/");
+
 const jobs = [
-  { path: "/pl/broszura/studenci/", file: "silver-studenci-pl.png" },
-  { path: "/pl/broszura/firmy/", file: "silver-firmy-pl.png" },
-  { path: "/en/brochure/students/", file: "silver-students-en.png" },
-  { path: "/en/brochure/companies/", file: "silver-companies-en.png" },
+  { path: `${BASE}pl/broszura/studenci/`, file: "silver-studenci-pl.png" },
+  { path: `${BASE}pl/broszura/firmy/`, file: "silver-firmy-pl.png" },
+  { path: `${BASE}en/brochure/students/`, file: "silver-students-en.png" },
+  { path: `${BASE}en/brochure/companies/`, file: "silver-companies-en.png" },
 ];
 
 const server = Bun.serve({
@@ -27,7 +31,8 @@ const server = Bun.serve({
   hostname: "127.0.0.1",
   fetch: async (req) => {
     const url = new URL(req.url);
-    const path = url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname;
+    const site = url.pathname.startsWith(BASE) ? url.pathname.slice(BASE.length - 1) : url.pathname;
+    const path = site.endsWith("/") ? `${site}index.html` : site;
     const file = Bun.file(join(dist, path));
     return (await file.exists()) ? new Response(file) : new Response("not found", { status: 404 });
   },

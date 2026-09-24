@@ -3,6 +3,7 @@ import { getEntry } from "astro:content";
 import Footer from "../components/Footer.astro";
 import Mark from "../components/Mark.astro";
 import MarkDefs from "../components/MarkDefs.astro";
+import { withBase } from "../lib/base";
 import { locales, pathFor } from "../lib/i18n";
 import "../styles/tokens.css";
 import "../styles/base.css";
@@ -33,8 +34,8 @@ const title = sides.map((s) => s.copy.title).join(" · ");
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, follow" />
     <title>{`${title} — ${site.name}`}</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href={withBase("favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={withBase("fonts/Geist-Variable.woff2")} as="font" type="font/woff2" crossorigin />
     <meta name="theme-color" content="#16161B" />
   </head>
   <body>

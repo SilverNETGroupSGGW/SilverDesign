@@ -1,3 +1,5 @@
+import { withBase } from "./base";
+
 export const locales = ["pl", "en"] as const;
 export type Locale = (typeof locales)[number];
 
@@ -12,7 +14,7 @@ export type RouteKey = keyof typeof routes;
 
 export const pathFor = (key: RouteKey, locale: Locale): string => {
   const slug = routes[key][locale];
-  return slug === "" ? `/${locale}/` : `/${locale}/${slug}/`;
+  return withBase(slug === "" ? `${locale}/` : `${locale}/${slug}/`);
 };
 
 export const otherLocale = (locale: Locale): Locale => (locale === "pl" ? "en" : "pl");

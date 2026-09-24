@@ -1,5 +1,6 @@
 import geometryJson from "../../brand/logo/geometry.json?raw";
 import markSvg from "../../brand/logo/mark-transparent.svg?raw";
+import { withBase } from "./base";
 import { ribbonArms, ribbonBand, ribbonTopBar, ribbonTopBarKeep } from "./ribbon";
 import { compactPath } from "./svg-path";
 
@@ -7,7 +8,10 @@ export const markPathId = "silver-mark-path";
 
 // The exported SVG inlines the same 261 KB JPEG four times; pointing the tiles at the copy in
 // public/ keeps the inline markup at ~31 KB instead of ~1 MB per mark.
-const source = markSvg.replaceAll(/data:image\/jpeg;base64,[^"]+/g, "/brand/foil-texture.jpg");
+const source = markSvg.replaceAll(
+  /data:image\/jpeg;base64,[^"]+/g,
+  withBase("brand/foil-texture.jpg"),
+);
 
 const capture = (pattern: RegExp, label: string): string => {
   const found = pattern.exec(source)?.[1];
