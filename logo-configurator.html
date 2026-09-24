@@ -291,7 +291,7 @@ function build(P) {
   }
   const bandTop = pathOf(outer.slice().reverse().concat(inner));
   const bandBot = pathOf(outer.slice().reverse().concat(inner).map(p => rot180(...p)));
-  return { sPath, bandTop, bandBot };
+  return { sPath, bandTop, bandBot, spine };
 }
 
 /* ---- svg assembly ---- */

@@ -51,6 +51,10 @@ const result = await page.evaluate(() => {
     Pouter[1] + inn2[1] * (armWidth / 2),
   ];
   const twin: [number, number] = [2 * centre - axis[0], 2 * centre - axis[1]];
+  // The S is its spine offset by half the line width either side; a page that draws the S in the
+  // order the stroke runs needs the spine, from the upper arm's joint to the lower one's.
+  // @ts-expect-error configurator globals
+  const { spine } = build(state) as { spine: [number, number][] };
   const span: [number, number] = [twin[0] - axis[0], twin[1] - axis[1]];
   return {
     // @ts-expect-error configurator globals
@@ -58,6 +62,7 @@ const result = await page.evaluate(() => {
     // @ts-expect-error configurator globals
     transparent: svgString(state, textureUri, false) as string,
     angleDeg,
+    spine,
     ribbon: {
       units: `viewBox user units; the exported viewBox is ${o} ${o} ${vb} ${vb}`,
       direction: [uo2[0] as number, uo2[1] as number] as [number, number],
@@ -69,8 +74,16 @@ const result = await page.evaluate(() => {
   };
 });
 const round = (n: number, places: number): number => Number(n.toFixed(places));
+// Every fourth sample: the spine's curvature is gentle enough that the dropped points sit within a
+// hundredth of a unit of the chords, and the file stays a few kilobytes.
+const spine = result.spine.filter((_, i, all) => i % 4 === 0 || i === all.length - 1);
 const geometry = {
   angleDeg: round(result.angleDeg, 2),
+  spine: {
+    units: "viewBox user units, from the upper arm's joint through the S to the lower arm's",
+    lineWidth: settings.lineWidth as number,
+    points: spine.map((p) => p.map((n) => round(n, 2))),
+  },
   ribbon: {
     ...result.ribbon,
     direction: result.ribbon.direction.map((n) => round(n, 6)),
