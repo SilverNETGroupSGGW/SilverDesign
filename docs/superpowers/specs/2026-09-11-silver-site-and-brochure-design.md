@@ -86,7 +86,7 @@ słowem „ilver" na pasie folii, który wchodzi lewą krawędzią dokumentu i w
 górną albo prawą, tytuł nad pasem i lead pod nim, oba z wierszami opływającymi
 krawędzie folii (`shape-outside`). Wstęga nigdy nie kończy się w kadrze.
 
-`/pl/` · `/en/` (`/` przekierowuje na `/pl/`):
+`/pl/` · `/en/` (`/` pokazuje stronę główną `/pl/`):
 
 1. **Hero** — wstęga otwierająca (patrz wyżej): jedno zdanie, kim jesteśmy i dla
    kogo, przycisk „Dołącz na Discordzie" i link „Zobacz projekty".
@@ -277,9 +277,9 @@ Od zera; z poprzedniego systemu nic nie wraca.
 - **Astro 7**, wyjście statyczne, wbudowane i18n: `defaultLocale: "pl"`,
   `locales: ["pl", "en"]`, `prefixDefaultLocale: true`,
   `redirectToDefaultLocale: false`. Każda strona żyje pod `/pl/…` albo
-  `/en/…`; `/` to ręcznie napisana strona `src/pages/index.astro`,
-  przekierowująca na `/pl/` (meta refresh plus zwykły link, bo statyczny
-  hosting nie robi redirectów 30x). `<html lang>`, linki `hreflang`,
+  `/en/…`; `/` renderuje polską stronę główną z canonical na `/pl/`, bo
+  statyczny hosting nie robi redirectów 30x, a meta refresh pokazywał na
+  chwilę stronę pośrednią. `<html lang>`, linki `hreflang`,
   przełącznik zachowuje bieżącą podstronę.
 - **TypeScript** — `tsconfig` rozszerza `astro/tsconfigs/strictest`.
 - **Bun** jako runtime, menedżer pakietów i test runner.

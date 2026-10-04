@@ -8,9 +8,9 @@ export default defineConfig({
   output: "static",
   integrations: [
     sitemap({
-      // The brochures are handed out and carry noindex (spec §4), and the site's root only
-      // redirects to /pl/. Matching paths under a locale drops the redirect whatever base the build
-      // is given; the integration drops the 404 on its own.
+      // The brochures are handed out and carry noindex (spec §4), and the site's root is a copy of
+      // /pl/ whose canonical points there. Matching paths under a locale drops the root whatever base
+      // the build is given; the integration drops the 404 on its own.
       filter: (page) => {
         const path = new URL(page).pathname;
         return /\/(pl|en)\//.test(path) && !/\/(broszura|brochure)\//.test(path);

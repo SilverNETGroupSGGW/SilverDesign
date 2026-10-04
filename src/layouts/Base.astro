@@ -3,7 +3,7 @@ import { getEntry } from "astro:content";
 import Footer from "../components/Footer.astro";
 import MarkDefs from "../components/MarkDefs.astro";
 import Opener from "../components/Opener.astro";
-import { BASE, withBase } from "../lib/base";
+import { withBase } from "../lib/base";
 import { locales, pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import "../styles/tokens.css";
 import "../styles/base.css";
@@ -82,15 +82,14 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
       });
       addEventListener("pageshow", () => document.documentElement.classList.remove("vt-lockup"));
     </script>
-    {/* Back from another page of the site, the home page is already at rest; a reload and the root
-        redirect replay the arrival. Inline in the head so the attribute is set before the first
-        frame. */}
+    {/* Back from another page of the site, the home page is already at rest; a reload replays the
+        arrival. Inline in the head so the attribute is set before the first frame. */}
     {variant === "home" && (
-      <script is:inline define:vars={{ rootPath: BASE }}>
+      <script is:inline>
         try {
           const [entry] = performance.getEntriesByType("navigation");
           const from = new URL(document.referrer);
-          if (entry.type !== "reload" && from.origin === location.origin && from.pathname !== rootPath)
+          if (entry.type !== "reload" && from.origin === location.origin)
             document.documentElement.dataset.hero = "still";
         } catch {}
       </script>
