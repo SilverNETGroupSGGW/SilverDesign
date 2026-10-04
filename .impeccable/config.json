@@ -16,5 +16,12 @@
         "reason": "spec §8 pins Geist Mono for identifiers/addresses; owner-authored spec"
       }
     ]
+  },
+  "hook": {
+    "enabled": true,
+    "limits": {
+      "maxFindings": 5,
+      "maxChars": 8000
+    }
   }
 }
