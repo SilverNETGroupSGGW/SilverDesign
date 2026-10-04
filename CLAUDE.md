@@ -1,6 +1,6 @@
 # Silver — zasady dla Claude Code
 
-Stan pracy i sposób wznowienia: `HANDOFF.md`. Spec i plan: `docs/superpowers/`.
+Spec i plan: `docs/superpowers/`.
 
 ## Na start sesji
 
