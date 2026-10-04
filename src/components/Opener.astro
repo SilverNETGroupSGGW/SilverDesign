@@ -4,17 +4,21 @@ import FolderCode from "lucide-static/icons/folder-code.svg";
 import History from "lucide-static/icons/history.svg";
 import UserPlus from "lucide-static/icons/user-plus.svg";
 import { pathFor, type Locale, type RouteKey } from "../lib/i18n";
-import { lockupPath, lockupTightBox } from "../lib/lockup";
+import { lockupFlightBox, lockupPath, lockupTightBox } from "../lib/lockup";
 import {
+  markArmsGrowth,
   markAxis,
   markBandPath,
   markPathId,
   markPattern,
   markRibbonPath,
+  markSlab,
   markTopBarKeep,
+  markTopBarGrowth,
   markTopBarPath,
   markViewBox,
 } from "../lib/mark";
+import type { Growth } from "../lib/ribbon";
 import {
   backdropVariants,
   formCss,
@@ -57,27 +61,40 @@ const style = [
   `--mark-x:${formCss(markOrigin[0])}`,
   `--mark-y:${formCss(markOrigin[1])}`,
 ].join(";");
-// The S and the word only: the row centres on those, and the bar's horizontal run hangs below it.
-const logoStyle = `--box-x:${lockupTightBox.x};--box-y:${lockupTightBox.y};--box-w:${lockupTightBox.w};--box-h:${lockupTightBox.h}`;
 // The element that flies between the hero and the navigation's corner on a page change
 // (Base.astro). On the home page it sits over the hero's lockup, a fraction of --m in from the mark
 // box's corner.
-const { x: tx, y: ty, w: tw, h: th } = lockupTightBox;
-const tightViewBox = `${tx} ${ty} ${tw} ${th}`;
+const { x: fx, y: fy, w: fw, h: fh } = lockupFlightBox;
+const flightViewBox = `${fx} ${fy} ${fw} ${fh}`;
+// The S and the word only: the row centres on those, and the bar's horizontal run hangs below it.
+const logoStyle = [
+  `--box-x:${lockupTightBox.x};--box-y:${lockupTightBox.y};--box-w:${lockupTightBox.w};--box-h:${lockupTightBox.h}`,
+  `--fx:${fx};--fy:${fy};--fw:${fw};--fh:${fh}`,
+].join(";");
 const [mvx, mvy, mvs] = markViewBox.split(" ").map(Number) as [number, number, number];
-const heroLockupStyle = `--lx:${(tx - mvx) / mvs};--ly:${(ty - mvy) / mvs};--lw:${tw / mvs};--lh:${th / mvs}`;
-const besideLockup = `M -30000 -30000 H 30000 V 30000 H -30000 Z M ${tx} ${ty} h ${tw} v ${th} h ${-tw} Z`;
+const heroLockupStyle = `--lx:${(fx - mvx) / mvs};--ly:${(fy - mvy) / mvs};--lw:${fw / mvs};--lh:${fh / mvs}`;
 /** In mark units: how far the unroll's strokes and the word's lane reach past what they uncover. */
 const UNROLL_MARGIN = 8;
 const SPINE_WIDTH = unroll.lineWidth + UNROLL_MARGIN;
 /** Longer than any path position --unroll-tip takes, its resting value included. */
 const UNROLL_DASH = 100000;
+const ARM_STROKE = unroll.half * 2 + 2 * UNROLL_MARGIN;
 const { centre, dir, half, lower, upper, spineLength, wordEnd } = unroll;
 const frame = { centre, dir, half, lower, upper, spineLength, wordEnd };
 // The polygons name the zone's own origin, and a custom property resolves its var() references on
 // the element it is declared on: they have to sit on the zone, not on the opener.
 const polyAbove = `--poly:${polygonCss(shapeAbove)}`;
 const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
+// What a landing lockup shows before its arms grow (the S and the word), and the line each arm grows
+// along with the ray it leaves the page by, for Base.astro to measure.
+const lane = {
+  transform: `translate(${unroll.centre.join(" ")}) rotate(${unroll.angle})`,
+  x: unroll.wordStart - UNROLL_MARGIN,
+  y: unroll.wordAcross[0] - UNROLL_MARGIN,
+  height: unroll.wordAcross[1] - unroll.wordAcross[0] + 2 * UNROLL_MARGIN,
+};
+const ray = (g: Growth): string =>
+  [g.pre, ...g.from, ...g.toward].map((n) => Math.round(n * 1e4) / 1e4).join(" ");
 ---
 <div class="frame">
   <header class:list={["opener", variant, backdrop && "backdrop"]} style={style} data-foil={variant === "home" ? markAxis.join(" ") : undefined}>
@@ -85,7 +102,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       class="ribbon"
       viewBox={markViewBox}
       aria-hidden="true"
-      style={variant === "home" ? `--beside-lockup:url(#beside-lockup-${uid})` : undefined}
+      style={variant === "home" ? `--grow-mask:url(#grow-${uid})` : undefined}
     >
       <defs set:html={markPattern(uid)} />
       {/* One custom property, the tip's position on the path up the lower arm, along the spine and
@@ -94,9 +111,6 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
           lane holds nothing else past the S. */}
       {variant === "home" && (
         <defs>
-          <clipPath id={`beside-lockup-${uid}`}>
-            <path d={besideLockup} clip-rule="evenodd" />
-          </clipPath>
           <clipPath id={`word-lane-${uid}`}>
             <rect
               x={unroll.wordStart - UNROLL_MARGIN}
@@ -123,9 +137,22 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
               <rect class="word" x="-60000" y="-25000" width="60000" height="50000" fill="#fff" />
             </g>
           </mask>
+          <mask id={`grow-${uid}`} class="grow" style={`--dash:${UNROLL_DASH}`}>
+            <g class="lockup-area" fill="#fff">
+              <polygon points={markSlab.points} />
+              <rect transform={lane.transform} x={lane.x} y={lane.y} width="60000" height={lane.height} />
+            </g>
+            <g fill="none" stroke="#fff" stroke-width={ARM_STROKE} stroke-dasharray={`${UNROLL_DASH} ${UNROLL_DASH}`}>
+              {markArmsGrowth.map((g) => <path d={g.d} data-ray={ray(g)} />)}
+            </g>
+          </mask>
         </defs>
       )}
-      <g fill={`url(#foil-${uid})`} mask={variant === "home" ? `url(#unroll-${uid})` : undefined}>
+      <g
+        class:list={[variant === "home" && "drawing"]}
+        fill={`url(#foil-${uid})`}
+        mask={variant === "home" ? `url(#unroll-${uid})` : undefined}
+      >
         {backdrop ? (
           <path d={markBandPath} />
         ) : (
@@ -138,9 +165,12 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
       </g>
     </svg>
     {variant === "home" && (
-      <svg class="lockup-vt" viewBox={tightViewBox} style={heroLockupStyle} aria-hidden="true">
+      <svg class="lockup-vt" viewBox={flightViewBox} style={heroLockupStyle} aria-hidden="true">
+        <clipPath id={`slab-${uid}`}>
+          <polygon points={markSlab.points} />
+        </clipPath>
         <g fill={`url(#foil-${uid})`}>
-          <use href={`#${markPathId}`} />
+          <use href={`#${markPathId}`} clip-path={`url(#slab-${uid})`} />
           <path d={lockupPath} />
         </g>
       </svg>
@@ -151,7 +181,7 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
         {route !== undefined && (
           <nav aria-label={copy.nav.mainLabel}>
             <a class="logo" href={pathFor("home", locale)} aria-label={site.name} style={logoStyle}>
-              <svg class="mark" viewBox={markViewBox} aria-hidden="true">
+              <svg class="mark" viewBox={markViewBox} aria-hidden="true" style={`--grow-mask:url(#grow-${uid}-logo)`}>
                 {/* Unscaled at the logo's size the texture tiles every few dozen pixels and reads as a
                     repeat along the bar; past 3× the highlights no longer fit and it turns flat grey. */}
                 <defs>
@@ -159,16 +189,28 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
                   <clipPath id={`bar-${uid}`}>
                     <polygon points={markTopBarKeep} />
                   </clipPath>
+                  <mask id={`grow-${uid}-logo`} class="grow" style={`--dash:${UNROLL_DASH}`}>
+                    <g class="lockup-area" fill="#fff">
+                      <polygon points={markSlab.points} />
+                      <rect transform={lane.transform} x={lane.x} y={lane.y} width="60000" height={lane.height} />
+                    </g>
+                    <g fill="none" stroke="#fff" stroke-width={ARM_STROKE} stroke-dasharray={`${UNROLL_DASH} ${UNROLL_DASH}`}>
+                      {markTopBarGrowth.map((g) => <path d={g.d} data-ray={ray(g)} />)}
+                    </g>
+                  </mask>
                 </defs>
-                <g fill={`url(#foil-${uid}-logo)`}>
+                <g class="drawing" fill={`url(#foil-${uid}-logo)`}>
                   <path d={markTopBarPath} />
                   <use class="lockup-part" href={`#${markPathId}`} clip-path={`url(#bar-${uid})`} />
                   <path class="lockup-part" d={lockupPath} />
                 </g>
               </svg>
-              <svg class="lockup-vt" viewBox={tightViewBox} aria-hidden="true">
+              <svg class="lockup-vt" viewBox={flightViewBox} aria-hidden="true">
+                <clipPath id={`slab-${uid}`}>
+                  <polygon points={markSlab.points} />
+                </clipPath>
                 <g fill={`url(#foil-${uid}-logo)`}>
-                  <use href={`#${markPathId}`} clip-path={`url(#bar-${uid})`} />
+                  <use href={`#${markPathId}`} clip-path={`url(#slab-${uid})`} />
                   <path d={lockupPath} />
                 </g>
               </svg>
@@ -560,9 +602,11 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
   }
   /* Only while a page change is captured (Base.astro sets .vt-lockup around it) does the lockup
      stand on its own layer: the overlay shows and takes the transition's name, and the same S and
-     word in the big drawing step aside, so the ribbon and the bar stay behind with the page. */
+     word in the drawing step aside, so the ribbon and the bar stay behind with the page, both arms
+     ending square where the overlay's S overlaps them on landing (markSlab). */
   .lockup-vt {
     position: absolute;
+    max-width: none;
     visibility: hidden;
     overflow: hidden;
     pointer-events: none;
@@ -574,19 +618,57 @@ const polyBelow = `--poly:${polygonCss(shapeBelow)}`;
     block-size: calc(var(--lh) * var(--m));
   }
   .backdrop .lockup-vt {
-    inset: 0;
-    inline-size: 100%;
-    block-size: 100%;
+    inset-inline-start: calc(var(--unit) * (var(--fx) - var(--box-x)));
+    inset-block-start: calc(var(--unit) * (var(--fy) - var(--box-y)));
+    inline-size: calc(var(--unit) * var(--fw));
+    block-size: calc(var(--unit) * var(--fh));
   }
   :global(:root.vt-lockup) .lockup-vt {
     visibility: visible;
     view-transition-name: silver-lockup;
   }
-  :global(:root.vt-lockup) .home .lockup-part {
-    clip-path: var(--beside-lockup);
-  }
-  :global(:root.vt-lockup) .backdrop .lockup-part {
+  :global(:root.vt-lockup) .lockup-part {
     visibility: hidden;
+  }
+  /* When the lockup lands where it was not (Base.astro sets .vt-move, then .vt-landed once the
+     transition has finished), the arms there stay hidden while it flies and then grow out of its
+     square ends to the page's edges. --grow runs from 0 to 1 of each arm's measured length (--len);
+     the fallback reaches past any edge. */
+  @property --grow {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 1;
+  }
+  .grow path {
+    stroke-dashoffset: calc((var(--dash) - var(--grow) * var(--len, 20000)) * 1px);
+  }
+  :global(:root.vt-move) .drawing {
+    mask: var(--grow-mask);
+  }
+  /* In flight the S and the word are on the overlay, and their area would show only the arms'
+     overlap with it, as two slivers. */
+  :global(:root.vt-lockup) .grow .lockup-area {
+    visibility: hidden;
+  }
+  :global(:root.vt-move) .home .ribbon,
+  :global(:root.vt-move) .backdrop .logo .mark {
+    --grow: 0;
+  }
+  /* The home page's unroll curve, and times that keep both at about one speed: the hero's arms run
+     several times as far as the corner's. */
+  :global(:root.vt-move.vt-landed) .home .ribbon {
+    animation: arms-grow 650ms cubic-bezier(0.3, 0.55, 0.3, 1) both;
+  }
+  :global(:root.vt-move.vt-landed) .backdrop .logo .mark {
+    animation: arms-grow 350ms cubic-bezier(0.3, 0.55, 0.3, 1) both;
+  }
+  @keyframes arms-grow {
+    from {
+      --grow: 0;
+    }
+    to {
+      --grow: 1;
+    }
   }
   .backdrop h1 {
     margin-block-start: var(--space-4);

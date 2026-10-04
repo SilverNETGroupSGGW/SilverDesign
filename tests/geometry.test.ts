@@ -1,6 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import {
+  JOIN_OVERLAP,
+  ribbonGrowth,
+  ribbonSlab,
+  ribbonTopBarLevel,
+  TOP_BAR_BEND,
+} from "../src/lib/ribbon";
 
 const geometry = JSON.parse(
   readFileSync(join(import.meta.dir, "..", "brand", "logo", "geometry.json"), "utf8"),
@@ -39,5 +46,38 @@ describe("brand/logo/geometry.json", () => {
 
   test("the two arms are parallel but offset, so one straight ribbon cannot hold both", () => {
     expect(geometry.ribbon.offset).toBeGreaterThan(geometry.ribbon.width);
+  });
+});
+
+describe("the lockup's flight between the hero and the navigation", () => {
+  // The exported viewBox is 300 300 600 600.
+  const centre = [600, 600];
+  const { direction: d, axis, start, width } = geometry.ribbon;
+  const twin = [2 * centre[0]! - axis[0]!, 2 * centre[1]! - axis[1]!];
+  const along = (p: number[], from: number[]): number =>
+    (p[0]! - from[0]!) * d[0]! + (p[1]! - from[1]!) * d[1]!;
+
+  test("the flying S overlaps both arms' square ends, short of the top bar's bend", () => {
+    expect(JOIN_OVERLAP).toBeGreaterThan(0);
+    expect(JOIN_OVERLAP).toBeLessThan(TOP_BAR_BEND.run);
+    const { ends } = ribbonSlab(geometry.ribbon, centre);
+    const [u0, u1, l0, l1] = ends as [number[], number[], number[], number[]];
+    for (const p of [u0, u1]) expect(along(p, axis)).toBeCloseTo(start + JOIN_OVERLAP, 3);
+    for (const p of [l0, l1]) expect(along(p, twin)).toBeCloseTo(-(start + JOIN_OVERLAP), 3);
+    expect(Math.hypot(u0[0]! - u1[0]!, u0[1]! - u1[1]!)).toBeCloseTo(width, 3);
+  });
+
+  test("the arms grow from their square ends, the top bar's lower one out of its bend", () => {
+    for (const topBar of [false, true]) {
+      const [up, low] = ribbonGrowth(geometry.ribbon, centre, topBar);
+      expect(along(up.from, axis)).toBeCloseTo(start, 3);
+      expect(up.toward).toEqual(d);
+      if (!topBar) expect(along(low.from, twin)).toBeCloseTo(-start, 3);
+    }
+    const [, bar] = ribbonGrowth(geometry.ribbon, centre, true);
+    expect(bar.toward).toEqual([-1, 0]);
+    expect(bar.from[1]).toBeCloseTo(ribbonTopBarLevel(geometry.ribbon, centre).level, 6);
+    const turn = Math.acos(d[0]!);
+    expect(bar.pre).toBeCloseTo(TOP_BAR_BEND.run + TOP_BAR_BEND.radius * turn, 6);
   });
 });

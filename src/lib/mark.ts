@@ -1,7 +1,14 @@
 import geometryJson from "../../brand/logo/geometry.json?raw";
 import markSvg from "../../brand/logo/mark-transparent.svg?raw";
 import { withBase } from "./base";
-import { ribbonArms, ribbonBand, ribbonTopBar, ribbonTopBarKeep } from "./ribbon";
+import {
+  ribbonArms,
+  ribbonBand,
+  ribbonGrowth,
+  ribbonSlab,
+  ribbonTopBar,
+  ribbonTopBarKeep,
+} from "./ribbon";
 import { compactPath } from "./svg-path";
 
 export const markPathId = "silver-mark-path";
@@ -47,3 +54,6 @@ export const markRibbonPath = compactPath(ribbonArms(geometry.ribbon, centre));
 export const markBandPath = compactPath(ribbonBand(geometry.ribbon));
 export const markTopBarPath = compactPath(ribbonTopBar(geometry.ribbon, centre));
 export const markTopBarKeep = ribbonTopBarKeep(geometry.ribbon, centre);
+export const markSlab = ribbonSlab(geometry.ribbon, centre);
+export const markArmsGrowth = ribbonGrowth(geometry.ribbon, centre, false);
+export const markTopBarGrowth = ribbonGrowth(geometry.ribbon, centre, true);

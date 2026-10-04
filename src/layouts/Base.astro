@@ -58,7 +58,7 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     {/* Entrances hide their elements from the first frame, so something already painted never
         blinks out and back in; reveal.ts takes over, and if it never arrives the page opens up by
         itself. */}
-    <script is:inline>
+    <script is:inline define:vars={{ variant }}>
       try {
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
           const root = document.documentElement;
@@ -72,15 +72,54 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
       // put it on its own layer for the frames the transition captures, the old one as it leaves
       // and the new one before its first frame.
       addEventListener("pageswap", (e) => {
-        if (e.viewTransition) document.documentElement.classList.add("vt-lockup");
+        if (!e.viewTransition) return;
+        document.documentElement.classList.add("vt-lockup");
+        try {
+          sessionStorage.setItem("silver-from", variant);
+        } catch {}
       });
+      // Each growing arm's length to where it leaves the opener, in the mark's units: `pre` units of
+      // path, then straight on from a point along a direction (data-ray, Opener.astro).
+      const measureArms = () => {
+        for (const path of document.querySelectorAll(".grow [data-ray]")) {
+          const m = path.ownerSVGElement.getScreenCTM();
+          const box = path.closest(".opener").getBoundingClientRect();
+          const [pre, x, y, vx, vy] = path.dataset.ray.split(" ").map(Number);
+          const across = ((vx < 0 ? box.left : box.right) - m.e) / m.a;
+          const t = Math.min(
+            vx ? (across - x) / vx : Infinity,
+            vy < 0 ? ((box.top - m.f) / m.d - y) / vy : Infinity,
+          );
+          const width = Number(path.parentNode.getAttribute("stroke-width"));
+          path.style.setProperty("--len", String(pre + Math.max(t, 0) + width));
+        }
+      };
       addEventListener("pagereveal", (e) => {
         if (!e.viewTransition) return;
         const root = document.documentElement;
         root.classList.add("vt-lockup");
         e.viewTransition.finished.finally(() => root.classList.remove("vt-lockup"));
+        let from = variant;
+        try {
+          from = sessionStorage.getItem("silver-from") ?? variant;
+        } catch {}
+        // Between two pages the lockup stays in the corner and the arms stay drawn.
+        if (from === variant || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        root.classList.add("vt-move");
+        if (variant === "home") root.dataset.hero = "still";
+        e.viewTransition.ready.then(measureArms);
+        e.viewTransition.finished.finally(() => root.classList.add("vt-landed"));
       });
-      addEventListener("pageshow", () => document.documentElement.classList.remove("vt-lockup"));
+      addEventListener("animationend", (e) => {
+        if (e.animationName === "arms-grow")
+          document.documentElement.classList.remove("vt-move", "vt-landed");
+      });
+      // Only a page restored from the back-forward cache still carries its own pageswap's classes. On
+      // a fresh load pageshow can fire mid-flight, and the drawing's lockup would show under the one
+      // still flying in.
+      addEventListener("pageshow", (e) => {
+        if (e.persisted) document.documentElement.classList.remove("vt-lockup", "vt-move", "vt-landed");
+      });
     </script>
     {/* Back from another page of the site, the home page is already at rest; a reload replays the
         arrival. Inline in the head so the attribute is set before the first frame. */}
