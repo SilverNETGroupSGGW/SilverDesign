@@ -26,11 +26,11 @@
       },
       {
         "title": "Pick a project or pitch your own",
-        "body": "Get into something that's already running, or bring an idea of your own. Solo or with a few people."
+        "body": "Get into something that's already running, or bring an idea of your own."
       },
       {
         "title": "Work on it over a semester",
-        "body": "On your own or in a small team, at your own pace. And when it helps to sit down together, we meet in our room."
+        "body": "On your own or in a small team, at your own pace. When it helps to sit down together, we meet in our room."
       }
     ],
     "hackathons": "We go to hackathons too. HackArena 3.0, March 2026: 4th place in the final."
@@ -68,7 +68,7 @@
     "email": "Email",
     "room": "Room",
     "stripProjects": "We build solo or in small teams. Join a project that's running, or bring your own.",
-    "stripHistory": "The next chapter is happening now. We post projects and meetup dates on the Discord."
+    "stripHistory": "The club is still going. We post current projects and meetup dates on the Discord."
   },
   "footer": {
     "since": "At WIII SGGW (formerly WZIM) since {year}",

@@ -26,11 +26,11 @@
       },
       {
         "title": "Wybierasz projekt albo zgłaszasz swój",
-        "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z własnym pomysłem. Samodzielnie albo w kilka osób."
+        "body": "Dołączasz do czegoś, co już się dzieje, albo przychodzisz z własnym pomysłem."
       },
       {
         "title": "Pracujesz nad nim przez semestr",
-        "body": "Samodzielnie albo w zespole, w swoim tempie. A kiedy trzeba usiąść razem, spotykamy się na żywo w naszej sali."
+        "body": "Samodzielnie albo w zespole, w swoim tempie. Kiedy trzeba usiąść razem, spotykamy się na żywo w naszej sali."
       }
     ],
     "hackathons": "Jeździmy też na hackathony. HackArena 3.0, marzec 2026: 4. miejsce w finale."
@@ -68,7 +68,7 @@
     "email": "Mail",
     "room": "Sala",
     "stripProjects": "Budujemy samodzielnie albo w małych zespołach. Dołączasz do trwającego projektu albo przychodzisz z własnym.",
-    "stripHistory": "Ciąg dalszy dzieje się teraz. Projekty i terminy spotkań ogłaszamy na Discordzie."
+    "stripHistory": "Koło działa dalej. Bieżące projekty i terminy spotkań ogłaszamy na Discordzie."
   },
   "footer": {
     "since": "Przy WIII SGGW (dawniej WZIM) od {year}",
