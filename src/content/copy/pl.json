@@ -15,7 +15,9 @@
     "title": "Koło naukowe informatyków na SGGW.",
     "lead": "Aplikacje, z których korzysta kampus, piszą studenci z twojego wydziału. Następną możesz napisać z nami.",
     "ctaDiscord": "Dołącz na Discordzie",
-    "ctaProjects": "Zobacz projekty"
+    "ctaProjects": "Zobacz projekty",
+    "scroll": "Przewiń",
+    "scrollTo": "Przewiń do tego, co budujemy"
   },
   "steps": {
     "heading": "Start w trzech krokach",
@@ -33,11 +35,11 @@
         "body": "Samodzielnie albo w zespole, w swoim tempie. Kiedy trzeba usiąść razem, spotykamy się na żywo w naszej sali."
       }
     ],
-    "hackathons": "Jeździmy też na hackathony. HackArena 3.0, marzec 2026: 4. miejsce w finale."
+    "hackathons": "Startujemy też w hackathonach. Na HackArenie 3.0 w marcu 2026 przeszliśmy do finału i zajęliśmy w nim 4. miejsce."
   },
   "projects": {
     "heading": "Projekty",
-    "lead": "Dwie z naszych aplikacji są w sklepach i mają po ponad tysiąc pobrań. Reszta jest na GitHubie.",
+    "lead": "Aplikacje i narzędzia, które piszemy w kole. Jest spora szansa, że jedną z nich masz już w telefonie.",
     "viewAll": "Wszystkie projekty",
     "filterAll": "Wszystkie",
     "filterStore": "W sklepach",
@@ -56,19 +58,21 @@
   },
   "build": {
     "heading": "Co budujemy i czym",
-    "what": "Część naszych projektów rozwiązuje problemy, które sami mamy na uczelni. Stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś chciał sprawdzić nową technologię albo zrobić coś znanego po swojemu.",
-    "how": "Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie sięgamy po nowe rzeczy, czasem zanim ktokolwiek uzna je za stabilne.",
+    "cardTitle": "Jak wybieramy i tworzymy projekty",
+    "slot": "Następny projekt",
+    "what": "Bierzemy to, co irytuje nas na uczelni, i zamieniamy w aplikacje. Tak powstały plan zajęć w telefonie i mapa kampusu. Resztę napędza ciekawość i frajda: nowa technologia do sprawdzenia albo znany pomysł zrobiony po swojemu.",
+    "how": "Nie zamykamy się w jednym stacku. Każdy projekt dostaje narzędzia, które do niego pasują, a po nowości sięgamy wcześnie, czasem zanim ktokolwiek uzna je za stabilne.",
     "inOrg": "W naszej organizacji na GitHubie:"
   },
   "join": {
     "heading": "Dołącz",
-    "lead": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole!",
-    "threshold": "Terminy spotkań i bieżące projekty ogłaszamy na Discordzie. Wejdź, przedstaw się i napisz, co chcesz robić.",
+    "lead": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? To masz już podstawy. Resztę złapiesz w zespole.",
+    "threshold": "Terminy spotkań i bieżące projekty ogłaszamy na Discordzie. Żeby zacząć, wystarczy tam napisać.",
     "discord": "Discord",
     "email": "Mail",
     "room": "Sala",
-    "stripProjects": "Budujemy samodzielnie albo w małych zespołach. Dołączasz do trwającego projektu albo przychodzisz z własnym.",
-    "stripHistory": "Koło działa dalej. Bieżące projekty i terminy spotkań ogłaszamy na Discordzie."
+    "stripProjects": "Masz pomysł na aplikację? Przyjdź z nim albo dołącz do projektu, który już trwa.",
+    "stripHistory": "Bieżące projekty i terminy spotkań ogłaszamy na Discordzie."
   },
   "footer": {
     "since": "Przy WIII SGGW (dawniej WZIM) od {year}",
@@ -77,7 +81,7 @@
   },
   "history": {
     "heading": "Historia",
-    "lead": "Co się działo w kole, rok po roku."
+    "lead": "Od 2013 roku: projekty, warsztaty i hackathony, rok po roku."
   },
   "notFound": {
     "title": "Nie ma takiej strony",
@@ -87,17 +91,17 @@
   "brochure": {
     "students": {
       "title": "Koło naukowe informatyków na SGGW",
-      "lead": "Nasze aplikacje docierają na cały kampus. Ty możesz napisać następną, niezależnie od wydziału!",
+      "lead": "Nasze aplikacje znajdziesz w telefonach w całym kampusie. Następną możesz napisać ty, z jakiegokolwiek wydziału jesteś.",
       "stepsHeading": "Start w trzech krokach",
       "appsHeading": "Nasze aplikacje",
-      "threshold": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? Czyli podstawy już masz, reszty nauczysz się w zespole!",
+      "threshold": "Udało ci się kiedyś napisać skrypt na zajęcia, stronę albo bota? To masz już podstawy. Resztę złapiesz w zespole.",
       "qrLabel": "Wpadnij na Discorda, gdzie zaczyna się każdy projekt."
     },
     "companies": {
       "title": "Koło naukowe informatyków SGGW",
       "lead": "Siedmioosobowy zespół studentów, który wypuszcza aplikacje do sklepów.",
       "whoHeading": "Kim jesteśmy",
-      "who": "Koło Naukowe Informatyków Silver przy WIII SGGW (dawniej WZIM). Robimy aplikacje mobilne i webowe dla studentów z kampusu i dla siebie.",
+      "who": "Koło Naukowe Informatyków Silver przy WIII SGGW (dawniej WZIM). Piszemy i wydajemy aplikacje mobilne i webowe, z których korzystają studenci SGGW.",
       "builtHeading": "Co zbudowaliśmy",
       "togetherHeading": "Co możemy zrobić razem",
       "together": [

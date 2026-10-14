@@ -23,7 +23,7 @@ export const ProjectSchema = z.object({
   name: z.string(),
   order: z.number().int(),
   status: z.enum(["store", "github"]),
-  /** Shown on the students' sheet, which has room for three apps and picks them by hand. */
+  /** The apps picked by hand for the students' sheet, which has room for three, and the home page. */
   sheet: z.boolean().default(false),
   platforms: z.array(z.enum(["android", "ios", "web", "api"])),
   links: z.object({
@@ -35,6 +35,8 @@ export const ProjectSchema = z.object({
   summary: LocalizedString,
   result: LocalizedString,
   screenshot: z.string().optional(),
+  /** For a picture that is not a screen of the app, which the default alt text would claim. */
+  screenshotAlt: LocalizedString.optional(),
 });
 export type Project = z.infer<typeof ProjectSchema>;
 
@@ -68,6 +70,9 @@ export const CopySchema = z.object({
     lead: z.string(),
     ctaDiscord: z.string(),
     ctaProjects: z.string(),
+    /** The scroll cue's visible label, and its accessible name, which starts with the label. */
+    scroll: z.string(),
+    scrollTo: z.string(),
   }),
   steps: z.object({
     heading: z.string(),
@@ -93,7 +98,14 @@ export const CopySchema = z.object({
     platformWeb: z.string(),
     platformApi: z.string(),
   }),
-  build: z.object({ heading: z.string(), what: z.string(), how: z.string(), inOrg: z.string() }),
+  build: z.object({
+    heading: z.string(),
+    cardTitle: z.string(),
+    slot: z.string(),
+    what: z.string(),
+    how: z.string(),
+    inOrg: z.string(),
+  }),
   join: z.object({
     heading: z.string(),
     lead: z.string(),

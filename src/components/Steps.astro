@@ -3,32 +3,32 @@ import type { Copy } from "../lib/schemas";
 
 interface Props {
   steps: Copy["steps"];
+  /** Where the first step leads; given, that step becomes the page's primary action. */
+  firstHref?: string;
 }
-const { steps } = Astro.props;
+const { steps, firstHref } = Astro.props;
 ---
-<section class="steps container" aria-labelledby="steps-heading">
-  <h2 class="angled" id="steps-heading" data-reveal>{steps.heading}</h2>
-  <ol role="list">
+<div class="steps">
+  <ol role="list" aria-label={steps.heading}>
     {steps.items.map((s, i) => (
-      <li class="cut" data-reveal>
+      <li class:list={i === 0 && firstHref ? ["primary", "cut-fill"] : ["cut"]} data-reveal>
         <span class="n mono">0{i + 1}</span>
-        <h3>{s.title}</h3>
+        {i === 0 && firstHref ? (
+          <h3><a class="go" href={firstHref}>{s.title}<span aria-hidden="true"> →</span></a></h3>
+        ) : (
+          <h3>{s.title}</h3>
+        )}
         <p>{s.body}</p>
       </li>
     ))}
   </ol>
-  <p class="hack" data-reveal data-motion="read">{steps.hackathons}</p>
-</section>
+</div>
 
 <style>
   .steps {
-    padding-block: var(--space-6);
     display: grid;
     gap: var(--space-4);
     grid-template-columns: minmax(0, 1fr);
-  }
-  h2 {
-    font-size: var(--step-3);
   }
   ol {
     list-style: none;
@@ -44,6 +44,7 @@ const { steps } = Astro.props;
     background: var(--surface);
     border: 1px solid var(--line);
     display: grid;
+    align-content: start;
     gap: var(--space-2);
     grid-template-columns: minmax(0, 1fr);
   }
@@ -98,7 +99,43 @@ const { steps } = Astro.props;
   p {
     color: var(--muted);
   }
-  .hack {
-    color: var(--muted);
+  /* The primary button's fill on a whole step: cut on the pseudo-element, so the focus ring around
+     the step is not cut with it. */
+  .primary {
+    isolation: isolate;
+    border-color: transparent;
+    color: var(--bg);
+  }
+  .primary::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    background: var(--ink);
+    transition: background-color 120ms;
+  }
+  .primary:hover::before {
+    background: var(--bright);
+  }
+  /* 5.7 : 1 on Chrome Silver, 7.1 : 1 on Polished Highlight. */
+  .primary .n,
+  .primary p {
+    color: color-mix(in srgb, var(--bg) 70%, var(--ink));
+  }
+  .go {
+    color: inherit;
+    text-decoration: none;
+  }
+  .go::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .go:focus-visible {
+    outline: none;
+  }
+  .primary:has(.go:focus-visible) {
+    outline: 2px solid var(--bright);
+    outline-offset: 3px;
   }
 </style>

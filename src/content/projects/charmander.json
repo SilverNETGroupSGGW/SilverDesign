@@ -9,5 +9,10 @@
     "pl": "Proxy do powiadomień push w przeglądarce. Jeden kontrakt API napisany dwa razy: raz w .NET, raz w Pythonie, żeby porównać.",
     "en": "A proxy for browser push notifications. One API contract written twice, once in .NET and once in Python, to see how they compare."
   },
-  "result": { "pl": "Dwa backendy, jeden kontrakt", "en": "Two backends, one contract" }
+  "result": { "pl": "Dwa backendy, jeden kontrakt", "en": "Two backends, one contract" },
+  "screenshot": "charmander-code.png",
+  "screenshotAlt": {
+    "pl": "Ten sam endpoint /register-device w .NET i w Pythonie",
+    "en": "The same /register-device endpoint in .NET and in Python"
+  }
 }

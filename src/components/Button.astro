@@ -50,12 +50,12 @@ const { href, variant = "primary", ...attrs } = Astro.props;
   :global(:root[data-reveals]) .button[data-reveal]:not([data-reveal="in"]) {
     opacity: 1;
   }
-  :global(:root[data-reveals]) .primary[data-reveal]:not([data-reveal="in"])::before,
-  :global(:root[data-reveals]) .ghost[data-reveal]:not([data-reveal="in"]) {
+  :global(:root[data-reveals]) .primary[data-reveal]:not([data-reveal="in"], :focus-within)::before,
+  :global(:root[data-reveals]) .ghost[data-reveal]:not([data-reveal="in"], :focus-within) {
     clip-path: inset(0 100% 0 0);
   }
   /* Dark on dark is still faintly there on an antialiased edge; the label waits for its fill. */
-  :global(:root[data-reveals]) .primary[data-reveal]:not([data-reveal="in"]) .label {
+  :global(:root[data-reveals]) .primary[data-reveal]:not([data-reveal="in"], :focus-within) .label {
     opacity: 0;
   }
   .primary[data-reveal="in"] .label {
@@ -67,7 +67,8 @@ const { href, variant = "primary", ...attrs } = Astro.props;
   .primary[data-reveal="in"]::before {
     animation: cut-in 650ms var(--ease-out) both;
   }
+  /* Filled backwards only: held after the end, the clip would cut off the focus ring. */
   .ghost[data-reveal="in"] {
-    animation: draw 650ms var(--ease-out) both;
+    animation: draw 650ms var(--ease-out) backwards;
   }
 </style>

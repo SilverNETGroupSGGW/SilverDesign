@@ -17,6 +17,9 @@ export const pathFor = (key: RouteKey, locale: Locale): string => {
   return withBase(slug === "" ? `${locale}/` : `${locale}/${slug}/`);
 };
 
+/** The language picked with the switch, which the root page honours over the browser's. */
+export const localeKey = "silver-locale";
+
 export const otherLocale = (locale: Locale): Locale => (locale === "pl" ? "en" : "pl");
 
 export const fill = (template: string, vars: Record<string, string | number>): string =>

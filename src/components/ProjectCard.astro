@@ -28,7 +28,7 @@ const copy = (await getEntry("copy", locale))!.data;
 // declares it or not, and the masters in that directory are three times the weight of the crops.
 // tests/content.test.ts keeps this list and the declared screenshots in step.
 const screenshots = import.meta.glob<{ default: ImageMetadata }>(
-  "../../brand/screenshots/{kampus-sggw-map-crop.jpg,plan-wzim-day-crop.png}",
+  "../../brand/screenshots/{kampus-sggw-map-crop.jpg,plan-wzim-day-crop.png,dni-sggw-harmonogram-crop.png,charmander-code.png}",
 );
 const shot =
   withScreenshot && p.screenshot
@@ -49,17 +49,17 @@ const links = [
 ].filter((l): l is { href: string; label: string } => Boolean(l));
 
 // The first screenshot of a listing is the page's LCP element, and at the default quality it weighs
-// 130 KB. The cards render it grayscale at 85% opacity, where 65 is invisible.
+// 130 KB. The cards render it muted at 85% opacity, where 65 is invisible.
 const shotQuality = 65;
 ---
 <article class="card cut" data-status={p.status} data-reveal>
   {shot && (
     <Image
       src={shot}
-      alt={fill(copy.projects.shotAlt, { name: p.name })}
+      alt={p.screenshotAlt?.[locale] ?? fill(copy.projects.shotAlt, { name: p.name })}
       width={420}
       widths={[420, 840]}
-      sizes="(min-width: 40rem) min(50vw - 3rem, 36rem), 100vw"
+      sizes="(min-width: 40rem) min(50vw - 3rem, 36rem), calc(100vw - 2rem)"
       class="shot"
       quality={shotQuality}
       loading={eagerScreenshot ? "eager" : "lazy"}
@@ -105,7 +105,6 @@ const shotQuality = 65;
     object-position: top;
     /* A lazy screenshot is an empty frame until it decodes; the tint keeps it from reading as a gap. */
     background: var(--line);
-    filter: saturate(0);
     opacity: 0.85;
   }
   .card {
@@ -114,8 +113,9 @@ const shotQuality = 65;
   .card[data-reveal="in"] {
     animation: fade-in 500ms ease-out both;
   }
+  /* Backwards only, so the image is left with no filter at all once developed. */
   .card[data-reveal="in"] .shot {
-    animation: develop 1200ms var(--ease-out) both;
+    animation: develop 1200ms var(--ease-out) backwards;
   }
   .card[data-reveal="in"] .body {
     animation: fade-in 600ms ease-out 350ms both;
@@ -125,7 +125,7 @@ const shotQuality = 65;
       filter: saturate(0) brightness(2.6) blur(14px);
     }
     to {
-      filter: saturate(0) brightness(1) blur(0);
+      filter: saturate(1) brightness(1) blur(0);
     }
   }
   .body {

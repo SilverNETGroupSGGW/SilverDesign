@@ -12,15 +12,25 @@ const { locale, route, icon = false } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const target = otherLocale(locale);
 ---
-<a class="switch mono" href={pathFor(route, target)} hreflang={target} lang={target}>
+<a class="switch" href={pathFor(route, target)} hreflang={target} lang={target}>
   {icon && <Languages class="icon" aria-hidden="true" />}<span class="label">{copy.nav.switchTo}</span>
 </a>
+
+<script>
+  import { localeKey } from "../lib/i18n";
+  for (const link of document.querySelectorAll<HTMLAnchorElement>("a.switch"))
+    link.addEventListener("click", () => {
+      try {
+        localStorage.setItem(localeKey, link.hreflang);
+      } catch {}
+    });
+</script>
 
 <style>
   .switch {
     text-decoration: none;
     color: var(--nav-rest, var(--muted));
-    padding-block: 0.55rem;
+    padding-block: 0.45rem;
     transition: color 120ms;
   }
   .switch:hover {

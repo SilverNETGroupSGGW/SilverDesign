@@ -6,7 +6,8 @@
   "platforms": ["android", "ios"],
   "links": {
     "play": "https://play.google.com/store/apps/details?id=com.silvernet.silvertimetable",
-    "appStore": "https://apps.apple.com/pl/app/plan-wzim/id1384573148"
+    "appStore": "https://apps.apple.com/pl/app/plan-wzim/id1384573148",
+    "github": "https://github.com/SilverNETGroupSGGW/SilverTimetable2"
   },
   "tech": ["Flutter", "Dart"],
   "summary": {

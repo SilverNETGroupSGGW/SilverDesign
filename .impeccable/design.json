@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-06T21:09:44+00:00",
+  "title": "Design System: Silver",
+  "extensions": {
+    "colorMeta": {
+      "covert-black": {
+        "role": "neutral",
+        "displayName": "Covert Black",
+        "canonical": "oklch(20.2% 0.0099 285.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.0099 285.5)",
+          "oklch(26.4% 0.0099 285.5)",
+          "oklch(37.9% 0.0099 285.5)",
+          "oklch(49.3% 0.0099 285.5)",
+          "oklch(60.7% 0.0099 285.5)",
+          "oklch(72.1% 0.0099 285.5)",
+          "oklch(83.6% 0.0099 285.5)",
+          "oklch(95.0% 0.0099 285.5)"
+        ]
+      },
+      "graphite-surface": {
+        "role": "neutral",
+        "displayName": "Graphite Surface",
+        "canonical": "oklch(23.8% 0.0114 285.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.0114 285.5)",
+          "oklch(26.4% 0.0114 285.5)",
+          "oklch(37.9% 0.0114 285.5)",
+          "oklch(49.3% 0.0114 285.5)",
+          "oklch(60.7% 0.0114 285.5)",
+          "oklch(72.1% 0.0114 285.5)",
+          "oklch(83.6% 0.0114 285.5)",
+          "oklch(95.0% 0.0114 285.5)"
+        ]
+      },
+      "divider-line": {
+        "role": "neutral",
+        "displayName": "Divider Line",
+        "canonical": "oklch(32.8% 0.0140 285.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.0140 285.6)",
+          "oklch(26.4% 0.0140 285.6)",
+          "oklch(37.9% 0.0140 285.6)",
+          "oklch(49.3% 0.0140 285.6)",
+          "oklch(60.7% 0.0140 285.6)",
+          "oklch(72.1% 0.0140 285.6)",
+          "oklch(83.6% 0.0140 285.6)",
+          "oklch(95.0% 0.0140 285.6)"
+        ]
+      },
+      "control-edge": {
+        "role": "neutral",
+        "displayName": "Control Edge",
+        "canonical": "oklch(53.4% 0.0067 264.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.0067 264.5)",
+          "oklch(26.4% 0.0067 264.5)",
+          "oklch(37.9% 0.0067 264.5)",
+          "oklch(49.3% 0.0067 264.5)",
+          "oklch(60.7% 0.0067 264.5)",
+          "oklch(72.1% 0.0067 264.5)",
+          "oklch(83.6% 0.0067 264.5)",
+          "oklch(95.0% 0.0067 264.5)"
+        ],
+        "note": "color-mix(in srgb, #d8dbde 44%, #16161b); hex is the computed value"
+      },
+      "chrome-silver": {
+        "role": "primary",
+        "displayName": "Chrome Silver",
+        "canonical": "oklch(89.0% 0.0052 247.9)",
+        "tonalRamp": [
+          "oklch(15.0% 0.0052 247.9)",
+          "oklch(26.4% 0.0052 247.9)",
+          "oklch(37.9% 0.0052 247.9)",
+          "oklch(49.3% 0.0052 247.9)",
+          "oklch(60.7% 0.0052 247.9)",
+          "oklch(72.1% 0.0052 247.9)",
+          "oklch(83.6% 0.0052 247.9)",
+          "oklch(95.0% 0.0052 247.9)"
+        ]
+      },
+      "pewter-muted": {
+        "role": "neutral",
+        "displayName": "Pewter Muted",
+        "canonical": "oklch(69.8% 0.0112 261.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.0112 261.8)",
+          "oklch(26.4% 0.0112 261.8)",
+          "oklch(37.9% 0.0112 261.8)",
+          "oklch(49.3% 0.0112 261.8)",
+          "oklch(60.7% 0.0112 261.8)",
+          "oklch(72.1% 0.0112 261.8)",
+          "oklch(83.6% 0.0112 261.8)",
+          "oklch(95.0% 0.0112 261.8)"
+        ]
+      },
+      "polished-highlight": {
+        "role": "neutral",
+        "displayName": "Polished Highlight",
+        "canonical": "oklch(96.4% 0.0029 264.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.0029 264.5)",
+          "oklch(26.4% 0.0029 264.5)",
+          "oklch(37.9% 0.0029 264.5)",
+          "oklch(49.3% 0.0029 264.5)",
+          "oklch(60.7% 0.0029 264.5)",
+          "oklch(72.1% 0.0029 264.5)",
+          "oklch(83.6% 0.0029 264.5)",
+          "oklch(95.0% 0.0029 264.5)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Tytuł w pasie otwierającym; opływa przekątną."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "H2 sekcji, zawsze ze znacznikiem."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nazwy projektów, kroki, wpisy osi czasu, pasek Dołącz."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Lead hero, do prawej wzdłuż przekątnej."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Tekst, miara 58ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etykiety kolumn stopki, wersaliki."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Identyfikatory (pakiety, adresy, e-maile) oraz liczby i pomiary (kroki, lata, wyniki zaczynające się od liczby)."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Każde wejście i rysowanie."
+      },
+      {
+        "name": "axis-in",
+        "value": "700ms, travel 1.25rem along 26.17°",
+        "purpose": "Domyślne wejście: od dołu i z lewej, w górę osi wstęgi."
+      },
+      {
+        "name": "cut-in",
+        "value": "600–900ms",
+        "purpose": "Wypełnienia i pasek Dołącz wjeżdżają ścięciem naprzód."
+      },
+      {
+        "name": "color",
+        "value": "120ms",
+        "purpose": "Hover i zmiany koloru."
+      },
+      {
+        "name": "page",
+        "value": "200ms crossfade; lockup 650ms cubic-bezier(0.5, 0, 0.15, 1)",
+        "purpose": "View Transitions między stronami."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "--travel: 0px",
+        "purpose": "Zostają przenikania, nic się nie przesuwa."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "opener-narrow",
+        "value": "56rem (container)"
+      },
+      {
+        "name": "nav-tight",
+        "value": "40rem (container)"
+      },
+      {
+        "name": "coarse-pointer",
+        "value": "(pointer: coarse) → min 2.75rem targets"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Główne CTA (Discord). Srebrne wypełnienie ze ściętym rogiem na pseudo-elemencie, żeby fokus nie był przycięty.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\"><span>Dołącz na Discordzie</span></a>",
+      "css": ".ds-btn-primary{position:relative;display:inline-flex;align-items:center;padding:.75em 1.25em;border:1px solid transparent;font:500 1rem/1.5 Geist,system-ui,sans-serif;color:#16161b;text-decoration:none}.ds-btn-primary::before{content:\"\";position:absolute;inset:-1px;background:#d8dbde;transition:background-color 120ms;clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem * tan(26.17deg)), calc(100% - 1.25rem) 100%, 0 100%);}.ds-btn-primary span{position:relative}.ds-btn-primary:hover::before{background:#f2f3f5}.ds-btn-primary:focus-visible{outline:2px solid #f2f3f5;outline-offset:3px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Akcja drugorzędna (Zobacz projekty). Obrys w Chrome Silver, hover daje płaszczyznę Graphite Surface.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Zobacz projekty</a>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;padding:.75em 1.25em;border:1px solid #d8dbde;font:500 1rem/1.5 Geist,system-ui,sans-serif;color:#d8dbde;text-decoration:none;transition:background-color 120ms}.ds-btn-ghost:hover{background:#1e1e24}.ds-btn-ghost:focus-visible{outline:2px solid #f2f3f5;outline-offset:3px}"
+    },
+    {
+      "name": "Filter Pills",
+      "kind": "chip",
+      "refersTo": "filter-pill",
+      "description": "Filtr projektów. Obrys Control Edge (≥ 3 : 1), wciśnięta pigułka ze ściętym srebrnym wypełnieniem.",
+      "html": "<div class=\"ds-filter\"><button class=\"ds-pill\" aria-pressed=\"true\">Wszystkie</button><button class=\"ds-pill\" aria-pressed=\"false\">W sklepach</button><button class=\"ds-pill\" aria-pressed=\"false\">Na GitHubie</button></div>",
+      "css": ".ds-filter{display:flex;gap:.5rem;flex-wrap:wrap}.ds-pill{position:relative;isolation:isolate;font:400 1rem/1.5 Geist,system-ui,sans-serif;color:#9a9ea5;background:none;border:1px solid #6b6d71;padding:.4em 1em;cursor:pointer;transition:color 120ms,border-color 120ms}.ds-pill[aria-pressed=false]:hover{color:#d8dbde;border-color:#d8dbde}.ds-pill[aria-pressed=true]{color:#16161b;border-color:transparent}.ds-pill[aria-pressed=true]::before{content:\"\";position:absolute;inset:-1px;z-index:-1;background:#d8dbde;clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem * tan(26.17deg)), calc(100% - 1.25rem) 100%, 0 100%);}.ds-pill:focus-visible{outline:2px solid #f2f3f5;outline-offset:3px}"
+    },
+    {
+      "name": "Project Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Karta projektu: przygaszony zrzut z Google Play w stałym kadrze, twardy wynik w Polished Highlight, ścięty róg, bez cienia.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-shot\"></div><div class=\"ds-body\"><h3>Kampus SGGW</h3><p class=\"ds-result\">1 tys.+ pobrań · Android i iOS</p><p class=\"ds-muted\">Mapa kampusu w telefonie: budynki, sale, stołówki, przystanki.</p><p class=\"ds-mono\">Flutter · Dart</p><p class=\"ds-links\"><a href=\"#\">Google Play</a> <a href=\"#\">App Store</a></p></div></article>",
+      "css": ".ds-card{max-width:24rem;background:#1e1e24;border:1px solid #34343c;font-family:Geist,system-ui,sans-serif;color:#d8dbde;clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem * tan(26.17deg)), calc(100% - 1.25rem) 100%, 0 100%);}.ds-shot{aspect-ratio:9/5;max-height:18rem;background:linear-gradient(160deg,#5a5b60,#2a2a30)}.ds-body{padding:1.5rem;display:grid;gap:.5rem}.ds-body h3{margin:0;font-size:1.375rem;font-weight:600;line-height:1.1;letter-spacing:-.02em}.ds-body p{margin:0}.ds-result{color:#f2f3f5;font-weight:500}.ds-muted{color:#9a9ea5}.ds-mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:.86rem;color:#9a9ea5}.ds-links a{color:inherit;text-underline-offset:.15em;margin-right:1rem}.ds-links a:focus-visible{outline:2px solid #f2f3f5;outline-offset:3px}"
+    },
+    {
+      "name": "Section Heading",
+      "kind": "custom",
+      "refersTo": "headline",
+      "description": "H2 ze znacznikiem: kreska pochylona pod kątem wstęgi.",
+      "html": "<h2 class=\"ds-angled\">Projekty</h2>",
+      "css": ".ds-angled{margin:0;font:600 clamp(1.95rem,1.5rem + 2vw,3rem)/1.1 Geist,system-ui,sans-serif;letter-spacing:-.02em;color:#d8dbde}.ds-angled::before{content:\"\";display:block;inline-size:2.5rem;block-size:3px;margin-block:calc(2.5rem * tan(26.17deg)) 1rem;background:#d8dbde;transform:skewY(-26.17deg);transform-origin:0 100%}"
+    },
+    {
+      "name": "Join Strip",
+      "kind": "custom",
+      "refersTo": "join-strip",
+      "description": "Pasek „Dołącz”: płaszczyzna ze ściętym rogiem, tekst w rozmiarze title i główne CTA.",
+      "html": "<section class=\"ds-strip\"><p>Budujemy samodzielnie albo w małych zespołach.</p><a class=\"ds-strip-cta\" href=\"#\">Dołącz na Discordzie</a></section>",
+      "css": ".ds-strip{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5rem;padding:2.5rem;background:#1e1e24;color:#d8dbde;font-family:Geist,system-ui,sans-serif;clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.25rem * tan(26.17deg)), calc(100% - 1.25rem) 100%, 0 100%);}.ds-strip p{margin:0;font-size:1.375rem;max-width:46ch}.ds-strip-cta{padding:.75em 1.25em;background:#d8dbde;color:#16161b;font-weight:500;text-decoration:none;transition:background-color 120ms}.ds-strip-cta:hover{background:#f2f3f5}.ds-strip-cta:focus-visible{outline:2px solid #f2f3f5;outline-offset:3px}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Nawigacja: Pewter Muted, hover i aktywna strona w Chrome Silver.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Projekty</a><a href=\"#\">Historia</a><a href=\"#\">Dołącz</a><a href=\"#\">English</a></nav>",
+      "css": ".ds-nav{display:flex;gap:.5rem 1.5rem;flex-wrap:wrap;font:400 1rem/1.5 Geist,system-ui,sans-serif}.ds-nav a{color:#9a9ea5;text-decoration:none;padding-block:.45rem;transition:color 120ms}.ds-nav a:hover,.ds-nav a[aria-current=page]{color:#d8dbde}.ds-nav a[aria-current=page]{text-decoration:underline 2px;text-underline-offset:.3em}.ds-nav a:focus-visible{outline:2px solid #f2f3f5;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Single Ribbon",
+    "overview": "**Creative North Star: \"The Single Ribbon\"**\n\nCały system to jeden pas srebrnej folii, który wchodzi lewą krawędzią dokumentu, rysuje znak S i wychodzi górą albo prawą stroną. Wszystko inne jest tym pasem w mniejszej skali. Ścięty róg karty, znacznik nad nagłówkiem, uniesiona końcówka linii na osi czasu i kierunek każdego wejścia mają ten sam kąt: 26,17° (`--angle`, z `brand/logo/geometry.json`). Gdy element nie wie, jaki ma przyjąć kształt, przyjmuje ten kąt albo zostaje prosty.\n\nTło jest grafitowe, prawie czarne, a jedyny akcent to chrom. Interfejs nie ma żadnej barwy, tylko szarości wyprowadzone z dwóch kolorów marki; przygaszony kolor niosą jedynie zrzuty aplikacji. Folia (`brand/foil-texture.jpg`) jest materiałem, nie ozdobą: występuje tylko w znaku S i w pasie otwierającym stronę, dlatego ma wagę. Komponenty są techniczne i precyzyjne. Cienkie linie, cyfry tabularne, Geist Mono przy identyfikatorach i pomiarach. Wyglądają raczej jak rysunek techniczny niż interfejs aplikacji.\n\nRuch opowiada ten sam pas: każde wejście jedzie w górę wzdłuż osi wstęgi, od dołu i z lewej. Linie rysują się wzdłuż siebie, a wypełnienia wjeżdżają ścięciem naprzód. Gęstość jest umiarkowana. Szerokie sekcje (4–6rem) oddzielają małe, zwarte bloki treści.",
+    "keyCharacteristics": [
+      "Jeden kąt (26,17°) dla każdej przekątnej w systemie.",
+      "Folia tylko w znaku S i pasie hero.",
+      "Grafit i chrom, bez barwy, kontrast tekstu ≥ 4.5 : 1.",
+      "Zero cieni; głębia z płaszczyzn tonalnych.",
+      "Ruch wzdłuż osi wstęgi; przy `prefers-reduced-motion` zostają same przenikania."
+    ],
+    "rules": [
+      {
+        "name": "The No-Hue Rule",
+        "body": "Żadnej barwy w interfejsie poza szarościami (zrzuty aplikacji rządzą się Developed Print). Nowy kolor powstaje jako mieszanka srebra z czernią, a każdy kolor tekstu musi mieć zmierzone ≥ 4.5 : 1 na swoim tle.",
+        "section": "colors"
+      },
+      {
+        "name": "The Foil Exclusivity Rule",
+        "body": "Tekstura folii występuje tylko wewnątrz znaku S (z wstęgą i słowem lockupu) i w pasie hero. Nie trafia do kart, przycisków, teł sekcji ani gradientów.",
+        "section": "colors"
+      },
+      {
+        "name": "The Developed Print Rule",
+        "body": "Zrzuty aplikacji pochodzą z ich stron w Google Play (Dni SGGW po wydarzeniu zniknęły ze sklepów, więc z wersji webowej) i mają przygaszony kolor: 40% nasycenia, wypalone w kadrze przez `scripts/derive-assets.ts`, także po najechaniu. Tyle, żeby odróżnić pinezkę od budynku. W pełnym kolorze pinezki i akcenty z cudzego UI byłyby najgłośniejszą rzeczą na stronie i przebiłyby Polished Highlight. Projekt bez własnych ekranów (Charmander) pokazuje prawdziwy fragment swojego kodu, złożony w Geist Mono w szarościach strony (`scripts/render-code-shot.ts`), nigdy grafikę zastępczą.",
+        "section": "colors"
+      },
+      {
+        "name": "The Divider Is Decoration Rule",
+        "body": "`divider-line` nie może być jedyną granicą czegoś, w co się klika. Kontrolka w spoczynku dostaje `control-edge`.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Geist do wszystkiego, a Geist Mono do dwóch rzeczy: identyfikatorów (pakiety, adresy, e-maile) oraz liczb i pomiarów (numery kroków, lata, wyniki z liczbą). Zdanie zostaje w Geist, nawet w roli wyniku. Nie dodajemy trzeciego kroju ani Syncopate jako tekstu.",
+        "section": "typography"
+      },
+      {
+        "name": "The Diagonal Sets the Line Rule",
+        "body": "W hero strony głównej i broszur tytuł nie ma miary ani `text-wrap: balance`, a lead jest wyrównany do prawej i dosunięty do prawego marginesu. Wiersze wyznacza przekątna pasa. Lead wyrównany do lewej spada do stopy przekątnej i łamie się w środku słów. Nagłówek podstron (pas przyciemniony) ma zwykły lead: 48ch, do lewej.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Plane Rule",
+        "body": "Brak `box-shadow`, `drop-shadow` i `text-shadow`. Element wyżej w hierarchii dostaje jaśniejszą płaszczyznę, a nie cień.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Angle Rule",
+        "body": "Każda przekątna w systemie ma kąt `--angle` (26,17°). Długość cięcia może rosnąć z elementem, kąt nie.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do brać każdą przekątną z `--angle` (26,17°) i każde cięcie z `--cut`, skalując tylko długość.",
+      "Do wyprowadzać nowe szarości przez `color-mix` srebra z czernią i mierzyć ≥ 4.5 : 1 dla tekstu oraz ≥ 3 : 1 dla obrysu kontrolki.",
+      "Do prowadzić każde wejście wzdłuż osi wstęgi (`axis-in`: od dołu i z lewej, w górę pod kątem) z `--ease-out` (`cubic-bezier(0.16, 1, 0.3, 1)`).",
+      "Do przy `prefers-reduced-motion` zerować przesunięcie (`--travel: 0`) i zostawiać przenikania, bez ukrywania treści.",
+      "Do ścinać pseudo-element wypełnienia, a nie samą kontrolkę, żeby pierścień fokusu został cały.",
+      "Do pokazywać zrzuty aplikacji z Google Play w przygaszonym kolorze, w jednym poziomym kadrze zakotwiczonym u góry, takim samym dla każdej karty w rzędzie."
+    ],
+    "donts": [
+      "Don't używać barwy w interfejsie. Paleta to szarości z Covert Black i Chrome Silver.",
+      "Don't używać folii poza znakiem S i pasem hero.",
+      "Don't dodawać cieni. Cięcie robi `clip-path`, który i tak obcina `box-shadow`.",
+      "Don't pokazywać zrzutów w kolorze ani w pionowym kadrze telefonu (paski systemowe, karty po 1000 px wysokości).",
+      "Don't wprowadzać drugiego kąta ani łuku jako motywu.",
+      "Don't używać Syncopate jako fontu tekstowego. Żyje tylko w konturach lockupu.",
+      "Don't dodawać karuzel ani paralaksy.",
+      "Don't kończyć pasa w kadrze. Wstęga zawsze wychodzi przez krawędź dokumentu."
+    ]
+  }
+}

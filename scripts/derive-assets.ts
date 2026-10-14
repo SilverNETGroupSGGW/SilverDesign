@@ -16,33 +16,35 @@ const texture = join(root, "brand", "foil-texture.jpg");
 // inside the mark's foil pattern, where re-encoding is invisible.
 await write(
   join(root, "public", "brand", "foil-texture.jpg"),
-  await sharp(texture).jpeg({ quality: 85 }).toBuffer(),
+  await sharp(texture).jpeg({ quality: 85, mozjpeg: true }).toBuffer(),
 );
 
-// One aspect for every card, so a row shows one band of picture and the bodies start level. 9:5 is
-// the tallest the Plan WZIM shot can be: row 598 is the last above the "2071, b.23 — <lecturer>"
-// line of its first card, and spec §2.7 keeps former members' names off the site.
+// One aspect for every card, so a row shows one band of picture and the bodies start level.
 const cardAspect = 9 / 5;
+// DESIGN.md, the Developed Print Rule: the cards keep a trace of each app's own colour, enough to
+// tell a pin from a building, not enough for a red pin to outshout Polished Highlight.
+const shotSaturation = 0.4;
 const crop = async (from: string, to: string, width: number, left = 0, top = 0) => {
   const height = Math.round(width / cardAspect);
-  const source = sharp(join(root, "brand", "screenshots", from)).extract({
-    left,
-    top,
-    width,
-    height,
-  });
+  const source = sharp(join(root, "brand", "screenshots", from))
+    .extract({ left, top, width, height })
+    .modulate({ saturation: shotSaturation })
+    .removeAlpha();
   await write(
     join(root, "brand", "screenshots", to),
     to.endsWith(".png")
       ? await source.png().toBuffer()
-      : await source.jpeg({ quality: 80 }).toBuffer(),
+      : await source.jpeg({ quality: 80, mozjpeg: true }).toBuffer(),
   );
 };
-// The Kampus master has about twice Plan WZIM's pixel density (its app bar is 7% of the width
-// against 15.6%), so a 705 px cut puts both cards' UI at one scale, over the pins in the middle of
-// the campus rather than the woods under its app bar.
-await crop("kampus-sggw-map.jpg", "kampus-sggw-map-crop.jpg", 705, 540, 662);
-await crop("plan-wzim-day.png", "plan-wzim-day-crop.png", 1077);
+// Kampus and Plan WZIM are their Google Play listings' phone shots; Dni SGGW left the stores after the
+// event, so its master is the web build (sggw-days.web.app) at a phone viewport. Each is cut at full
+// width so the cards' UI sits at one scale. No cut shows a status bar, whose clock and battery are
+// the store's mock-up, not the app; Kampus starts over the pins in the middle of the campus rather
+// than the woods under its app bar.
+await crop("kampus-sggw-map.jpg", "kampus-sggw-map-crop.jpg", 1080, 0, 430);
+await crop("plan-wzim-day.png", "plan-wzim-day-crop.png", 1280, 0, 100);
+await crop("dni-sggw-harmonogram.png", "dni-sggw-harmonogram-crop.png", 1236);
 
 // Spec §8: latin + latin-ext subsets. The ranges are Google Fonts' own definitions of those two
 // subsets; subset-font keeps the weight axis, so 100–900 still interpolates.

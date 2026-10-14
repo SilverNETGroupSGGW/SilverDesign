@@ -15,7 +15,7 @@ const site = (await getEntry("site", "site"))!.data;
   <div class="container grid">
     <div>
       <p class="name">{site.formalName}</p>
-      <p class="muted"><a href={pathFor("history", locale)}>{fill(copy.footer.since, { year: site.since })}</a></p>
+      <p class="since muted"><a href={pathFor("history", locale)}>{fill(copy.footer.since, { year: site.since })}</a></p>
     </div>
     <div>
       <p class="label">{copy.footer.contact}</p>
@@ -93,6 +93,7 @@ const site = (await getEntry("site", "site"))!.data;
     margin-top: var(--space-2);
   }
   @media (pointer: coarse) {
+    .since a,
     .linkcol a,
     .linkcol :global(.switch),
     .mono a {

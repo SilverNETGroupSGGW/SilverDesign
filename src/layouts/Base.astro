@@ -3,7 +3,7 @@ import { getEntry } from "astro:content";
 import Footer from "../components/Footer.astro";
 import MarkDefs from "../components/MarkDefs.astro";
 import Opener from "../components/Opener.astro";
-import { withBase } from "../lib/base";
+import { BASE, withBase } from "../lib/base";
 import { locales, pathFor, type Locale, type RouteKey } from "../lib/i18n";
 import "../styles/tokens.css";
 import "../styles/base.css";
@@ -22,12 +22,14 @@ const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const canonical = new URL(pathFor(route, locale), Astro.site);
 const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
+const homePaths = [withBase(""), ...locales.map((l) => pathFor("home", l))];
 ---
 <!doctype html>
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <slot name="head" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -58,7 +60,7 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
     {/* Entrances hide their elements from the first frame, so something already painted never
         blinks out and back in; reveal.ts takes over, and if it never arrives the page opens up by
         itself. */}
-    <script is:inline define:vars={{ variant }}>
+    <script is:inline define:vars={{ variant, homePaths }}>
       try {
         if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
           const root = document.documentElement;
@@ -70,14 +72,50 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
       } catch {}
       // The lockup flies between the hero and the navigation's corner (Opener.astro): both pages
       // put it on its own layer for the frames the transition captures, the old one as it leaves
-      // and the new one before its first frame.
+      // and the new one before its first frame. Between two pages of one kind it stays with the
+      // page's crossfade: on its own layer it would slide by however far the old page was scrolled,
+      // since the new one opens at the top.
       addEventListener("pageswap", (e) => {
         if (!e.viewTransition) return;
-        document.documentElement.classList.add("vt-lockup");
+        const to = e.activation?.entry?.url;
+        const url = to === undefined ? undefined : new URL(to);
+        // No flight from or to a lockup off screen (scrolled past here, or a section further down
+        // the home page such as the navigation's #join), nor while the home page is still drawing
+        // its arrival, where the lockup is not all there yet: those go with the crossfade.
+        const here = document.querySelector(".lockup-vt")?.getBoundingClientRect();
+        const crossing =
+          url !== undefined &&
+          url.hash === "" &&
+          homePaths.includes(url.pathname) !== (variant === "home") &&
+          here !== undefined &&
+          here.bottom > 0 &&
+          !document.querySelector(".home .ribbon")?.getAnimations().some((a) => a.playState === "running");
+        if (crossing) document.documentElement.classList.add("vt-lockup");
         try {
-          sessionStorage.setItem("silver-from", variant);
+          sessionStorage.setItem("silver-from", crossing ? variant : "");
+          sessionStorage.setItem("silver-fly", JSON.stringify(crossing ? flyerBoxes() : null));
         } catch {}
       });
+      // What flies, by transition name (Opener.astro). The browser's own group animation also
+      // animates width and height, which runs on the main thread while opacity and transform run on
+      // the compositor, so under any jank the pieces drift apart. Each group instead gets one
+      // transform from its box on the last page to its exact box here: compositor only, all in
+      // step, and landing on the element's own fractional position with nothing to snap.
+      const flyers = {
+        "silver-lockup": ".lockup-vt",
+        "nav-projects": '.opener nav a[data-nav="projects"]',
+        "nav-history": '.opener nav a[data-nav="history"]',
+        "nav-join": '.opener nav a[data-nav="join"]',
+        "nav-locale": ".opener nav .switch",
+      };
+      const flyerBoxes = () => {
+        const boxes = {};
+        for (const [name, selector] of Object.entries(flyers)) {
+          const r = document.querySelector(selector)?.getBoundingClientRect();
+          if (r) boxes[name] = [r.left, r.top, r.width, r.height];
+        }
+        return boxes;
+      };
       // Each growing arm's length to where it leaves the opener, in the mark's units: `pre` units of
       // path, then straight on from a point along a direction (data-ray, Opener.astro).
       const measureArms = () => {
@@ -95,20 +133,43 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
         }
       };
       addEventListener("pagereveal", (e) => {
+        let fly = null;
+        try {
+          fly = JSON.parse(sessionStorage.getItem("silver-fly") ?? "null");
+          sessionStorage.removeItem("silver-fly");
+        } catch {}
         if (!e.viewTransition) return;
         const root = document.documentElement;
-        root.classList.add("vt-lockup");
-        e.viewTransition.finished.finally(() => root.classList.remove("vt-lockup"));
         let from = variant;
         try {
-          from = sessionStorage.getItem("silver-from") ?? variant;
+          from = sessionStorage.getItem("silver-from") || variant;
         } catch {}
         // Between two pages the lockup stays in the corner and the arms stay drawn.
-        if (from === variant || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (from === variant) return;
+        root.classList.add("vt-lockup");
+        e.viewTransition.finished.finally(() => root.classList.remove("vt-lockup", "vt-grow", "vt-shrink"));
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (fly) {
+          const here = flyerBoxes();
+          const style = document.createElement("style");
+          style.textContent = Object.entries(fly)
+            .filter(([name]) => here[name])
+            .map(([name, [x0, y0, w0, h0]]) => {
+              const [x1, y1, w1, h1] = here[name];
+              return `::view-transition-group(${name}){animation-name:fly-${name};transform-origin:0 0}@keyframes fly-${name}{from{transform:matrix(${w0 / w1},0,0,${h0 / h1},${x0},${y0})}to{transform:matrix(1,0,0,1,${x1},${y1})}}`;
+            })
+            .join("");
+          document.head.append(style);
+          e.viewTransition.finished.finally(() => style.remove());
+          // Which way the lockup's size goes decides which of its two pictures carries the flight.
+          root.classList.add(variant === "home" ? "vt-grow" : "vt-shrink");
+        }
         root.classList.add("vt-move");
         if (variant === "home") root.dataset.hero = "still";
-        e.viewTransition.ready.then(measureArms);
-        e.viewTransition.finished.finally(() => root.classList.add("vt-landed"));
+        e.viewTransition.ready.then(() => {
+          measureArms();
+          root.classList.add("vt-landed");
+        });
       });
       addEventListener("animationend", (e) => {
         if (e.animationName === "arms-grow")
@@ -121,14 +182,15 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
         if (e.persisted) document.documentElement.classList.remove("vt-lockup", "vt-move", "vt-landed");
       });
     </script>
-    {/* Back from another page of the site, the home page is already at rest; a reload replays the
-        arrival. Inline in the head so the attribute is set before the first frame. */}
+    {/* Back from another page of the site, the home page is already at rest; a reload and the
+        root's redirect to /en/ replay the arrival. Inline in the head so the attribute is set
+        before the first frame. */}
     {variant === "home" && (
-      <script is:inline>
+      <script is:inline define:vars={{ rootPath: BASE }}>
         try {
           const [entry] = performance.getEntriesByType("navigation");
           const from = new URL(document.referrer);
-          if (entry.type !== "reload" && from.origin === location.origin)
+          if (entry.type !== "reload" && from.origin === location.origin && from.pathname !== rootPath)
             document.documentElement.dataset.hero = "still";
         } catch {}
       </script>
@@ -172,18 +234,73 @@ const ogLocales = { pl: "pl_PL", en: "en_GB" } as const;
   ::view-transition-new(root) {
     animation-duration: 200ms;
   }
-  ::view-transition-group(silver-lockup) {
+  ::view-transition-group(silver-lockup),
+  ::view-transition-group(.nav) {
     animation-duration: 650ms;
     animation-timing-function: cubic-bezier(0.5, 0, 0.15, 1);
   }
   ::view-transition-old(silver-lockup),
-  ::view-transition-new(silver-lockup) {
+  ::view-transition-new(silver-lockup),
+  ::view-transition-old(.nav),
+  ::view-transition-new(.nav) {
     animation-duration: 650ms;
+  }
+  /* The lockup's two pictures are the same marks at sizes up to a dozen times apart, and the small
+     one blown up is a smear. The large one carries the flight: leaving the hero, the old picture
+     holds until the last fifth, by when the lockup is nearly corner-sized; landing in it, the new
+     picture takes over in the first fifth. */
+  ::view-transition-old(silver-lockup),
+  ::view-transition-new(silver-lockup) {
+    mix-blend-mode: plus-lighter;
+    animation-timing-function: linear;
+  }
+  :root.vt-shrink::view-transition-old(silver-lockup) {
+    animation-name: lockup-hold;
+  }
+  :root.vt-shrink::view-transition-new(silver-lockup) {
+    animation-name: lockup-late;
+  }
+  :root.vt-grow::view-transition-old(silver-lockup) {
+    animation-name: lockup-leave;
+  }
+  :root.vt-grow::view-transition-new(silver-lockup) {
+    animation-name: lockup-take;
+  }
+  @keyframes lockup-hold {
+    80% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes lockup-late {
+    from,
+    80% {
+      opacity: 0;
+    }
+  }
+  @keyframes lockup-leave {
+    20%,
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes lockup-take {
+    from {
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-group(silver-lockup),
     ::view-transition-old(silver-lockup),
-    ::view-transition-new(silver-lockup) {
+    ::view-transition-new(silver-lockup),
+    ::view-transition-group(.nav),
+    ::view-transition-old(.nav),
+    ::view-transition-new(.nav) {
       animation-duration: 0s;
     }
   }

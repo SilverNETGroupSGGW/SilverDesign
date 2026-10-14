@@ -1,4 +1,24 @@
 ---
+import { localeKey, pathFor } from "../lib/i18n";
 import Home from "../views/Home.astro";
 ---
-<Home locale="pl" />
+<Home locale="pl">
+  {/* The root is the Polish home page. A browser that asks for English before Polish, or for
+      neither, goes on to /en/ unless the visitor once picked a language with the switch. The parser
+      keeps painting this page until /en/ arrives, so the body stays hidden meanwhile. */}
+  <script is:inline slot="head" define:vars={{ en: pathFor("home", "en"), localeKey }}>
+    let saved = null;
+    try {
+      saved = localStorage.getItem(localeKey);
+    } catch {}
+    const asked = navigator.languages
+      .map((l) => l.split("-")[0].toLowerCase())
+      .find((l) => l === "pl" || l === "en");
+    if ((saved ?? asked ?? "en") === "en") {
+      const hide = document.createElement("style");
+      hide.textContent = "body{display:none}";
+      document.head.append(hide);
+      location.replace(en + location.search + location.hash);
+    }
+  </script>
+</Home>

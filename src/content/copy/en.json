@@ -15,7 +15,9 @@
     "title": "The computer science club at SGGW.",
     "lead": "The apps people use around campus are written by students at your faculty. You could build the next one with us.",
     "ctaDiscord": "Join on Discord",
-    "ctaProjects": "See the projects"
+    "ctaProjects": "See the projects",
+    "scroll": "Scroll",
+    "scrollTo": "Scroll to what we build"
   },
   "steps": {
     "heading": "Three steps to start",
@@ -33,11 +35,11 @@
         "body": "On your own or in a small team, at your own pace. When it helps to sit down together, we meet in our room."
       }
     ],
-    "hackathons": "We go to hackathons too. HackArena 3.0, March 2026: 4th place in the final."
+    "hackathons": "We compete at hackathons too. At HackArena 3.0 in March 2026 we made the final and finished 4th."
   },
   "projects": {
     "heading": "Projects",
-    "lead": "Two of our apps are in the stores with over a thousand downloads each. The rest is on GitHub.",
+    "lead": "Apps and tools we build in the club. Chances are one of them is already on your phone.",
     "viewAll": "All projects",
     "filterAll": "All",
     "filterStore": "In stores",
@@ -56,19 +58,21 @@
   },
   "build": {
     "heading": "What we build, and how",
-    "what": "Some of what we build fixes problems we run into at university ourselves. That's where the timetable app and the campus map came from. The rest happens because someone wanted to try a new technology, or do something familiar their own way.",
-    "how": "We don't have one stack. We pick the tools that fit the project, and we're happy to try new ones, sometimes before anyone calls them stable.",
+    "cardTitle": "How we pick and build projects",
+    "slot": "Next project",
+    "what": "We take what annoys us at university and turn it into apps. That's how the timetable app and the campus map came about. The rest runs on curiosity and fun: a new technology to try, or a familiar idea done our own way.",
+    "how": "We don't lock ourselves into one stack. Every project gets the tools that fit it, and we pick up new things early, sometimes before anyone calls them stable.",
     "inOrg": "In our GitHub org:"
   },
   "join": {
     "heading": "Join",
-    "lead": "Ever got a script for class, a website or a bot to work? Then you have the basics, and you'll learn the rest in a team!",
-    "threshold": "We post meetup dates and current projects on the Discord. Come in, introduce yourself and say what you'd like to build.",
+    "lead": "Ever got a script for class, a website or a bot working? Then you've got the basics. You'll pick up the rest in a team.",
+    "threshold": "We post meetup dates and current projects on the Discord. To start, just write to us there.",
     "discord": "Discord",
     "email": "Email",
     "room": "Room",
-    "stripProjects": "We build solo or in small teams. Join a project that's running, or bring your own.",
-    "stripHistory": "The club is still going. We post current projects and meetup dates on the Discord."
+    "stripProjects": "Got an idea for an app? Bring it, or join a project that's already running.",
+    "stripHistory": "We post current projects and meetup dates on the Discord."
   },
   "footer": {
     "since": "At WIII SGGW (formerly WZIM) since {year}",
@@ -77,7 +81,7 @@
   },
   "history": {
     "heading": "History",
-    "lead": "What the club has been up to, year by year."
+    "lead": "Since 2013: projects, workshops and hackathons, year by year."
   },
   "notFound": {
     "title": "Page not found",
@@ -87,17 +91,17 @@
   "brochure": {
     "students": {
       "title": "The computer science club at SGGW",
-      "lead": "Our apps reach the whole campus. You could write the next one, whatever your faculty!",
+      "lead": "You'll find our apps on phones all over campus. You could write the next one, whatever your faculty.",
       "stepsHeading": "Three steps to start",
       "appsHeading": "Our apps",
-      "threshold": "Ever got a script for class, a website or a bot to work? Then you have the basics, and you'll learn the rest in a team!",
+      "threshold": "Ever got a script for class, a website or a bot working? Then you've got the basics. You'll pick up the rest in a team.",
       "qrLabel": "Come say hi on Discord, where every project starts."
     },
     "companies": {
       "title": "SGGW computer science student club",
       "lead": "A seven-person student team that ships apps to the stores.",
       "whoHeading": "Who we are",
-      "who": "The Silver computer science student club at WIII (formerly WZIM), SGGW. We build mobile and web apps for students on campus and for ourselves.",
+      "who": "The Silver computer science student club at WIII (formerly WZIM), SGGW. We build and ship mobile and web apps used by SGGW students.",
       "builtHeading": "What we've built",
       "togetherHeading": "What we can do together",
       "together": [

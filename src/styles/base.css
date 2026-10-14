@@ -201,7 +201,8 @@ svg {
 [data-motion="read"][data-reveal] {
   --reveal-gap: 180ms;
 }
-:root[data-reveals] [data-reveal]:not([data-reveal="in"]) {
+/* Never hides what holds focus, even before reveal.ts has turned it "in". */
+:root[data-reveals] [data-reveal]:not([data-reveal="in"], :focus-within) {
   opacity: 0;
 }
 [data-reveal="in"] {
@@ -216,11 +217,11 @@ svg {
 }
 /* A heading fades by colour, not opacity: its marker is its own ::before, which has to be drawing
    while the words are still hidden. */
-:root[data-reveals] .angled[data-reveal]:not([data-reveal="in"]) {
+:root[data-reveals] .angled[data-reveal]:not([data-reveal="in"], :focus-within) {
   opacity: 1;
   color: transparent;
 }
-:root[data-reveals] .angled[data-reveal]:not([data-reveal="in"])::before {
+:root[data-reveals] .angled[data-reveal]:not([data-reveal="in"], :focus-within)::before {
   clip-path: inset(0 100% 0 0);
 }
 .angled[data-reveal="in"] {

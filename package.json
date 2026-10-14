@@ -14,6 +14,7 @@
     "logo:export": "bun scripts/export-logo.ts",
     "lockup:export": "bun scripts/export-lockup.ts",
     "assets:derive": "bun scripts/derive-assets.ts",
+    "assets:code": "bun scripts/render-code-shot.ts",
     "brochure": "bun scripts/render-brochures.ts"
   },
   "dependencies": {

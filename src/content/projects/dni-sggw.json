@@ -1,17 +1,18 @@
 {
   "name": "Dni SGGW",
-  "order": 3,
+  "order": 1,
   "status": "github",
   "sheet": true,
   "platforms": ["android", "ios", "web"],
   "links": { "github": "https://github.com/SilverNETGroupSGGW/sggw_days" },
   "tech": ["Flutter", "Firebase", "GitHub Actions"],
   "summary": {
-    "pl": "Aplikacja na Dni SGGW 2026: program, mapa, powiadomienia. Na czas wydarzenia w Google Play, App Store i w przeglądarce.",
-    "en": "The app for SGGW Days 2026: schedule, map, notifications. Live in Google Play, the App Store and the browser for the event."
+    "pl": "Program, mapa, powiadomienia i gra terenowa z kodami QR na Dni SGGW 2026. Na czas wydarzenia w sklepach i w przeglądarce.",
+    "en": "Schedule, map, notifications and a QR code game for SGGW Days 2026. In the stores and the browser for the event."
   },
   "result": {
     "pl": "24 kody QR na kampusie · Android, iOS i web",
     "en": "24 QR codes across campus · Android, iOS and web"
-  }
+  },
+  "screenshot": "dni-sggw-harmonogram-crop.png"
 }

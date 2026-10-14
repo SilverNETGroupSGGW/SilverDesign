@@ -1,6 +1,6 @@
 {
   "name": "Kampus SGGW",
-  "order": 1,
+  "order": 3,
   "status": "store",
   "sheet": true,
   "platforms": ["android", "ios"],

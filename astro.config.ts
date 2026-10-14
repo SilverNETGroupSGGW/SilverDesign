@@ -6,6 +6,9 @@ export default defineConfig({
   // site is served from the root.
   site: "https://silvernetgroupsggw.github.io",
   output: "static",
+  // ~15 KB of CSS, the same on every page: most visits arrive from a QR code with an empty cache,
+  // where two blocking requests cost more than repeating it in each page.
+  build: { inlineStylesheets: "always" },
   integrations: [
     sitemap({
       // The brochures are handed out and carry noindex (spec §4), and the site's root is a copy of

@@ -1,0 +1,100 @@
+---
+import { getEntry } from "astro:content";
+import type { Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+  tech: readonly string[];
+}
+const { locale, tech } = Astro.props;
+const copy = (await getEntry("copy", locale))!.data;
+---
+<article class="making cut" aria-labelledby="making-heading" data-reveal>
+  <div class="layout">
+    <div class="slot" aria-hidden="true"><span>{copy.build.slot}</span></div>
+    <div class="body">
+      <h3 class="name" id="making-heading">{copy.build.cardTitle}</h3>
+      <p>{copy.build.what}</p>
+      <p>{copy.build.how}</p>
+      <p class="tech">{copy.build.inOrg} <span class="mono">{tech.join(" · ")}</span></p>
+    </div>
+  </div>
+</article>
+
+<style>
+  /* A project card with its screenshot left blank: the frame where the next project's picture
+     would go, hatched along the band. */
+  .making {
+    container-type: inline-size;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    --reveal-gap: 220ms;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+  .slot {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 9 / 5;
+    max-height: 18rem;
+    border-block-end: 1px solid var(--line);
+    background: repeating-linear-gradient(
+      calc(-1 * var(--angle)),
+      var(--line) 0 1px,
+      transparent 1px 0.75rem
+    );
+  }
+  .slot span {
+    padding: 0.35em 0.9em;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+  }
+  .body {
+    padding: var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+  }
+  .name {
+    font-size: var(--step-1);
+  }
+  .tech {
+    color: var(--muted);
+  }
+  /* Spanning a whole row (Home.astro), the blank frame stands beside the text instead of over it,
+     and "what" and "with what" read side by side. */
+  @container (width >= 48rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+    .slot {
+      aspect-ratio: auto;
+      max-height: none;
+      border-block-end: 0;
+      border-inline-end: 1px solid var(--line);
+    }
+    .body {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--space-5);
+    }
+    .name,
+    .tech {
+      grid-column: 1 / -1;
+    }
+  }
+  .making[data-reveal="in"] {
+    animation: fade-in 500ms ease-out both;
+  }
+  .making[data-reveal="in"] .slot {
+    animation: draw 900ms var(--ease-out) backwards;
+  }
+  .making[data-reveal="in"] .body {
+    animation: fade-in 600ms ease-out 350ms both;
+  }
+</style>

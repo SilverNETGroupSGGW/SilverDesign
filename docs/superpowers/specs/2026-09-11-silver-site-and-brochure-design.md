@@ -57,7 +57,7 @@ robić_, _czy dam radę_, _kiedy, gdzie i jak dołączyć_. Nic ponad to.
 | GitHub         | `https://github.com/SilverNETGroupSGGW`                                                                       |
 | Facebook       | `https://www.facebook.com/silvernetgroupsggw` (tylko stopka)                                                  |
 | Aplikacja      | Kampus SGGW — Android (`com.silvers.kampus_sggw_remake`) i iOS (`id1586959639`), 1 tys.+ pobrań w Google Play |
-| Aplikacja | Plan WZIM — Android (`com.silvernet.silvertimetable`) i iOS (`id1384573148`), 1 tys.+ pobrań w Google Play |
+| Aplikacja | Plan WZIM — Android (`com.silvernet.silvertimetable`) i iOS (`id1384573148`), 1 tys.+ pobrań w Google Play; kod otwarty w orgu (`SilverTimetable2`) |
 | Aplikacja | Dni SGGW (`sggw_days`) — Flutter + Firebase, ukończona; aplikacja na wydarzenie Dni SGGW 2026, ponad 80 pobrań w dwa dni. Na czas wydarzenia była w Google Play, App Store i w przeglądarce; dziś tylko repo w orgu. Z plakatu podsumowującego (właściciel, 2026-09-13): mapa z 24 kodami QR na kampusie (gra terenowa z weryfikacją geolokalizacją), wiki o kampusie, program z powiadomieniami; 15 osób ukończyło grę |
 | Projekt        | Charmander — proxy do powiadomień push, FastAPI i .NET Minimal API, repo w orgu                               |
 | Hackathon | HackArena 3.0 (SGGW, 28–29.03.2026, 33 drużyny, boty do gry wyścigowej): 4. miejsce w finałowym starciu, 16. w klasyfikacji łącznej |
@@ -86,22 +86,37 @@ słowem „ilver" na pasie folii, który wchodzi lewą krawędzią dokumentu i w
 górną albo prawą, tytuł nad pasem i lead pod nim, oba z wierszami opływającymi
 krawędzie folii (`shape-outside`). Wstęga nigdy nie kończy się w kadrze.
 
-`/pl/` · `/en/` (`/` pokazuje stronę główną `/pl/`):
+`/pl/` · `/en/` (`/` pokazuje stronę główną `/pl/` albo przenosi na `/en/`, §9):
 
 1. **Hero** — wstęga otwierająca (patrz wyżej): jedno zdanie, kim jesteśmy i dla
-   kogo, przycisk „Dołącz na Discordzie" i link „Zobacz projekty".
+   kogo, przycisk „Dołącz na Discordzie" i link „Zobacz projekty". Zajmuje co
+   najmniej cały ekran (`100svh`), więc następna sekcja nigdy nie wystaje nad
+   krawędź. Kompozycja dopasowuje się do proporcji okna: na poziomym ekranie
+   tytuł rośnie obok S, a lead z przyciskami siedzi nisko w trójkącie pod pasem,
+   na wysokości jego wyjścia lewą krawędzią; okno pionowe (telefon, tablet,
+   monitor obrócony) dostaje układ wąski, z tytułem nad lockupem, który rośnie
+   do szerokości albo wysokości okna; tytuł stoi nad pasem w tej samej
+   odległości, w jakiej lead zaczyna się pod nim. Wysokości, której treść nie wypełni,
+   kompozycja nie rozrywa na dziury: stoi wyśrodkowana, nawigacja zostaje u
+   góry. Tuż pod przyciskami wskazówka „Przewiń": link do pierwszej sekcji z
+   cienką linią, która schodzi w dół i skręca pod kątem wstęgi.
 2. **Jak to działa** — trzy kroki: wchodzisz na Discorda → dołączasz do
    projektu albo zgłaszasz swój → robimy go w małym zespole przez semestr,
    co jakiś czas spotykając się w 3/79. Pod krokami jedna linijka o
    hackathonach z bieżącym wynikiem (HackArena 3.0, marzec 2026: 4. miejsce
    w finale).
-3. **Projekty** — cztery karty (Kampus SGGW, Plan WZIM, Dni SGGW,
-   Charmander) z linkami do sklepów i GitHuba; Kampus SGGW i Plan WZIM z
-   prawdziwym zrzutem ekranu z `brand/screenshots/`. Karty w sklepach pierwsze,
-   każda z jednym twardym wynikiem (pobrania, platformy) zamiast opisu.
-4. **Co budujemy i czym** — dwa akapity (zasada §2.4): co (własne
-   problemy + małe projekty po swojemu) i czym (stack pod projekt), plus
-   lista tego, co realnie jest w orgu.
+3. **Projekty** — trzy karty aplikacji wybranych ręcznie (`sheet`, te same
+   co na kartce dla studentów: Kampus SGGW, Plan WZIM, Dni SGGW) z linkami do
+   sklepów i GitHuba i prawdziwym zrzutem ekranu z `brand/screenshots/`, na
+   desktopie w jednym rzędzie po trzy, w kolejności Dni SGGW, Plan WZIM,
+   Kampus SGGW (Charmander na końcu podstrony projektów). Każda z
+   jednym twardym wynikiem (pobrania, platformy) zamiast opisu.
+4. **Co budujemy i czym** — karta „Jak wybieramy i tworzymy projekty” na
+   końcu siatki projektów: karta projektu z pustym, kreskowanym pod kątem
+   wstęgi kadrem zamiast zrzutu („Następny projekt”), a w niej dwa akapity
+   (zasada §2.4): co (własne problemy + małe projekty po swojemu) i czym
+   (stack pod projekt), plus lista tego, co realnie jest w orgu. Na desktopie
+   zajmuje cały wiersz pod aplikacjami, przy dwóch kolumnach domyka 2×2.
 5. **Dołącz** — próg wejścia jawnie („nie musisz jeszcze umieć
    programować"), Discord, mail, sala.
 6. **Stopka** — kontakt, adres, GitHub, Facebook, „przy WZIM SGGW od 2013"
@@ -148,17 +163,19 @@ Hero:
 
 Projekty (wstęp):
 
-> Dwie z naszych aplikacji są w sklepach i mają po ponad tysiąc pobrań.
-> Reszta jest na GitHubie.
+> Aplikacje i narzędzia, które piszemy w kole. Jest spora szansa, że jedną
+> z nich masz już w telefonie.
 
 Co budujemy i czym:
 
-> Część z tego, co robimy, rozwiązuje problemy, które sami mamy na uczelni —
-> stąd plan zajęć w telefonie i mapa kampusu. Reszta powstaje, bo ktoś
-> chciał sprawdzić nową technologię albo zrobić znaną rzecz po swojemu.
+> Bierzemy to, co irytuje nas na uczelni, i zamieniamy w aplikacje. Tak
+> powstały plan zajęć w telefonie i mapa kampusu. Resztę napędza ciekawość
+> i frajda: nowa technologia do sprawdzenia albo znany pomysł zrobiony po
+> swojemu.
 >
-> Nie mamy jednego stacku. Dobieramy narzędzia pod projekt i chętnie
-> sięgamy po nowe rzeczy — czasem zanim ktokolwiek uzna je za stabilne.
+> Nie zamykamy się w jednym stacku. Każdy projekt dostaje narzędzia, które
+> do niego pasują, a po nowości sięgamy wcześnie, czasem zanim ktokolwiek
+> uzna je za stabilne.
 
 Dołącz:
 
@@ -252,7 +269,10 @@ Od zera; z poprzedniego systemu nic nie wraca.
   ramieniem, rysuje S wzdłuż jego kręgosłupa (oś kreski z konfiguratora),
   wychodzi górnym ramieniem, a słowo odsłania się, gdy ramię nad nim
   przechodzi (jedyny moment, w którym pas kończy się w kadrze); potem tytuł,
-  lead, przyciski i nawigacja (~1,8 s całość). Powrót na stronę główną z innej
+  lead, przyciski i nawigacja (~1,8 s całość). Dopiero po niej pojawia się
+  wskazówka przewijania: etykieta wjeżdża wzdłuż osi, linia rysuje się w dół,
+  a potem co kilka sekund biegnie nią jasny odcinek jak czoło wstęgi; znika,
+  gdy strona się przesunie. Powrót na stronę główną z innej
   strony serwisu zaczyna się w spoczynku; przeładowanie odtwarza sekwencję.
   Folia idzie za kursorem (sprężyna krytycznie tłumiona) i raz błyska wzdłuż
   osi po załadowaniu. Tytuł i lead podstron odsłaniają się przy wejściu
@@ -279,8 +299,10 @@ Od zera; z poprzedniego systemu nic nie wraca.
   `redirectToDefaultLocale: false`. Każda strona żyje pod `/pl/…` albo
   `/en/…`; `/` renderuje polską stronę główną z canonical na `/pl/`, bo
   statyczny hosting nie robi redirectów 30x, a meta refresh pokazywał na
-  chwilę stronę pośrednią. `<html lang>`, linki `hreflang`,
-  przełącznik zachowuje bieżącą podstronę.
+  chwilę stronę pośrednią. Skrypt w `<head>` strony `/` przenosi na `/en/`
+  przeglądarkę, która prosi o angielski przed polskim albo o żaden z nich,
+  chyba że gość wybrał już język przełącznikiem (`localStorage`).
+  `<html lang>`, linki `hreflang`, przełącznik zachowuje bieżącą podstronę.
 - **TypeScript** — `tsconfig` rozszerza `astro/tsconfigs/strictest`.
 - **Bun** jako runtime, menedżer pakietów i test runner.
 - **oxlint** + **oxfmt** — jedyne narzędzia lint/format; brak ESLint i

@@ -27,6 +27,9 @@ const spring = (p: number, v: number, target: number, dt: number): [number, numb
 const foil = (mark: HTMLElement) => {
   const pattern = mark.querySelector<SVGPatternElement>("pattern");
   if (!pattern) return undefined;
+  // The ribbon lays the texture as tiles (markFoilTiles); the pattern still fills the lockup that
+  // flies on a page change.
+  const tiles = mark.querySelector<SVGGElement>(".foil-tiles");
   const x0 = Number(pattern.getAttribute("x") ?? 0);
   const y0 = Number(pattern.getAttribute("y") ?? 0);
   const w = Number(pattern.getAttribute("width") ?? 0);
@@ -46,6 +49,7 @@ const foil = (mark: HTMLElement) => {
   const paint = () => {
     pattern.setAttribute("x", String(x0 + x));
     pattern.setAttribute("y", String(y0 + y));
+    tiles?.setAttribute("transform", `translate(${x} ${y})`);
   };
   const step = (now: number) => {
     // A stalled frame (the lead's layout on fonts.ready, a background tab) would otherwise land

@@ -4,6 +4,7 @@ import {
   backdropVariants,
   belowBoundary,
   body,
+  CUE_ROOM,
   evalForm,
   exits,
   lockupBox,
@@ -15,16 +16,36 @@ import {
   shapeAbove,
   shapeBelow,
   sizeCss,
+  sizeValue,
+  type SizeContext,
   tan,
+  TITLE_WIDEST_WORD,
   unroll,
   wordEndPoint,
 } from "../src/lib/opener";
 import { tipSpan, unrollSpan } from "../src/lib/unroll-span";
 
-// 980 and 1000 sit on both sides of the 56rem breakpoint, where the narrow floor is tightest.
-const WIDTHS = [400, 768, 980, 1000, 1024, 1440, 1920, 2560];
-/** A stand-in: no size reads the window height. */
-const WINDOW_H = 400;
+// 980 and 1000 sit on both sides of the 56rem breakpoint, where the narrow floor is tightest. The
+// home opener fills the window, so each width comes with a window it is seen in, the short ones
+// included: a laptop with its toolbars, a phone on its side, and portrait windows wider than the
+// breakpoint, which take the narrow composition.
+const WINDOWS: [number, number][] = [
+  [360, 640],
+  [400, 844],
+  [640, 360],
+  [768, 1024],
+  [844, 390],
+  [960, 1080],
+  [1180, 1290],
+  [980, 640],
+  [1000, 640],
+  [1024, 768],
+  [1280, 650],
+  [1440, 900],
+  [1920, 1080],
+  [2000, 1017],
+  [2560, 1440],
+];
 
 const overlaps = (a: [number, number], b: [number, number]): boolean => a[0] < b[1] && b[0] < a[1];
 
@@ -64,21 +85,22 @@ describe("the opener's construction", () => {
     expect(sizeCss({ by: 1, m: body.h, g: 2 })).toBe(
       "calc(0.538 * var(--m) + var(--by) + 2 * var(--g))",
     );
-    expect(openerStyle(openerLayouts.home)).toContain("--m:clamp(");
+    expect(openerStyle(openerLayouts.home)).toContain("--m-wide:clamp(");
+    expect(openerStyle(openerLayouts.page)).toContain("--m:clamp(");
   });
 });
 
 describe("the ribbon never ends inside the opener", () => {
   for (const variant of ["home", "page"] as const) {
     const layout = openerLayouts[variant];
-    for (const w of WIDTHS) {
+    for (const [w, h] of WINDOWS) {
       // A subpage title is one line; the home title is three on the narrowest phone.
-      const v = openerSizes(layout, { w, h: WINDOW_H, titleLines: variant === "page" ? 1 : 3 });
+      const v = openerSizes(layout, { w, h, titleLines: variant === "page" ? 1 : 3 });
       const rem = rootFontSize(w);
       const backdrop = backdropVariants.has(variant);
       const e = exits(v, backdrop);
 
-      test(`${variant} at ${w}: the lower arm leaves through the left edge`, () => {
+      test(`${variant} at ${w}×${h}: the lower arm leaves through the left edge`, () => {
         // A backdrop's ribbon runs on under the page's content, so it only has to reach the left
         // edge below the top; the wrapping variants clip it, so it has to get there inside the box.
         if (!backdrop) expect(e.leftBottom).toBeLessThan(v.h - rem);
@@ -91,12 +113,12 @@ describe("the ribbon never ends inside the opener", () => {
       const leaves = (topX: number, rightY: number): boolean =>
         topX <= w ? topX > 0 : rightY > 0 && (backdrop || rightY < v.h - rem);
 
-      test(`${variant} at ${w}: the upper arm leaves through the top or the right edge`, () => {
+      test(`${variant} at ${w}×${h}: the upper arm leaves through the top or the right edge`, () => {
         expect(leaves(e.topStart, e.rightTop)).toBe(true);
         expect(leaves(e.topEnd, e.rightBottom)).toBe(true);
       });
 
-      test(`${variant} at ${w}: the word stays on screen`, () => {
+      test(`${variant} at ${w}×${h}: the word stays on screen`, () => {
         if (backdrop) return;
         expect(wordEndPoint(v)[0]).toBeLessThanOrEqual(0.95 * w);
         // In y too: the word is the one part that may not leave through an edge, and the opener
@@ -104,7 +126,7 @@ describe("the ribbon never ends inside the opener", () => {
         expect(evalForm(lockupBox.origin[1], v)).toBeGreaterThanOrEqual(v.g);
       });
 
-      test(`${variant} at ${w}: the navigation's box is clear of the foil`, () => {
+      test(`${variant} at ${w}×${h}: the navigation's box is clear of the foil`, () => {
         // On a page the lockup is a dimmed backdrop the copy stands on, so the foil may run under
         // the navigation.
         if (backdrop) return;
@@ -121,23 +143,126 @@ describe("the ribbon never ends inside the opener", () => {
         expect(overlaps(nav.y, upper)).toBe(false);
       });
 
-      test(`${variant} at ${w}: the S sits below the navigation's box`, () => {
+      test(`${variant} at ${w}×${h}: the S sits below the navigation's box`, () => {
         // A backdrop has no S, and its dimmed band may pass behind the links.
         if (backdrop) return;
         expect(v.by).toBeGreaterThanOrEqual(v.navTop + v.navH + v.g);
       });
 
-      test(`${variant} at ${w}: the lead and the navigation's offset stay capped`, () => {
-        expect(v.lead).toBeLessThanOrEqual(1.35 * rem);
+      test(`${variant} at ${w}×${h}: the lead and the navigation's offset stay capped`, () => {
+        expect(v.lead).toBeLessThanOrEqual((variant === "home" ? 2.4 : 1.35) * rem);
         expect(v.navTop).toBeLessThanOrEqual(2 * rem);
       });
 
-      test(`${variant} at ${w}: the lead starts beside the S, below its top third`, () => {
+      test(`${variant} at ${w}×${h}: the lead starts beside the S, below its top third`, () => {
         if (backdrop) return;
         expect(v.belowY).toBeGreaterThanOrEqual(v.by + body.h * 0.3 * v.m);
         expect(v.belowX).toBeGreaterThanOrEqual(v.aboveX);
       });
     }
+  }
+
+  for (const [w, h] of WINDOWS) {
+    const v = openerSizes(openerLayouts.home, { w, h, titleLines: 3 });
+    const rem = rootFontSize(w);
+    const wide = w >= 56 * rem && w >= h;
+
+    test(`home at ${w}×${h}: the opener is at least one screen tall`, () => {
+      expect(v.h).toBeGreaterThanOrEqual(h);
+    });
+
+    test(`home at ${w}×${h}: the title's widest word fits the column beside the S`, () => {
+      if (!wide) return;
+      // The shape's margin keeps the lines a second --g off the boundary.
+      const column = v.bx - 2 * v.g - v.aboveX;
+      expect(v.title).toBeLessThanOrEqual(Math.max(3.6 * rem, column / TITLE_WIDEST_WORD) + 1e-9);
+    });
+
+    test(`home at ${w}×${h}: the lead starts low enough to leave the cue its room`, () => {
+      if (!wide) return;
+      const c: SizeContext = {
+        px: 1,
+        narrow: false,
+        stacked: false,
+        rem,
+        cqw: w / 100,
+        svh: h / 100,
+        m: v.m,
+        bx: v.bx,
+        by: v.by,
+        g: v.g,
+        tb: 0,
+        nh: v.navH,
+        ld: v.lead,
+        dr: v.drop,
+        cw: 0,
+        tt: v.title,
+        tr: 0,
+        tl: 0,
+      };
+      const room = sizeValue(CUE_ROOM, c);
+      expect(v.belowY + room).toBeLessThanOrEqual(h);
+    });
+  }
+
+  test("home: a landscape desktop's composition fills the window, and a taller window centres it", () => {
+    for (const [w, h] of [
+      [1440, 900],
+      [1920, 1080],
+      [2000, 1017],
+      [2560, 1440],
+    ] as const)
+      expect(openerSizes(openerLayouts.home, { w, h }).drop).toBeLessThan(1);
+    for (const [w, h] of [
+      [412, 915],
+      [1920, 1200],
+    ] as const) {
+      const v = openerSizes(openerLayouts.home, { w, h });
+      expect(v.drop).toBeGreaterThan(0);
+      // The composition is as tall as the window less the drop above it and below it.
+      expect(v.h).toBe(h);
+    }
+  });
+
+  test("home: a portrait window takes the narrow composition at any width", () => {
+    const rem = rootFontSize(1180);
+    const portrait = openerSizes(openerLayouts.home, { w: 1180, h: 1290 });
+    const landscape = openerSizes(openerLayouts.home, { w: 1180, h: 820 });
+    expect(portrait.bx).toBeCloseTo(3 * rem, 6);
+    expect(landscape.bx).toBeGreaterThan(3 * rem);
+  });
+
+  test("home: the mark and the title grow with a desktop screen", () => {
+    const sizes = [
+      [1440, 900],
+      [1920, 1080],
+      [2560, 1440],
+    ].map(([w, h]) => openerSizes(openerLayouts.home, { w: w!, h: h! }));
+    for (let i = 1; i < sizes.length; i++)
+      expect(sizes[i]!.title).toBeGreaterThan(sizes[i - 1]!.title);
+    expect(sizes.at(-1)!.m).toBeGreaterThan(1.3 * sizes[0]!.m);
+  });
+
+  // A 32 px root on a phone stacks the home page's links; the title grows with the root and takes
+  // more lines.
+  for (const w of [320, 360, 400]) {
+    const v = openerSizes(openerLayouts.home, { w, h: 844, rem: 32, titleLines: 4 });
+    const e = exits(v);
+
+    test(`home at ${w} with a 32 px root: the stacked links are clear of the foil`, () => {
+      expect(v.navH).toBe(9.6 * 32);
+      expect(v.by).toBeGreaterThanOrEqual(v.navTop + v.navH + v.g);
+      const at = v.aboveX + v.navW;
+      const nav: [number, number] = [v.navTop, v.navTop + v.navH];
+      expect(overlaps(nav, [e.leftTop - tan * at, e.leftBottom - tan * at])).toBe(false);
+      expect(overlaps(nav, [(e.topStart - at) * tan, (e.topEnd - at) * tan])).toBe(false);
+      expect(e.leftBottom).toBeLessThan(v.h - 32);
+    });
+
+    test(`home at ${w} with a 32 px root: the title grows, and its widest word fits`, () => {
+      expect(v.title).toBeGreaterThan(v.lead);
+      expect(v.title * TITLE_WIDEST_WORD).toBeLessThanOrEqual(w - 2 * v.aboveX + 1e-9);
+    });
   }
 
   test("the sheet's opener holds the whole lockup and both exits", () => {

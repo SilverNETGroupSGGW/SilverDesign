@@ -1,11 +1,12 @@
 ---
 import { getCollection, getEntry } from "astro:content";
 import Button from "../components/Button.astro";
-import JoinStrip from "../components/JoinStrip.astro";
+import MakingCard from "../components/MakingCard.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import Steps from "../components/Steps.astro";
 import Base from "../layouts/Base.astro";
 import { pathFor, type Locale } from "../lib/i18n";
+import { CUE_SIZE, sizeCss, tan } from "../lib/opener";
 
 interface Props {
   locale: Locale;
@@ -14,7 +15,16 @@ const { locale } = Astro.props;
 const copy = (await getEntry("copy", locale))!.data;
 const site = (await getEntry("site", "site"))!.data;
 const projects = (await getCollection("projects")).toSorted((a, b) => a.data.order - b.data.order);
+const apps = projects.filter((p) => p.data.sheet);
 const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
+// The scroll cue's rule, in sixteenths of its type size (CUE_SIZE): a drop, then a tail as long as
+// a corner cut (--cut at a 16 px size) that turns down the band's angle, the way the lower arm
+// leaves the page.
+const CUE_DROP = 48;
+const CUE_CUT = 20;
+const cueTail = CUE_CUT * tan;
+const cueBox = { w: CUE_CUT + 2, h: CUE_DROP + cueTail + 2 };
+const cuePath = `M ${CUE_CUT + 1} 1 V ${CUE_DROP + 1} l ${-CUE_CUT} ${cueTail.toFixed(3)}`;
 ---
 <Base
   locale={locale}
@@ -25,39 +35,46 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   heading={copy.hero.title}
   lead={copy.hero.lead}
 >
+  <slot name="head" slot="head" />
   <Fragment slot="cta">
     <p class="ctas">
       <Button href={site.discord}>{copy.hero.ctaDiscord}</Button>
       <Button href={pathFor("projects", locale)} variant="ghost">{copy.hero.ctaProjects}</Button>
     </p>
+    <p class="cue-row" style={`--cue-size:${sizeCss(CUE_SIZE)}`}>
+      <a class="cue" href="#what" aria-label={copy.hero.scrollTo}>
+        <span class="cue-label">{copy.hero.scroll}</span>
+        <svg
+          class="cue-rule"
+          viewBox={`0 0 ${cueBox.w} ${cueBox.h.toFixed(3)}`}
+          style={`inline-size:${cueBox.w / 16}em;block-size:${(cueBox.h / 16).toFixed(4)}em`}
+          aria-hidden="true"
+        >
+          <path class="track" d={cuePath} pathLength="100" />
+          <path class="tip" d={cuePath} pathLength="100" />
+        </svg>
+      </a>
+    </p>
   </Fragment>
 
-  <Steps steps={copy.steps} />
-
-  <section class="projects container" aria-labelledby="projects-heading">
-    <h2 class="angled" id="projects-heading" data-reveal>{copy.projects.heading}</h2>
+  <section id="what" class="what container" aria-labelledby="what-heading">
+    <h2 class="angled" id="what-heading" data-reveal>{copy.build.heading}</h2>
     <p class="lead" data-reveal data-motion="read">{copy.projects.lead}</p>
     <div class="grid">
-      {projects.map((p) => <ProjectCard project={p} locale={locale} withScreenshot />)}
+      {apps.map((p) => <ProjectCard project={p} locale={locale} withScreenshot />)}
+      <MakingCard locale={locale} tech={orgTech} />
     </div>
-    <p data-reveal data-motion="read"><a href={pathFor("projects", locale)}>{copy.projects.viewAll} →</a></p>
-  </section>
-
-  <JoinStrip locale={locale} text={copy.join.stripProjects} />
-
-  <section class="build container" aria-labelledby="build-heading">
-    <h2 class="angled" id="build-heading" data-reveal>{copy.build.heading}</h2>
-    <p data-reveal data-motion="read">{copy.build.what}</p>
-    <p data-reveal data-motion="read">{copy.build.how}</p>
-    <p class="muted" data-reveal data-motion="read">{copy.build.inOrg} <span class="mono">{orgTech.join(" · ")}</span></p>
+    <p class="more" data-reveal data-motion="read"><a href={pathFor("projects", locale)}>{copy.projects.viewAll} →</a></p>
+    <p class="muted" data-reveal data-motion="read">{copy.steps.hackathons}</p>
   </section>
 
   <section id="join" class="join container" aria-labelledby="join-heading">
     <h2 class="angled" id="join-heading" data-reveal>{copy.join.heading}</h2>
     <p class="lead" data-reveal data-motion="read">{copy.join.lead}</p>
-    <p data-reveal data-motion="read">{copy.join.threshold}</p>
+    <Steps steps={copy.steps} firstHref={site.discord} />
+    <p class="after-steps" data-reveal data-motion="read">{copy.join.threshold}</p>
     <dl class="facts" data-reveal data-motion="read">
-      <dt>{copy.join.discord}</dt><dd><a href={site.discord}>{site.discord.replace("https://", "")}</a></dd>
+      <dt>{copy.join.discord}</dt><dd><a class="mono" href={site.discord}>{site.discord.replace("https://", "")}</a></dd>
       <dt>{copy.join.email}</dt><dd><a class="mono" href={`mailto:${site.email}`}>{site.email}</a></dd>
       <dt>{copy.join.room}</dt><dd class="mono">{site.room}, {site.address[0]}</dd>
     </dl>
@@ -69,11 +86,13 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   /* The buttons stay inline-level: a block-level flex row clears the float's whole box instead of
      following its shape, and their line box is what finds a band beside the ribbon wide enough for
      the row. Their block margins are that line box's only leading, so the row keeps its gap where
-     it wraps beside the diagonal. */
+     it wraps beside the diagonal. They grow with the lead on a large screen: opener.ts budgets the
+     two together in lead sizes. */
   .ctas {
     position: relative;
     z-index: 2;
-    margin-block-start: 1.2em;
+    font-size: max(1rem, 0.7 * var(--lead));
+    margin-block: 1.2em 0;
     max-width: none;
     text-align: end;
   }
@@ -90,7 +109,7 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     animation: fade-in 250ms ease-out 1240ms both;
   }
   :global(:root:not([data-hero="still"])) .ctas :global(.ghost) {
-    animation: draw 650ms var(--ease-out) 1070ms both;
+    animation: draw 650ms var(--ease-out) 1070ms backwards;
   }
   @media (prefers-reduced-motion: reduce) {
     :global(:root:not([data-hero="still"])) .ctas :global(.primary)::before {
@@ -100,18 +119,116 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
       animation: fade-in 500ms ease-out 1070ms both;
     }
   }
+  /* Right under the buttons at the margin they end on (CUE_ROOM in opener.ts), so the lead, the
+     buttons and the cue read as one column. In flow and not a flex row of its own: a box that
+     contained the float would clear its whole width instead of following its shape. */
+  .cue-row {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    /* The bottom is the 1.5rem CUE_ROOM keeps under the cue: where the copy outgrows the window,
+       the opener grows by it instead of cutting the cue. */
+    padding-block: calc(0.5 * var(--cue-size)) var(--space-4);
+    max-width: none;
+    font-size: var(--cue-size);
+    line-height: 0;
+    text-align: end;
+  }
+  .cue {
+    display: inline-flex;
+    vertical-align: top;
+    align-items: start;
+    gap: var(--space-2);
+    /* The hit area reaches past the drawing without moving it. */
+    padding: var(--space-2);
+    margin: calc(-1 * var(--space-2));
+    line-height: 1.2;
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color 120ms,
+      opacity 300ms ease-out;
+  }
+  .cue:hover {
+    color: var(--ink);
+  }
+  /* Gone once the page moves, unless it holds focus: a keyboard user scrolled to it still sees
+     it. */
+  .cue[data-away]:not(:focus-visible) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .cue-rule {
+    flex: none;
+    overflow: visible;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: square;
+  }
+  .track {
+    stroke: var(--line-interactive);
+  }
+  /* A short run of ink travels down the rule and out along the tail, the way the unroll's tip runs
+     along the ribbon. pathLength is 100, so the dash and the run are in hundredths of the rule. */
+  .tip {
+    stroke: var(--ink);
+    stroke-dasharray: 16 200;
+    stroke-dashoffset: 16;
+    animation: cue-run 2800ms cubic-bezier(0.5, 0, 0.3, 1) 2600ms infinite;
+  }
+  @keyframes cue-run {
+    0% {
+      stroke-dashoffset: 16;
+    }
+    60%,
+    100% {
+      stroke-dashoffset: -100;
+    }
+  }
+  /* After the arrival (Opener.astro and the buttons above end by 1730 ms): the label comes in along
+     the axis and the rule draws down from it. */
+  :global(:root:not([data-hero="still"])) .cue-label {
+    animation: axis-in 700ms var(--ease-out) 1800ms both;
+  }
+  :global(:root:not([data-hero="still"])) .track {
+    stroke-dasharray: 100 100;
+    animation: cue-draw 700ms var(--ease-out) 1950ms both;
+  }
+  @keyframes cue-draw {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tip {
+      animation: none;
+      visibility: hidden;
+    }
+    :global(:root:not([data-hero="still"])) .cue-label,
+    :global(:root:not([data-hero="still"])) .track {
+      animation: fade-in 500ms ease-out 1800ms both;
+    }
+  }
   /* minmax(0, …) instead of a bare column: a grid track sized to auto never shrinks below the
      longest word, which at 200% text zoom is wider than a phone. */
-  .projects,
-  .build,
+  .what,
   .join {
     padding-block: var(--space-6);
     display: grid;
     gap: var(--space-4);
     grid-template-columns: minmax(0, 1fr);
   }
-  .join {
-    justify-items: start;
+  .join > :global(.button) {
+    justify-self: start;
+  }
+  /* The join section holds two groups (the steps and where to find us), and the break between them
+     is wider than the gap inside either. */
+  .join > :global(.steps),
+  .after-steps {
+    margin-block-start: calc(var(--space-5) - var(--space-4));
   }
   /* The lead belongs to its heading, not to the row of cards below: it sits closer than the grid's
      gap puts it. */
@@ -131,6 +248,16 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
+  /* With two columns the card on how we work closes the 2×2 beside the third app; with three it
+     takes the next row whole. */
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .grid > :global(.making) {
+      grid-column: 1 / -1;
+    }
+  }
   .muted {
     color: var(--muted);
   }
@@ -148,6 +275,19 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
     margin: 0;
     overflow-wrap: anywhere;
   }
+  /* Baseline rows keep each label level with its taller link. */
+  @media (pointer: coarse) {
+    .more a,
+    .facts a {
+      display: inline-flex;
+      align-items: center;
+      min-block-size: 2.75rem;
+      padding-block: 0;
+    }
+    .facts {
+      align-items: baseline;
+    }
+  }
 </style>
 
 <script>
@@ -155,4 +295,13 @@ const orgTech = [...new Set(projects.flatMap((p) => p.data.tech))];
   // so the module ships with this page instead of with every opener.
   import "../lib/foil";
   import "../lib/unroll";
+
+  const cue = document.querySelector(".cue");
+  if (cue !== null) {
+    const away = (): void => {
+      cue.toggleAttribute("data-away", scrollY > 0);
+    };
+    addEventListener("scroll", away, { passive: true });
+    away();
+  }
 </script>

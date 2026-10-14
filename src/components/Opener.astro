@@ -9,6 +9,8 @@ import {
   markArmsGrowth,
   markAxis,
   markBandPath,
+  markFoilTiles,
+  markPathData,
   markPathId,
   markPattern,
   markRibbonPath,
@@ -32,7 +34,12 @@ import {
   unroll,
   UNROLL_ARM_LENGTH,
   titleLines,
+  titleLinesBroad,
+  titleLinesLandscape,
+  titleLinesStacked,
+  titleReach,
 } from "../lib/opener";
+import { compactPath, simplifyPolyline } from "../lib/svg-path";
 import LocaleSwitch from "./LocaleSwitch.astro";
 
 interface Props {
@@ -57,7 +64,21 @@ const links = route === undefined ? [] : [
 const uid = Math.random().toString(36).slice(2, 8);
 const style = [
   openerStyle(openerLayouts[variant]),
-  `--title-band:calc(${titleLines(title)} * ${TITLE_LINE_HEIGHT} * var(--title))`,
+  `--title-band-row:calc(${titleLines(title)} * ${TITLE_LINE_HEIGHT} * var(--title))`,
+  `--title-band-stacked:calc(${titleLinesStacked(title)} * ${TITLE_LINE_HEIGHT} * var(--title))`,
+  `--title-band-landscape:calc(${titleLinesLandscape(title)} * ${TITLE_LINE_HEIGHT} * var(--title))`,
+  `--title-band-broad:calc(${titleLinesBroad(title)} * ${TITLE_LINE_HEIGHT} * var(--title))`,
+  ...(
+    [
+      ["row", titleLines(title)],
+      ["stacked", titleLinesStacked(title)],
+      ["landscape", titleLinesLandscape(title)],
+      ["broad", titleLinesBroad(title)],
+    ] as const
+  ).map(([k, n]) => {
+    const { full, last } = titleReach(title, n);
+    return `--title-reach-${k}:calc(${full} * var(--title));--title-reach-last-${k}:calc(${last} * var(--title))`;
+  }),
   `--mark-x:${formCss(markOrigin[0])}`,
   `--mark-y:${formCss(markOrigin[1])}`,
 ].join(";");
@@ -93,6 +114,9 @@ const lane = {
   y: unroll.wordAcross[0] - UNROLL_MARGIN,
   height: unroll.wordAcross[1] - unroll.wordAcross[0] + 2 * UNROLL_MARGIN,
 };
+// The mark's outline appears twice in the page (MarkDefs and here). A twentieth of a unit is a
+// thirtieth of a pixel at the hero's largest size (0.66 px a unit) and drops four points in five.
+const drawingClip = markRibbonPath + compactPath(simplifyPolyline(markPathData, 0.05)) + lockupPath;
 const ray = (g: Growth): string =>
   [g.pre, ...g.from, ...g.toward].map((n) => Math.round(n * 1e4) / 1e4).join(" ");
 ---
@@ -148,11 +172,28 @@ const ray = (g: Growth): string =>
           </mask>
         </defs>
       )}
-      <g
-        class:list={[variant === "home" && "drawing"]}
-        fill={`url(#foil-${uid})`}
-        mask={variant === "home" ? `url(#unroll-${uid})` : undefined}
-      >
+      {variant === "home" ? (
+        <>
+          {/* The shapes cut the foil instead of filling with it: see markFoilTiles. One path per
+              clip, because Chromium paints any other clip as a mask, every frame the foil moves.
+              While the lockup flies (.vt-lockup) the drawing keeps the ribbon alone. */}
+          <clipPath id={`drawing-${uid}`}>
+            <path d={drawingClip} />
+          </clipPath>
+          <clipPath id={`ribbon-${uid}`}>
+            <path d={markRibbonPath} />
+          </clipPath>
+          <g
+            class="drawing"
+            mask={`url(#unroll-${uid})`}
+            clip-path={`url(#drawing-${uid})`}
+            style={`--ribbon-clip:url(#ribbon-${uid})`}
+          >
+            <Fragment set:html={markFoilTiles(uid)} />
+          </g>
+        </>
+      ) : (
+      <g fill={`url(#foil-${uid})`}>
         {backdrop ? (
           <path d={markBandPath} />
         ) : (
@@ -163,6 +204,7 @@ const ray = (g: Growth): string =>
           </>
         )}
       </g>
+      )}
     </svg>
     {variant === "home" && (
       <svg class="lockup-vt" viewBox={flightViewBox} style={heroLockupStyle} aria-hidden="true">
@@ -216,7 +258,7 @@ const ray = (g: Growth): string =>
               </svg>
             </a>
             {links.map((l) => (
-              <a href={l.href} aria-current={l.key === route ? "page" : undefined}>
+              <a href={l.href} aria-current={l.key === route ? "page" : undefined} data-nav={l.key}>
                 <l.Icon class="icon" aria-hidden="true" /><span class="label">{l.label}</span>
               </a>
             ))}
@@ -234,7 +276,7 @@ const ray = (g: Growth): string =>
           {route !== undefined && (
             <nav aria-label={copy.nav.mainLabel}>
               {links.map((l) => (
-                <a href={l.href} aria-current={l.key === route ? "page" : undefined}>
+                <a href={l.href} aria-current={l.key === route ? "page" : undefined} data-nav={l.key}>
                 <l.Icon class="icon" aria-hidden="true" /><span class="label">{l.label}</span>
               </a>
               ))}
@@ -285,8 +327,17 @@ const ray = (g: Growth): string =>
   .opener {
     font-size: 1rem;
     --w: 100cqw;
+    --m: var(--m-wide);
+    --bx: var(--bx-wide);
     --by: var(--by-wide);
-    --h: var(--h-wide);
+    --drop: var(--drop-wide);
+    --below-y: var(--below-y-wide);
+    --title: var(--title-wide);
+    --lead: var(--lead-wide);
+    --title-band: var(--title-band-row);
+    --title-reach: var(--title-reach-row);
+    --title-reach-last: var(--title-reach-last-row);
+    --clear: var(--clear-wide);
     position: relative;
     isolation: isolate;
     display: grid;
@@ -300,11 +351,72 @@ const ray = (g: Growth): string =>
        on a real edge of the document. */
     overflow: hidden;
   }
-  /* NARROW_REM in opener.ts. */
+  /* NARROW_REM in opener.ts, and a portrait window at any width. A container query cannot read
+     the height, so the same switch is written twice. A phone on its side and a broad portrait
+     window count the title's lines their own way (titleLinesLandscape, titleLinesBroad). */
   @container (width < 56rem) {
     .opener {
+      --m: var(--m-narrow);
+      --bx: var(--bx-narrow);
       --by: var(--by-narrow);
-      --h: var(--h-narrow);
+      --drop: var(--drop-narrow);
+      --below-y: var(--below-y-narrow);
+      --title: var(--title-narrow);
+      --lead: var(--lead-narrow);
+      --clear: var(--clear-narrow);
+    }
+    @media (aspect-ratio > 1) {
+      .opener {
+        --title-band: var(--title-band-landscape);
+        --title-reach: var(--title-reach-landscape);
+        --title-reach-last: var(--title-reach-last-landscape);
+      }
+    }
+  }
+  @media (aspect-ratio < 1) {
+    .opener {
+      --m: var(--m-narrow);
+      --bx: var(--bx-narrow);
+      --by: var(--by-narrow);
+      --drop: var(--drop-narrow);
+      --below-y: var(--below-y-narrow);
+      --title: var(--title-narrow);
+      --lead: var(--lead-narrow);
+      --clear: var(--clear-narrow);
+    }
+    @container (width >= 50rem) {
+      .opener {
+        --title-band: var(--title-band-broad);
+        --title-reach: var(--title-reach-broad);
+        --title-reach-last: var(--title-reach-last-broad);
+      }
+    }
+  }
+  .home {
+    --nav-h: var(--nav-h-row);
+    --cta-wrap: 0px;
+  }
+  /* Where the home page's two buttons no longer share a row: in em, so the bound follows the
+     language the way the navigation's fold does (.frame:lang(en)), 26rem in Polish. */
+  @container (width < 26em) {
+    .home {
+      --cta-wrap: 3.7rem;
+    }
+  }
+  /* STACK_REM in opener.ts: below the folded row's floor, which large text reaches on a phone. A
+     wrapped row's height depends on where its labels break and cannot be budgeted, so the links
+     stack, one a row, and the S and the band move down by the column's exact height instead of the
+     row wrapping onto the foil. The title, larger here, takes more lines. */
+  @container (width < 18.25rem) {
+    .home {
+      --nav-h: var(--nav-h-stacked);
+      --title-band: var(--title-band-stacked);
+      --title-reach: var(--title-reach-stacked);
+      --title-reach-last: var(--title-reach-last-stacked);
+    }
+    .home nav {
+      flex-direction: column;
+      row-gap: 0;
     }
   }
   /* Inline-level and in flow: a block-level box would clear the float's whole margin box instead of
@@ -349,6 +461,12 @@ const ray = (g: Growth): string =>
   nav a[aria-current="page"] {
     color: var(--ink);
   }
+  /* The current page's label is one lightness step from its neighbours (1.13:1), too close to read
+     on its own; an underline marks it without moving either row. */
+  nav a[aria-current="page"] :global(.label) {
+    text-decoration: underline 2px;
+    text-underline-offset: 0.3em;
+  }
   .ribbon {
     position: absolute;
     inset-block-start: var(--mark-y);
@@ -392,6 +510,7 @@ const ray = (g: Growth): string =>
   }
   .below .sh {
     float: left;
+    shape-margin: var(--clear);
     block-size: calc(var(--h) - var(--below-y));
   }
   /* Not balanced as base.css does: balancing counts characters against a rectangle the shape has
@@ -501,11 +620,11 @@ const ray = (g: Growth): string =>
      label, in CSS so the first paint already has it. The bounds are measured: the one-line row
      wraps below 30.06rem in Polish and 27.63rem in English, and the folded row fits from 17.75rem
      with the lockup (14.3rem without), both with room for another engine's text metrics. Below the
-     floor, which large text reaches on a phone, the links wrap: a row that cannot shrink would
-     scroll the page. The columns are equal, not spaced evenly: even gaps between unequal labels set
-     the icons at uneven distances. The margins take back the links' padding so the outer columns
-     stand equally far from the page edges. The --nav-w budget is for the one-line labels; this row
-     is short enough to clear the band across the full width. */
+     floor, which large text reaches on a phone, the links wrap (on the home page they stack, above):
+     a row that cannot shrink would scroll the page. The columns are equal, not spaced evenly: even
+     gaps between unequal labels set the icons at uneven distances. The margins take back the links'
+     padding so the outer columns stand equally far from the page edges. The --nav-w budget is for
+     the one-line labels; this row is short enough to clear the band across the full width. */
   @container (18.25rem <= width < 30.75em) {
     nav {
       --pad: 0.1rem;
@@ -529,7 +648,6 @@ const ray = (g: Growth): string =>
       flex-direction: column;
       gap: 0.2rem;
       padding: 0.35rem var(--pad);
-      font-family: inherit;
       font-size: 0.8rem;
     }
     nav :global(.icon) {
@@ -560,6 +678,12 @@ const ray = (g: Growth): string =>
     syntax: "<number>";
     inherits: true;
     initial-value: 40000;
+  }
+  /* Both run on .ribbon and are read only in its masks. The foil's tiles under .drawing would
+     otherwise restyle with every frame of either animation. */
+  .drawing {
+    --unroll-tip: 0;
+    --grow: 0;
   }
   .unroll .arm-in {
     stroke-dashoffset: calc((var(--dash) - var(--arm-length) - var(--unroll-tip)) * 1px);
@@ -630,9 +754,30 @@ const ray = (g: Growth): string =>
   :global(:root.vt-lockup) .lockup-part {
     visibility: hidden;
   }
-  /* When the lockup lands where it was not (Base.astro sets .vt-move, then .vt-landed once the
-     transition has finished), the arms there stay hidden while it flies and then grow out of its
-     square ends to the page's edges. --grow runs from 0 to 1 of each arm's measured length (--len);
+  :global(:root.vt-lockup) .home .drawing {
+    clip-path: var(--ribbon-clip);
+  }
+  /* The same links lead both rows, so across the same page change each travels from its place in
+     one to its place in the other, alongside the lockup, instead of fading out and back in. */
+  :global(:root.vt-lockup) nav a[data-nav="projects"] {
+    view-transition-name: nav-projects;
+  }
+  :global(:root.vt-lockup) nav a[data-nav="history"] {
+    view-transition-name: nav-history;
+  }
+  :global(:root.vt-lockup) nav a[data-nav="join"] {
+    view-transition-name: nav-join;
+  }
+  :global(:root.vt-lockup) nav :global(.switch) {
+    view-transition-name: nav-locale;
+  }
+  :global(:root.vt-lockup) nav a[data-nav],
+  :global(:root.vt-lockup) nav :global(.switch) {
+    view-transition-class: nav;
+  }
+  /* When the lockup lands where it was not (Base.astro sets .vt-move, then .vt-landed as the flight
+     starts), the arms there stay hidden while it flies and then grow out of its square ends to the
+     page's edges, from the moment it lands (the flight's 650 ms, Base.astro). --grow runs from 0 to 1 of each arm's measured length (--len);
      the fallback reaches past any edge. */
   @property --grow {
     syntax: "<number>";
@@ -657,10 +802,10 @@ const ray = (g: Growth): string =>
   /* The home page's unroll curve, and times that keep both at about one speed: the hero's arms run
      several times as far as the corner's. */
   :global(:root.vt-move.vt-landed) .home .ribbon {
-    animation: arms-grow 650ms cubic-bezier(0.3, 0.55, 0.3, 1) both;
+    animation: arms-grow 650ms cubic-bezier(0.3, 0.55, 0.3, 1) 650ms both;
   }
   :global(:root.vt-move.vt-landed) .backdrop .logo .mark {
-    animation: arms-grow 350ms cubic-bezier(0.3, 0.55, 0.3, 1) both;
+    animation: arms-grow 350ms cubic-bezier(0.3, 0.55, 0.3, 1) 650ms both;
   }
   @keyframes arms-grow {
     from {

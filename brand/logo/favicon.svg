@@ -1,6 +1,6 @@
 <!--
-  Template for /favicon.svg, filled at build by src/pages/favicon.svg.ts with the viewBox and the
-  outline of brand/logo/mark.svg. Comments are stripped from the output.
+  Template for /favicon.svg, filled at build by src/pages/favicon.svg.ts with the outline of
+  brand/logo/mark.svg and a viewBox cropped to its S. Comments are stripped from the output.
 
   The foil can never show at 32 px, so the icon is the mark flattened to the two brand greys. The
   background is transparent and the greys swap with the browser's scheme. The outline is the tab
