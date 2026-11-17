@@ -9,7 +9,7 @@ W terminalu robią to hooki z plikami-flagami w `~/.claude`; w sesjach w chmurze
 tych plików nie ma, więc wywołanie jest ręczne.
 
 Subagenci: model `opus` dla implementerów i reviewerów, `sonnet` dla scoped
-re-review małych diffów. Nigdy `fable`. Jeden implementer naraz.
+re-review małych diffów. Nigdy `fable`.
 
 ## Komentarze
 
